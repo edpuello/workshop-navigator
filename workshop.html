@@ -382,11 +382,8 @@ pre.zpl{background:#f3f6fa;border:1px solid var(--line-2)}
 .collapse{background:#fff;border-color:var(--bg);color:var(--navy);box-shadow:0 2px 8px rgba(18,45,75,.2)}.collapse:hover{background:#f3f6fa}
 a.nav,a.ibtn{text-decoration:none;color:inherit}
 .side a.navlink{color:#c7d7e6}
-/* phone header: navy band like the Checklist page */
-html.m-phone .ptop{background:var(--navy);color:#fff;margin:-6px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px}
-html.m-phone .ptop .ws,html.m-phone .ptop .ibtn{color:#fff}
-html.m-phone .ptop .ws .logo{background:#fff;color:var(--navy)}
-html.m-phone .ptop .ibtn:hover{background:rgba(255,255,255,.1)}
+/* phone toolbar under the header */
+html.m-phone .ptop .ws .logo{background:var(--navy-2);color:#fff}
 /* part images (Bolt Depot thumbnails) */
 .pthumb{flex:none;width:64px;height:32px;border-radius:7px;background:#fff;border:1px solid #e3e9f0;display:grid;place-items:center;overflow:hidden}
 .pthumb img{max-width:58px;max-height:28px;width:auto;height:auto;display:block}
@@ -398,11 +395,29 @@ html.m-phone .pthumb{width:52px;height:28px}html.m-phone .pthumb img{max-width:4
 .ptop .livedot{margin:0 4px}
 @keyframes livepulse{0%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,122,.7)}50%{opacity:.35}70%{box-shadow:0 0 0 6px rgba(60,207,122,0)}100%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,122,0)}}
 @media (prefers-reduced-motion:reduce){.livedot.ok{animation:none}}
+
+/* top header: identical to the Checklist page */
+.wn-header{background:var(--wn-brand,#173a5c);color:#fff;padding:23px max(20px,calc((100vw - 1240px)/2));padding-top:max(23px,calc(env(safe-area-inset-top,0px) + 12px));font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wn-header h1{margin:0;font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.25;color:#fff}
+.wn-header p{margin:6px 0 0;color:#c7d7e6;font-size:13px;line-height:1.4}
+.wn-topbar{display:flex;gap:8px;align-items:center;margin:-6px 0 12px;flex-wrap:wrap}
+.wn-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;line-height:1.5;cursor:pointer;text-decoration:none;font-family:inherit;height:auto}
+.wn-chip:hover{background:rgba(255,255,255,.16)}
+.wn-chip.dotonly{padding:7px 9px}
+.wn-chip.dotonly #wnSyncText{display:none}
+.wn-dot{width:8px;height:8px;border-radius:50%;background:#9fb4c3;flex:none}
+.wn-dot.ok{background:#3ccf7a;animation:livepulse 1.6s ease-in-out infinite}.wn-dot.err{background:#ff6b5b}
+.wn-switch{display:inline-flex;gap:2px;padding:3px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08)}
+.wn-switch a{color:#dbe6f0;text-decoration:none;font-size:12px;font-weight:650;padding:4px 12px;border-radius:999px;white-space:nowrap;line-height:1.5}
+.wn-switch a:hover{color:#fff;background:rgba(255,255,255,.1)}
+.wn-switch a.on{background:#fff;color:#14375c}
+html.m-phone .wn-header{padding-left:18px;padding-right:18px}
 </style>
 </head>
 <body>
 
 
+<header class="wn-header"><div class="wn-topbar"><a class="wn-chip" id="wnSync" href="#" title="Live"><span class="wn-dot" id="wnDot"></span><span id="wnSyncText">Live</span></a><button type="button" class="wn-chip" data-go="settings">&#9881; Settings</button><nav class="wn-switch" aria-label="Switch page"><a href="index.html">Checklist</a><a class="on" href="workshop.html" aria-current="page">Workshop App</a></nav></div><h1>Workshop App</h1><p>Inventory · Storage · Projects · Labels · AI planner</p></header>
 <div class="app" id="app">
   <aside class="side" id="side" aria-label="Main menu">
     <button class="collapse desk-only" id="collapse" aria-label="Collapse sidebar" aria-expanded="true"></button>
@@ -989,13 +1004,16 @@ function renderChrome() {
   $('ai-card').innerHTML = S.area === 'buy'
     ? `<h4>${I('cart', 'sm')}<span>Restock run</span></h4><p>${shopN} on your shopping list, ${S.alerts.length} reorder alert${S.alerts.length === 1 ? '' : 's'}.</p><button class="btn-glow" data-go="shop">${I('cart', 'sm')}<span class="bl">Open shopping list</span></button>`
     : `<h4>${I('spark', 'sm')}<span>Workshop AI</span></h4><p>Qwen 3.8 plans any build from your dimensions and checks it against your inventory.</p><button class="btn-glow" data-go="ai">${I('spark', 'sm')}<span class="bl">Plan a project</span></button>`;
-  const ws = WN.status, signed = !!WN.user, lst = !signed ? (ws.state === 'error' ? 'err' : 'off') : ws.state === 'error' ? 'err' : ws.state === 'busy' ? 'busy' : 'ok';
-  const lbl = !signed ? 'Sign in on the Checklist page' : lst === 'ok' ? 'Live · synced' : lst === 'busy' ? 'Syncing…' : 'Sync issue';
+  const ws = WN.status, signed = !!WN.user, online = navigator.onLine !== false, lst = signed && online ? 'ok' : 'off';
+  const lbl = !signed ? 'Sign in on the Checklist page' : online ? 'Live' : 'Offline';
   $('me').innerHTML = `<span class="ava">MG</span><span class="who"><b>Main garage</b><span><i class="livedot ${lst}"></i>${lbl}</span></span><span class="ud">${I('cu', 'xs')}${I('cd', 'xs')}</span>`;
   $('me').title = ws.msg || '';
+  const hd = $('wnDot'), ht = $('wnSyncText'), hc = $('wnSync');
+  if (hd) { hd.className = 'wn-dot' + (lst === 'off' ? '' : ' ' + lst); ht.textContent = !signed ? 'Sign in' : online ? 'Live' : 'Offline'; hc.classList.remove('dotonly'); hc.title = !signed ? 'Sign in on the Checklist page' : online ? 'Live: changes sync to all your devices instantly' : 'Offline: changes are saved here and sync when you reconnect'; hc.setAttribute('href', signed ? '#' : 'index.html'); }
+  const brand = (WN.doc && WN.doc.settings && WN.doc.settings.brand) || '#173a5c'; document.documentElement.style.setProperty('--wn-brand', brand);
   // phone header, pills, tab bar
   const preview = S.mode === 'offline' ? '<span class="state-pill">Preview</span>' : '';
-  $('ptop').innerHTML = `<button class="ibtn" id="open-drawer" aria-label="Open menu">${I('menu')}</button><button class="ws" id="area-menu" aria-label="Switch area"><span class="logo">${I(A.logo)}</span>${A.name} ${I('cd', 'xs')}</button>${preview}<i class="livedot ${WN.user ? (WN.status.state === 'error' ? 'err' : WN.status.state === 'busy' ? 'busy' : 'ok') : 'off'}" title="${esc(WN.status.msg || '')}"></i><a class="ibtn" href="index.html" aria-label="Purchase Checklist">${I('clip')}</a><button class="ibtn" aria-label="Reorder alerts" data-go="alerts">${I('bell')}</button>`;
+  $('ptop').innerHTML = `<button class="ibtn" id="open-drawer" aria-label="Open menu">${I('menu')}</button><button class="ws" id="area-menu" aria-label="Switch area"><span class="logo">${I(A.logo)}</span>${A.name} ${I('cd', 'xs')}</button>${preview}<i class="livedot ${WN.user && navigator.onLine !== false ? 'ok' : 'off'}" title="${WN.user ? (navigator.onLine !== false ? 'Live' : 'Offline') : 'Sign in on the Checklist page'}"></i><a class="ibtn" href="index.html" aria-label="Purchase Checklist">${I('clip')}</a><button class="ibtn" aria-label="Reorder alerts" data-go="alerts">${I('bell')}</button>`;
   $('ptabs').innerHTML = A.pills.map(([id, l]) => `<button class="pill ${S.screen === id ? 'on' : ''}" role="tab" aria-selected="${S.screen === id}" data-go="${id}">${l}</button>`).join('');
   const third = S.area === 'buy' ? ['shop', 'Shopping', 'cart'] : ['ai', 'AI Hub', 'spark'];
   $('tabbar').innerHTML = `<button class="tab" id="tab-create"><span class="ic"><span class="plus">${I('plus', 'sm')}</span></span>${S.area === 'buy' ? 'Add' : 'Create'}</button><button class="tab ${S.screen === A.home ? 'on' : ''}" data-go="${A.home}"><span class="ic">${I('home')}</span>Home</button><button class="tab ${S.screen === third[0] ? 'on' : ''}" data-go="${third[0]}"><span class="ic">${I(third[2])}</span>${third[1]}</button>`;
@@ -1167,6 +1185,7 @@ function simple(t, body) { return `<div class="card"><div class="mid">${t}</div>
 
 // ------------------------------------------------------------ render + bind
 function render() {
+  queueMicrotask(persistState);
   renderChrome();
   const isV = S.screen === 'viewer';
   $('viewer').hidden = !isV;
@@ -1348,6 +1367,7 @@ function fromDoc() {
   SHOP = reconcile(SHOP, d.app.shopping.map(x => ({ ...x })));
   S.alerts = reconcile(S.alerts, d.app.alerts.map(x => ({ ...x })));
   S.sample = false; S.chkDraft = false;
+  applyState(d.app.state);
 }
 function nextHW() { const n = WN.doc.items.map(x => Number((String(x.id).match(/(\d+)$/) || [])[1] || 0)); return 'HW-' + String(Math.max(0, ...n) + 1).padStart(4, '0'); }
 const noSrc = (o) => { const c = { ...o }; delete c._src; return c; };
@@ -1374,6 +1394,28 @@ function toDoc(name) {
   } else if (name === 'shopping') d.app.shopping = SHOP.map(noSrc);
   else if (name === 'alerts') d.app.alerts = S.alerts.map(noSrc);
 }
+function stateOut() {
+  return { queue: S.queue.slice(), steps: { ...S.steps }, done: JSON.parse(JSON.stringify(S.done)), shelfReq: S.shelfReq.map(r => ({ n: r.n, s: r.s })),
+    shed: { ...S.shed }, ai: { primary: S.ai.primary, fallback: S.ai.fallback, internet: S.ai.internet, url: S.ai.url, model: S.ai.model, claude: S.ai.claude, prompt: S.ai.prompt },
+    look: { siding: S.v.siding, trim: S.v.trim, roof: S.v.roof } };
+}
+let lastState = '';
+function applyState(st) {
+  if (!st || !st.u) { lastState = JSON.stringify(stateOut()); return; }
+  if (Array.isArray(st.queue)) S.queue = st.queue.slice();
+  if (st.shed && JSON.stringify(st.shed) !== JSON.stringify(S.shed)) { try { S.shed = { ...S.shed, ...st.shed }; SHED = ShedCalc.designShed({ ...S.shed, door_height_in: Math.min(S.shed.door_height_in || 80, S.shed.wall_height_ft * 12 - 12) }); Viewer.dirty = true; } catch (e) { } }
+  if (st.steps) S.steps = { ...S.steps, ...st.steps };
+  if (st.done) { if (Array.isArray(st.done.shelf)) S.done.shelf = st.done.shelf.slice(); if (Array.isArray(st.done.shed) && st.done.shed.length === SHED.steps.length) S.done.shed = st.done.shed.slice(); }
+  if (Array.isArray(st.shelfReq)) st.shelfReq.forEach(x => { const r = S.shelfReq.find(y => y.n === x.n); if (r && x.s) r.s = x.s; });
+  if (st.ai) Object.assign(S.ai, st.ai);
+  if (st.look) Object.assign(S.v, st.look);
+  lastState = JSON.stringify(stateOut());
+}
+function persistState() {
+  if (!live()) return;
+  const j = JSON.stringify(stateOut()); if (j === lastState) return;
+  lastState = j; WN.doc.app.state = JSON.parse(j); WN.commit();
+}
 function save(name) {
   if (!live()) return;
   toDoc(name); WN.commit();
@@ -1387,8 +1429,11 @@ function refresh() {
 }
 async function initStore() {
   S.mode = 'live'; fromDoc(); S.loaded = true; render();
+  setInterval(persistState, 1500);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistState(); });
+  window.addEventListener('pagehide', persistState);
   WN.on('change', () => { fromDoc(); clearTimeout(refreshT); refreshT = setTimeout(refresh, 30); });
-  WN.on('status', () => renderChrome());
+  window.addEventListener('online', () => renderChrome()); window.addEventListener('offline', () => renderChrome());
   WN.on('auth', () => renderChrome());
 }
 
@@ -1681,7 +1726,7 @@ function settings() {
   const d = S.device || {};
   const name = (k) => k === 'phone' ? 'iPhone' : k === 'tablet' ? 'iPad' : 'Computer';
   const opts = [['auto', 'Auto'], ['phone', 'iPhone'], ['tablet', 'iPad'], ['desktop', 'Computer']];
-  const saved = S.mode === 'live' ? (WN.user ? 'Live · synced to your account' : 'Saved on this device · sign in on the Checklist page to sync') : 'Connecting…';
+  const saved = S.mode === 'live' ? (WN.user ? 'Saved and synced to your account' : 'Saved on this device · sign in on the Checklist page to sync') : 'Connecting…';
   return `<div class="grid">
   <div class="card span2"><div class="k">${I('cpu', 'sm')}Device layout</div><div class="mid" style="margin-top:8px">${name(d.layout)} layout</div>
     <div class="foot">Detected: ${name(d.auto)}, ${d.portrait ? 'portrait' : 'landscape'}, ${d.w} x ${d.h}. On iPad the sidebar folds into icons in portrait and opens in landscape.</div>

@@ -34,6 +34,7 @@
     if (!Array.isArray(d.locations)) d.locations = [];
     d.app = d.app && typeof d.app === 'object' ? d.app : {};
     for (const k of ['inventory', 'shopping', 'alerts']) if (!Array.isArray(d.app[k])) d.app[k] = [];
+    d.app.state = d.app.state && typeof d.app.state === 'object' && !Array.isArray(d.app.state) ? d.app.state : {};
     d.del = d.del && typeof d.del === 'object' ? d.del : {};
     d.settings = d.settings && typeof d.settings === 'object' ? d.settings : {};
     d.created = d.created || new Date().toISOString();
@@ -45,6 +46,7 @@
     const s = {};
     for (const path of COLLECTIONS) { const key = path.join('.'); s[key] = {}; (getCol(d, path) || []).forEach(o => { if (o && o.id != null) s[key][o.id] = sig(o); }); }
     s.settings = sig(d.settings || {});
+    s.state = sig((d.app && d.app.state) || {});
     return s;
   }
 
@@ -61,6 +63,7 @@
       for (const id of Object.keys(before)) if (!seen.has(String(id))) { doc.del[key + ':' + id] = t; changed = true; }
     }
     if ((shadow.settings || '{}') !== sig(doc.settings || {})) { doc.settings.u = t; changed = true; }
+    if ((shadow.state || '{}') !== sig(doc.app.state || {})) { doc.app.state.u = t; changed = true; }
     if (changed) doc.modified = new Date(t).toISOString();
     shadow = snapshot(doc);
     return changed;
@@ -91,6 +94,7 @@
     for (const [k, v] of Object.entries(del)) if (v < cutoff) delete del[k];
     out.del = del;
     out.settings = (local.settings.u || 0) > (remote.settings.u || 0) ? local.settings : remote.settings;
+    out.app.state = (local.app.state.u || 0) > (remote.app.state.u || 0) ? local.app.state : remote.app.state;
     out.created = [local.created, remote.created].filter(Boolean).sort()[0];
     out.modified = [local.modified, remote.modified].filter(Boolean).sort().pop();
     return out;
@@ -214,7 +218,7 @@
       const old = doc; next = normalize(clone(next)); const t = now();
       for (const path of COLLECTIONS) (getCol(next, path) || []).forEach(o => { if (o) o.u = t; });
       for (const path of COLLECTIONS) { const key = path.join('.'), ids = new Set((getCol(next, path) || []).map(o => String(o.id))); (getCol(old, path) || []).forEach(o => { if (o && !ids.has(String(o.id))) next.del[key + ':' + o.id] = t; }); }
-      next.settings.u = t; next.modified = new Date(t).toISOString();
+      next.settings.u = t; next.app.state.u = t; next.modified = new Date(t).toISOString();
       doc = next; shadow = snapshot(doc); saveLocal(); emit('change', doc, 'local'); schedulePush(0);
     },
     async syncNow() { await pull('manual'); await push(); },
@@ -243,6 +247,9 @@
       });
       const wake = () => { if (user && document.visibilityState === 'visible') { if (!(channel && channel.__live)) subscribe(); pull('wake'); } };
       document.addEventListener('visibilitychange', wake);
+      const flush = () => { if (user && pushTimer) { clearTimeout(pushTimer); pushTimer = null; push(); } };
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+      window.addEventListener('pagehide', flush);
       window.addEventListener('online', wake);
       window.addEventListener('focus', () => { if (user && !(channel && channel.__live)) pull('focus'); });
     } else setStatus('error', 'Cloud sync could not load (offline or blocked). Changes save on this device.');
