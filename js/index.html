@@ -1,0 +1,254 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Workshop Navigator — Digital Purchase Checklist</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="js/seed.js"></script><script src="js/parts.js"></script><script src="js/sync.js"></script><style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#15243a;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}header{background:var(--brand);color:white;padding:23px max(20px,calc((100vw - 1240px)/2))}header h1{margin:0;font-size:24px;letter-spacing:-.5px}header p{margin:6px 0 0;color:#c7d7e6;font-size:13px}.shell{max-width:1240px;margin:auto;padding:22px 18px 60px}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:17px}.stat{background:white;border:1px solid #e0e6ed;border-radius:12px;padding:15px}.stat strong{display:block;font-size:27px;color:var(--brand)}.stat span{font-size:12px;color:#65778a}.toolbar,.panel{background:white;border:1px solid #dce4ee;border-radius:12px;padding:15px;margin-bottom:16px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}button,.btn{border:1px solid #b7c6d5;border-radius:8px;padding:9px 12px;background:white;color:#18334f;cursor:pointer;font-weight:650;font-size:13px}button.primary{background:var(--accent);color:white;border-color:var(--accent)}button:hover{filter:brightness(.95)}input,select,textarea{border:1px solid #bac8d6;border-radius:7px;padding:9px;background:white;color:#18334f;max-width:100%;font:inherit}input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}input[type=number]{width:72px}input[type=text]{min-width:90px}#search{flex:1;min-width:210px}.category{margin:20px 0 0;background:white;border:1px solid #dce4ee;border-radius:12px;overflow:hidden}.category h2{margin:0;background:#e9f1f8;color:#14375c;padding:11px 14px;font-size:15px}.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:790px}th{background:var(--brand);color:white;font-size:11px;text-align:left;padding:9px 7px;letter-spacing:.3px}td{border-bottom:1px solid #e6edf3;padding:8px 7px;font-size:12px;vertical-align:middle}tr:nth-child(even) td{background:#fafbfd}td.center{text-align:center}.part{font-weight:650}.muted{font-size:11px;color:#708196}.location{width:148px}.notes{width:130px}td input[type=text]{font-size:12px;padding:6px;width:100%}td input[type=number]{font-size:12px;padding:6px;width:74px}.tabs{display:flex;gap:8px;margin:0 0 16px}.tabs button.active{background:var(--brand);color:white;border-color:var(--brand)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;font-weight:700;color:#465d74}.field input,.field select{width:100%}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.notice{background:#e9f5ed;border:1px solid #b8d9c2;border-radius:9px;padding:10px;font-size:12px;color:#235139}.warn{background:#fff6df;border:1px solid #e8d59a;border-radius:9px;padding:11px;font-size:12px;color:#6b5213;margin-bottom:15px}#toast{position:fixed;bottom:15px;right:15px;background:#123b5e;color:white;padding:10px 14px;border-radius:9px;display:none;box-shadow:0 4px 20px #0002}.small{font-size:12px;color:#62748a}.locrow{padding:12px 4px;border-bottom:1px solid #e6edf3}.locrow strong{color:#14375c}.hidden{display:none!important}footer{margin-top:24px;color:#61758b;font-size:12px}@media(max-width:650px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.shell{padding:13px}.toolbar{align-items:stretch}.toolbar>*{flex:1}header{padding:18px}header h1{font-size:20px}}@media print{header,.toolbar,.tabs,.actions,.warn,footer,.panel:not(#inventory),button{display:none!important}.shell{padding:0}.category{break-inside:avoid}.category h2{background:#ddd!important}table{min-width:0}td,th{font-size:9px}input{border:0!important}}
+:root{--brand:#173a5c;--accent:#1565a5}.topbar{display:flex;gap:8px;align-items:center;margin:-6px 0 12px}.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer}.chip:hover{background:rgba(255,255,255,.16);filter:none}.chip.active{background:rgba(255,255,255,.22)}.dot{width:8px;height:8px;border-radius:50%;background:#9fb1c3;flex:none}.dot.ok{background:#3ccf7a;box-shadow:0 0 0 0 rgba(60,207,122,.7);animation:livepulse 1.6s ease-in-out infinite}@keyframes livepulse{0%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,122,.7)}50%{opacity:.35}70%{box-shadow:0 0 0 6px rgba(60,207,122,0)}100%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,122,0)}}@media(prefers-reduced-motion:reduce){.dot.ok{animation:none}}.dot.busy{background:#f2b632}.dot.err{background:#ff6b5b}.settings-head{display:flex;align-items:center;gap:10px;margin:0 0 14px}.settings-head h2{margin:0;font-size:20px;color:var(--brand)}.panel h2{font-size:16px;color:var(--brand)}.panel h2 + .small{margin-top:0}.switch{display:flex;align-items:center;gap:9px;font-size:13px;padding:6px 0}.field .switch{font-size:13px;font-weight:600;color:#18334f}.field .switch input{width:18px;flex:none}body.insettings .summary,body.insettings .tabs{display:none}input[type=color]{width:52px;height:38px;padding:3px;cursor:pointer}body.compact td{padding:3px 6px}body.compact td input[type=text],body.compact td input[type=number]{padding:3px 5px}body.nostats .summary{display:none}@media print{.topbar{display:none!important}}a.chip{text-decoration:none}.pcell{display:flex;align-items:center;gap:10px}.pthumb{flex:none;width:64px;height:30px;border-radius:7px;background:#fff;border:1px solid #e3e9f0;display:grid;place-items:center;overflow:hidden}.pthumb img{max-width:58px;max-height:26px;width:auto;height:auto;display:block}.pthumb.none{color:#b4c1cf;background:#f6f8fb}body.compact .pthumb{height:24px;width:52px}body.compact .pthumb img{max-height:20px;max-width:46px}.tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;vertical-align:1px;letter-spacing:.2px}.tag.ord{background:#fff3d9;color:#8a5a00}.tag.low{background:#fff3d9;color:#8a5a00}.tag.out{background:#fde5e3;color:#a12a20}</style></head><body><header><div class="topbar"><button type="button" id="syncChip" class="chip" title="Account &amp; sync"><span class="dot" id="syncDot"></span><span id="syncChipText">Sign in</span></button><button type="button" id="openSettings" class="chip" data-tab="settingsTab" aria-label="Settings">&#9881; Settings</button><a class="chip" id="openWorkshop" href="workshop.html">Workshop App &rarr;</a></div><h1 id="appTitle">Workshop Navigator</h1><p id="appSubtitle">Digital Purchase Checklist · Workshop master list</p></header><main class="shell">
+<div class="summary" id="stats"></div><nav class="tabs"><button data-tab="inventoryTab" class="active">Purchase Checklist</button><button data-tab="locationsTab">Storage Locations</button><button data-tab="addTab">Add New Item</button></nav><section id="inventoryTab"><div class="toolbar"><input id="search" type="search" placeholder="Search part, size, category, location…"><select id="filter" aria-label="Filter items"><option value="all">All items</option><option value="need">Need to buy</option><option value="owned">Purchased / owned</option><option value="unstored">Not yet stored</option></select><button id="backup" class="primary">Download Backup (.json)</button><button id="exportCsv">Export CSV</button><label class="btn" style="cursor:pointer">Restore Backup <input id="restore" type="file" accept=".json,application/json" style="display:none"></label></div><div class="small">Tick <b>BUY</b> when you own the item; tick <b>STORE</b> when it has been placed away. Enter actual quantity and location. Updates save automatically.</div><div id="inventory"></div></section><section id="locationsTab" class="hidden"><div class="panel"><h2>Storage location registry</h2><p class="small">These are the master areas. Add sublocations like HUSKY-D03, SHED-BIN-01, AKRO-C01-D12 or PIPE-04 as your workshop takes shape.</p><div id="locationList"></div><h3>Add storage area or sublocation</h3><form id="addLocationForm"><div class="grid"><div class="field"><label>Location code</label><input name="code" required placeholder="SHED-BIN-01"></div><div class="field"><label>Name</label><input name="title" required placeholder="Shed · Bin 01"></div><div class="field" style="grid-column:1/-1"><label>Details</label><input name="detail" placeholder="e.g. paint rollers, tray liners"></div></div><div class="actions"><button type="submit" class="primary">Add Location</button></div></form></div></section><section id="addTab" class="hidden"><div class="panel"><h2>Add a new hardware or workshop item</h2><p class="small">New items receive a permanent unique ID. Existing item IDs and purchase progress remain unchanged.</p><form id="addForm"><div class="grid"><div class="field"><label>Part / description</label><input name="part" required placeholder="e.g. M10 × 20 mm socket head screw"></div><div class="field"><label>Category / family</label><input name="category" required list="categories" placeholder="e.g. Metric Screws & Bolts"><datalist id="categories"><option value="Anchors &amp; Mounting"><option value="Automotive &amp; Mechanical"><option value="Construction &amp; Wood Screws"><option value="Electrical"><option value="Metric Nuts"><option value="Metric Screws &amp; Bolts"><option value="Metric Washers"><option value="Nylon Fasteners — Flat Washers"><option value="Nylon Fasteners — Hex Nuts"><option value="Nylon Fasteners — Machine Screws"><option value="Plumbing &amp; Repair"><option value="Rivets"><option value="SAE Hex Bolts"><option value="SAE Machine Screws"><option value="SAE Nuts &amp; Washers"><option value="Sheet Metal &amp; TEK"><option value="Specialty Fasteners"><option value="Springs &amp; Misc. Repair"><option value="Threaded Rod"></datalist></div><div class="field"><label>Location code (optional)</label><input name="location" placeholder="e.g. HUSKY-D05"></div><div class="field"><label>Notes (optional)</label><input name="notes" placeholder="Material, thread, supplier, etc."></div></div><div style="margin-top:12px"><label><input type="checkbox" name="owned"> Already purchased / owned</label></div><div class="actions"><button type="submit" class="primary">Add to Master List</button></div></form></div></section><section id="settingsTab" class="hidden"><div class="settings-head"><button type="button" id="settingsBack">&larr; Back</button><h2>Settings</h2></div><section class="panel" id="cloudPanel">
+<h2 style="margin:0 0 8px">Account &amp; sync</h2>
+<div id="cloudSignedOut">
+<p class="small" style="margin:0 0 10px">Private workshop. Sign in with the owner account once on each device; after that it stays signed in and syncs on its own.</p>
+<form id="cloudAuthForm" autocomplete="on">
+<div class="grid">
+<div class="field"><label for="cloudEmail">Email</label><input id="cloudEmail" name="email" type="email" autocomplete="username" required placeholder="you@example.com"></div>
+<div class="field"><label for="cloudPassword">Password</label><input id="cloudPassword" name="password" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters"></div>
+</div>
+<div class="actions">
+<button type="submit" class="primary" id="cloudSignIn">Sign In</button>
+<button type="button" id="cloudForgot">Forgot Password</button>
+</div>
+</form>
+</div>
+<div id="cloudSignedIn" class="hidden">
+<div class="toolbar" style="padding:0;border:0;margin:0">
+<span class="small">Signed in as <b id="cloudUserEmail"></b></span>
+<button id="cloudSyncNow" class="primary">Sync Now</button>
+<button id="cloudSignOut">Sign Out</button>
+</div>
+<p class="small" style="margin:8px 0 0">You stay signed in on this device. Every change syncs automatically, and the latest version loads whenever you open the page.</p>
+</div>
+<p class="small" id="cloudStatus" role="status" style="margin:8px 0 0">Not signed in.</p>
+</section><section class="panel" id="customPanel"><h2 style="margin:0 0 8px">Customize</h2><p class="small" style="margin:0 0 12px">These settings sync with your account, so every device looks the same.</p><form id="customForm"><div class="grid"><div class="field"><label for="setTitle">Workshop name</label><input id="setTitle" type="text" maxlength="60" placeholder="Workshop Navigator"></div><div class="field"><label for="setSubtitle">Subtitle</label><input id="setSubtitle" type="text" maxlength="120" placeholder="Digital Purchase Checklist"></div><div class="field"><label for="setBrand">Header color</label><input id="setBrand" type="color" value="#173a5c"></div><div class="field"><label for="setAccent">Button color</label><input id="setAccent" type="color" value="#1565a5"></div><div class="field"><label for="setFilter">Show on open</label><select id="setFilter"><option value="all">All items</option><option value="need">Need to buy</option><option value="owned">Purchased / owned</option><option value="unstored">Not yet stored</option></select></div><div class="field"><label>&nbsp;</label><label class="switch"><input id="setCompact" type="checkbox"> Compact rows</label><label class="switch"><input id="setStats" type="checkbox" checked> Show summary cards</label></div></div><div class="actions"><button type="button" id="resetCustom">Reset to defaults</button></div></form></section><section class="panel" id="backupPanel">
+<h2 style="margin:0 0 8px">Backups</h2>
+<p class="small" style="margin:0 0 10px">Select a folder such as <b>Documents / Workshop Navigator / Backups</b>. When authorized, the app saves a dated JSON backup after edits and retains up to 30 daily backup files. Works in Chrome or Edge while this page is open. You can also use <b>Download Backup</b> and <b>Restore Backup</b> on the checklist page.</p>
+<div class="toolbar" style="padding:0;border:0;margin:0">
+<button id="chooseFolder" class="primary">Choose Backup Folder</button>
+<button id="reconnectFolder">Reconnect Folder</button>
+<button id="backupNow">Back Up Now</button>
+<span id="backupStatus" class="small" role="status">No backup folder connected.</span>
+</div>
+<p class="small" id="backupTime" style="margin:7px 0 0">Last file backup: Never</p>
+</section></section><footer>Master source: Workshop Navigator 167-item detailed-metric inventory. Drawer maps and QR scanning are planned, not implemented here.</footer></main><div id="toast" role="status"></div><script>
+const KEY='workshop-navigator-purchase-v1';
+let data;
+const clone=x=>JSON.parse(JSON.stringify(x));
+function initial(){return WN_SEED()}
+data=WN.init(initial);
+function save(){WN.commit();renderStats()}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(s){const e=document.getElementById('toast');e.textContent=s;e.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>e.style.display='none',1900)}
+function renderStats(){const n=data.items.length,have=data.items.filter(x=>x.buy).length,stored=data.items.filter(x=>x.store).length;document.getElementById('stats').innerHTML=[[n,'Total items'],[have,'Purchased / owned'],[n-have,'Need to buy'],[stored,'Stored / located']].map(([v,t])=>`<div class="stat"><strong>${v}</strong><span>${t}</span></div>`).join('')}
+function renderItems(){const q=document.getElementById('search').value.trim().toLowerCase(),filter=document.getElementById('filter').value;let filtered=data.items.filter(x=>(!q||[x.id,x.name,x.category,x.location,x.notes].some(y=>String(y||'').toLowerCase().includes(q)))&&(filter==='all'||filter==='need'&&!x.buy||filter==='owned'&&x.buy||filter==='unstored'&&!x.store));const cats=[...new Set(filtered.map(x=>x.category))];document.getElementById('inventory').innerHTML=cats.length?cats.map(cat=>{let entries=filtered.filter(x=>x.category===cat);return `<section class="category"><h2>${escapeHtml(cat)} <span class="muted">(${entries.length})</span></h2><div class="scroll"><table><thead><tr><th>BUY</th><th>STORE</th><th>PART SIZE / DESCRIPTION</th><th>QTY</th><th>LOCATION / DRAWER</th><th>NOTES</th></tr></thead><tbody>${entries.map(x=>`<tr data-id="${escapeHtml(x.id)}"><td class="center"><input aria-label="Purchased ${escapeHtml(x.name)}" type="checkbox" data-field="buy" ${x.buy?'checked':''}></td><td class="center"><input aria-label="Stored ${escapeHtml(x.name)}" type="checkbox" data-field="store" ${x.store?'checked':''}></td><td><div class="pcell">${WNParts.thumb(x)}<div><div class="part">${escapeHtml(x.name)}${itemTags(x)}</div><div class="muted">${escapeHtml(x.id)}</div></div></div></td><td><input aria-label="Quantity ${escapeHtml(x.name)}" type="number" min="0" step="1" data-field="qty" value="${escapeHtml(x.qty)}"></td><td><input class="location" aria-label="Location ${escapeHtml(x.name)}" type="text" data-field="location" placeholder="e.g. SHED-BIN-01" value="${escapeHtml(x.location)}"></td><td><input class="notes" aria-label="Notes ${escapeHtml(x.name)}" type="text" data-field="notes" placeholder="Notes" value="${escapeHtml(x.notes)}"></td></tr>`).join('')}</tbody></table></div></section>`}).join(''):'<div class="panel">No items match your search.</div>'}
+function itemTags(x){let t='';if(x.ordered&&!x.buy)t+='<span class="tag ord">Ordered</span>';if(x.store&&x.stock==='low')t+='<span class="tag low">Low</span>';if(x.store&&x.stock==='out')t+='<span class="tag out">Out</span>';return t}
+function renderLocations(){document.getElementById('locationList').innerHTML=data.locations.map(l=>`<div class="locrow"><strong>${escapeHtml(l.id)}</strong> — ${escapeHtml(l.name)}<div class="small">${escapeHtml(l.detail||'')}</div></div>`).join('')}
+function render(){renderStats();renderItems();renderLocations()}
+document.getElementById('inventory').addEventListener('change',e=>{let tr=e.target.closest('tr[data-id]');if(!tr)return;let it=data.items.find(x=>x.id===tr.dataset.id),field=e.target.dataset.field;if(!it||!field)return;let v=e.target.type==='checkbox'?e.target.checked:e.target.value;if(field==='qty')v=v===''?'':Math.max(0,Math.floor(Number(v)||0));it[field]=v;if(field==='buy'&&v&&it.ordered)it.ordered=false;save();toast('Saved')});
+document.getElementById('search').addEventListener('input',renderItems);document.getElementById('filter').addEventListener('change',renderItems);
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['inventoryTab','locationsTab','addTab','settingsTab'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById(b.dataset.tab).classList.remove('hidden')});
+function nextId(){const nums=data.items.map(x=>Number((x.id||'').match(/(\d+)$/)?.[1]||0));return 'HW-'+String(Math.max(0,...nums)+1).padStart(4,'0')}
+document.getElementById('addForm').addEventListener('submit',e=>{e.preventDefault();let f=e.target;const name=f.elements.part.value.trim(),category=f.elements.category.value.trim();if(!name||!category)return;const it={id:nextId(),name,category,buy:f.elements.owned.checked,store:false,qty:'',location:f.elements.location.value.trim(),notes:f.elements.notes.value.trim()};data.items.push(it);save();f.reset();render();toast('Added '+it.id)});
+document.getElementById('addLocationForm').addEventListener('submit',e=>{e.preventDefault();let f=e.target,id=f.elements.code.value.trim().toUpperCase();if(data.locations.some(x=>x.id===id)){alert('Location code already exists.');return}data.locations.push({id,name:f.elements.title.value.trim(),detail:f.elements.detail.value.trim()});save();f.reset();renderLocations();toast('Storage location added')});
+function download(content,filename,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function manualBackup(){download(JSON.stringify(data,null,2),'Workshop_Navigator_Backup_'+new Date().toISOString().replace(/[:.]/g,'-')+'.json','application/json');toast('Backup downloaded')}
+document.getElementById('backup').onclick=manualBackup;
+document.getElementById('exportCsv').onclick=()=>{let lines=[['ID','Category','Part','Purchased','Stored','Qty on hand','Location','Notes'],...data.items.map(x=>[x.id,x.category,x.name,x.buy?'YES':'NO',x.store?'YES':'NO',x.qty,x.location,x.notes])];download(lines.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'Workshop_Navigator_Items.csv','text/csv;charset=utf-8')};
+document.getElementById('restore').addEventListener('change',async e=>{let file=e.target.files[0];if(!file)return;try{let obj=JSON.parse(await file.text());if(!Array.isArray(obj.items)||!Array.isArray(obj.locations)||obj.items.some(x=>!x.id||!x.name))throw Error('Invalid backup format');if(!confirm('Restore this backup? This replaces the current checklist on this device. Export a backup first if needed.'))return;WN.replace(obj);toast('Backup restored')}catch(err){alert('Could not restore backup: '+err.message)}finally{e.target.value=''}});
+render();
+
+// Auto-backup: separate JSON files in a user-selected directory, with 30-day rolling history.
+// A folder handle is persisted in IndexedDB, subject to browser support and user permissions.
+const BACKUP_DB='workshop-navigator-backup-handles';
+const BACKUP_META='workshop-navigator-backup-meta-v2';
+let backupDir=null,backupTimer=null,backupInProgress=false;
+const backupStatus=document.getElementById('backupStatus');
+const backupTime=document.getElementById('backupTime');
+function setBackupStatus(msg){backupStatus.textContent=msg}
+function localDay(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function loadBackupMeta(){try{return JSON.parse(localStorage.getItem(BACKUP_META)||'{}')}catch{return {}}}
+function setBackupMeta(x){try{localStorage.setItem(BACKUP_META,JSON.stringify(x))}catch{}}
+function showBackupTime(){const meta=loadBackupMeta();backupTime.textContent='Last file backup: '+(meta.lastFileBackup?new Date(meta.lastFileBackup).toLocaleString():'Never')}
+function dbOpen(){return new Promise((resolve,reject)=>{const r=indexedDB.open(BACKUP_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('settings');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+async function handleGet(){const db=await dbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('settings','readonly');const r=tx.objectStore('settings').get('folder');r.onsuccess=()=>{db.close();resolve(r.result)};r.onerror=()=>{db.close();reject(r.error)}})}
+async function handleSet(handle){const db=await dbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('settings','readwrite');tx.objectStore('settings').put(handle,'folder');tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}})}
+async function permissionGranted(handle,ask=false){
+ if(!handle)return false;
+ try{
+   let p=await handle.queryPermission({mode:'readwrite'});
+   if(p!=='granted'&&ask)p=await handle.requestPermission({mode:'readwrite'});
+   return p==='granted'
+ }catch{return false}
+}
+async function pruneBackups(){
+ // Only remove files created by this app; preserve the 30 newest dated daily snapshots.
+ try{
+   const names=[];
+   for await(const [name,handle] of backupDir.entries()){
+     if(handle.kind==='file'&&/^Workshop_Navigator_Auto_\d{4}-\d{2}-\d{2}\.json$/.test(name))names.push(name);
+   }
+   names.sort().reverse();
+   for(const name of names.slice(30))await backupDir.removeEntry(name);
+ }catch(e){setBackupStatus('Backup saved; old-file cleanup was blocked.')}
+}
+async function writeBackup(force=false){
+ if(!backupDir){if(force)manualBackup();return}
+ if(backupInProgress){if(force)setTimeout(()=>writeBackup(true),1200);return}
+ if(!await permissionGranted(backupDir,false)){setBackupStatus('Folder permission needed — click Reconnect Folder.');if(force)manualBackup();return}
+ backupInProgress=true;
+ try{
+   const name='Workshop_Navigator_Auto_'+localDay()+'.json';
+   const file=await backupDir.getFileHandle(name,{create:true});
+   const writable=await file.createWritable();
+   await writable.write(JSON.stringify({...data,backupCreated:new Date().toISOString()},null,2));
+   await writable.close();
+   await pruneBackups();
+   setBackupMeta({lastFileBackup:new Date().toISOString(),lastRevision:data.modified});
+   showBackupTime();
+   setBackupStatus('Auto-backup active · '+name);
+   if(force)toast('Backup saved to folder');
+ }catch(e){setBackupStatus('Backup failed: '+e.message+' · Download Backup instead.')}
+ finally{backupInProgress=false}
+}
+function scheduleBackup(){
+ if(!backupDir)return;
+ clearTimeout(backupTimer);
+ backupTimer=setTimeout(()=>writeBackup(false),2500);
+}
+document.getElementById('chooseFolder').addEventListener('click',async()=>{
+ if(!window.showDirectoryPicker){alert('Choose Backup Folder requires a supported Chrome or Edge version and a secure context. You can still use Download Backup.');return}
+ try{
+   const h=await window.showDirectoryPicker({id:'workshop-navigator-backups',mode:'readwrite'});
+   if(!await permissionGranted(h,true)){setBackupStatus('Folder access not granted.');return}
+   backupDir=h;
+   try{await handleSet(h)}catch(e){setBackupStatus('Folder connected for this session; browser cannot remember it.')}
+   await writeBackup(true);
+ }catch(e){if(e.name!=='AbortError')alert('Unable to choose folder: '+e.message)}
+});
+document.getElementById('reconnectFolder').addEventListener('click',async()=>{
+ try{
+   backupDir=await handleGet();
+   if(!backupDir){setBackupStatus('No saved folder. Choose Backup Folder first.');return}
+   if(!await permissionGranted(backupDir,true)){setBackupStatus('Permission not granted.');return}
+   await writeBackup(true);
+ }catch(e){setBackupStatus('Could not reconnect: '+e.message)}
+});
+document.getElementById('backupNow').addEventListener('click',()=>writeBackup(true));
+// Wrap the existing save function so every edit schedules a file backup.
+const saveOriginal=save;
+save=function(){saveOriginal();scheduleBackup()};
+(async()=>{
+ showBackupTime();
+ try{
+   if(!('indexedDB' in window))return;
+   const h=await handleGet();
+   if(!h)return;
+   backupDir=h;
+   if(await permissionGranted(h,false)){
+     setBackupStatus('Backup folder reconnected automatically.');
+     const meta=loadBackupMeta();
+     if(meta.lastRevision!==data.modified || !meta.lastFileBackup || meta.lastFileBackup.slice(0,10)!==localDay())await writeBackup(false);
+   }else setBackupStatus('Saved backup folder found. Click Reconnect Folder to authorize.');
+ }catch(e){setBackupStatus('Folder backup not available here. Use Download Backup.')}
+})();
+// ---- Cloud sync (shared engine: js/sync.js) ----
+const cloudStatusEl=document.getElementById('cloudStatus');
+let cloudUser=null,pendingRender=false;
+function setCloud(msg){cloudStatusEl.textContent=msg}
+function pageUrl(){return /^https?:/.test(location.protocol)?location.origin+location.pathname:undefined}
+function showCloudUI(){
+ document.getElementById('cloudSignedOut').classList.toggle('hidden',!!cloudUser);
+ document.getElementById('cloudSignedIn').classList.toggle('hidden',!cloudUser);
+ document.getElementById('cloudUserEmail').textContent=cloudUser?cloudUser.email:'';
+}
+function typingInList(){const a=document.activeElement;return !!(a&&a.closest&&a.closest('#inventory')&&a.tagName==='INPUT'&&a.type!=='checkbox')}
+// Changes from other devices arrive here instantly. Don't redraw under someone typing in a row.
+WN.on('change',(d,src)=>{
+ data=d;
+ if(src!=='local'&&typingInList()){pendingRender=true;renderStats();return}
+ render();
+ if(src!=='local'&&typeof scheduleBackup==='function')scheduleBackup();
+});
+document.getElementById('inventory').addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender&&!typingInList()){pendingRender=false;render()}},0));
+WN.on('status',s=>{setCloud(s.msg);updateChip()});
+WN.on('auth',(u,event)=>{
+ cloudUser=u;showCloudUI();updateChip();
+ if(event==='PASSWORD_RECOVERY')setTimeout(async()=>{
+   const pw=prompt('Enter a new password for your Workshop Navigator account (at least 8 characters):');
+   if(!pw)return;
+   if(pw.length<8){alert('Password must be at least 8 characters. Use Forgot Password again.');return}
+   try{await WN.updatePassword(pw);alert('Password updated.')}catch(e){alert('Could not update password: '+e.message)}
+ },0);
+});
+function readCreds(){
+ const email=document.getElementById('cloudEmail').value.trim(),password=document.getElementById('cloudPassword').value;
+ if(!email||!password){alert('Enter your email and password first.');return null}
+ return {email,password};
+}
+document.getElementById('cloudAuthForm').addEventListener('submit',async e=>{
+ e.preventDefault();const c=readCreds();if(!c)return;
+ setCloud('Signing in…');
+ try{await WN.signIn(c.email,c.password);document.getElementById('cloudPassword').value=''}catch(err){setCloud('Sign-in failed: '+err.message)}
+});
+document.getElementById('cloudForgot').addEventListener('click',async()=>{
+ const email=document.getElementById('cloudEmail').value.trim();
+ if(!email){alert('Enter your email first.');return}
+ try{await WN.resetPassword(email,pageUrl());setCloud('If that email has an account, a reset link is on its way.')}catch(err){setCloud('Could not send reset email: '+err.message)}
+});
+document.getElementById('cloudSyncNow').addEventListener('click',()=>WN.syncNow());
+document.getElementById('cloudSignOut').addEventListener('click',async()=>{await WN.signOut();toast('Signed out')});
+
+// ---- Customize + minimal sync indicator ----
+const DEFAULT_SETTINGS={title:'Workshop Navigator',subtitle:'Digital Purchase Checklist · Workshop master list',brand:'#173a5c',accent:'#1565a5',defaultFilter:'all',compact:false,showStats:true};
+function getSettings(){return {...DEFAULT_SETTINGS,...(data.settings||{})}}
+function applySettings(init){
+ const st=getSettings(),root=document.documentElement.style;
+ root.setProperty('--brand',st.brand);root.setProperty('--accent',st.accent);
+ document.getElementById('appTitle').textContent=st.title||DEFAULT_SETTINGS.title;
+ document.getElementById('appSubtitle').textContent=st.subtitle;
+ document.title=(st.title||DEFAULT_SETTINGS.title)+' — Checklist';
+ document.body.classList.toggle('compact',!!st.compact);
+ document.body.classList.toggle('nostats',!st.showStats);
+ const f=(id,v,prop='value')=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el[prop]=v};
+ f('setTitle',st.title);f('setSubtitle',st.subtitle);f('setBrand',st.brand);f('setAccent',st.accent);f('setFilter',st.defaultFilter);
+ f('setCompact',!!st.compact,'checked');f('setStats',!!st.showStats,'checked');
+ if(init){document.getElementById('filter').value=st.defaultFilter;renderItems()}
+}
+const renderBeforeCustom=render;
+render=function(){renderBeforeCustom();applySettings(false)};
+let customTimer=null;
+function updateSetting(key,val,delay=0){
+ data.settings={...getSettings(),[key]:val};applySettings(false);
+ clearTimeout(customTimer);customTimer=setTimeout(()=>{save();toast('Settings saved')},delay);
+}
+document.getElementById('setTitle').addEventListener('input',e=>updateSetting('title',e.target.value.trim(),700));
+document.getElementById('setSubtitle').addEventListener('input',e=>updateSetting('subtitle',e.target.value.trim(),700));
+document.getElementById('setBrand').addEventListener('input',e=>updateSetting('brand',e.target.value,500));
+document.getElementById('setAccent').addEventListener('input',e=>updateSetting('accent',e.target.value,500));
+document.getElementById('setFilter').addEventListener('change',e=>updateSetting('defaultFilter',e.target.value));
+document.getElementById('setCompact').addEventListener('change',e=>updateSetting('compact',e.target.checked));
+document.getElementById('setStats').addEventListener('change',e=>updateSetting('showStats',e.target.checked));
+document.getElementById('resetCustom').addEventListener('click',()=>{data.settings={...DEFAULT_SETTINGS};applySettings(false);save();toast('Settings reset')});
+document.getElementById('customForm').addEventListener('submit',e=>e.preventDefault());
+document.getElementById('settingsBack').addEventListener('click',()=>document.querySelector('[data-tab="inventoryTab"]').click());
+document.getElementById('syncChip').addEventListener('click',()=>{document.getElementById('openSettings').click();document.getElementById('cloudPanel').scrollIntoView({behavior:'smooth',block:'start'})});
+function updateChip(){
+ const s=WN.status,dot=document.getElementById('syncDot'),txt=document.getElementById('syncChipText'),chip=document.getElementById('syncChip');
+ let state='off',label='Sign in';
+ if(cloudUser){
+   if(s.state==='error'){state='err';label='Sync issue'}
+   else if(s.state==='busy'){state='busy';label='Syncing…'}
+   else{state='ok';label='Live'}
+ }else if(s.state==='error'){state='err';label='Offline'}
+ dot.className='dot'+(state==='off'?'':' '+state);txt.textContent=label;
+ chip.title=s.msg+(cloudUser?(s.realtime?' · Instant updates on':' · Instant updates connecting'):'');
+}
+updateChip();
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{document.body.classList.toggle('insettings',b.dataset.tab==='settingsTab');window.scrollTo(0,0)}));
+applySettings(true);
+</script></body></html>
