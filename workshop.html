@@ -1361,15 +1361,15 @@ function reconcile(oldArr, next) {
 }
 function fromDoc() {
   const d = WN.doc;
-  CHK = reconcile(CHK, d.items.map(it => ({ id: it.id, fam: it.category || 'Other', item: it.name, qty: '', status: chkStatus(it), loc: it.location || '', category: it.category })));
-  const derived = d.items.filter(it => it.store).map(it => ({ id: it.id, n: it.name, c: it.category || 'Other', l: it.location || '', s: it.stock || 'plenty', _src: 'chk' }));
+  CHK = reconcile(CHK, d.items.filter(it => !it.archived).map(it => ({ id: it.id, fam: it.category || 'Other', item: it.name, qty: '', status: chkStatus(it), loc: it.location || '', category: it.category })));
+  const derived = d.items.filter(it => it.store && !it.archived).map(it => ({ id: it.id, n: it.name, c: it.category || 'Other', l: it.location || '', s: it.stock || 'plenty', _src: 'chk' }));
   INV = reconcile(INV, [...derived, ...d.app.inventory.map(x => ({ ...x }))]);
   SHOP = reconcile(SHOP, d.app.shopping.map(x => ({ ...x })));
   S.alerts = reconcile(S.alerts, d.app.alerts.map(x => ({ ...x })));
   S.sample = false; S.chkDraft = false;
   applyState(d.app.state);
 }
-function nextHW() { const n = WN.doc.items.map(x => Number((String(x.id).match(/(\d+)$/) || [])[1] || 0)); return 'HW-' + String(Math.max(0, ...n) + 1).padStart(4, '0'); }
+function nextHW() { const n = [...WN.doc.items.map(x => x.id), ...Object.keys(WN.doc.del || {}).filter(k => k.startsWith('items:')).map(k => k.slice(6))].map(x => Number((String(x).match(/(\d+)$/) || [])[1] || 0)); return 'HW-' + String(Math.max(0, ...n) + 1).padStart(4, '0'); }
 const noSrc = (o) => { const c = { ...o }; delete c._src; return c; };
 function toDoc(name) {
   const d = WN.doc, byId = new Map(d.items.map(i => [String(i.id), i]));
