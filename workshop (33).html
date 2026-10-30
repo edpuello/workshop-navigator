@@ -1,0 +1,2044 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Workshop App</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#122d4b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Workshop">
+<meta name="format-detection" content="telephone=no">
+<style>
+/* Layout: rounded sidebar panel + content canvas on iPad (rail when collapsed); header, pill tabs and floating tab bar on iPhone. Single dark look. */
+:root{
+  color-scheme:dark;
+  --bg:#0c0c0e; --panel:#151619; --card:#1b1c20; --card-2:#24252b; --card-3:#2e3036;
+  --line:rgba(255,255,255,.06); --line-2:rgba(255,255,255,.1);
+  --ink:#f3f3f5; --ink-2:#a6a8b0; --ink-3:#6f717a;
+  --accent:#6c5cff; --accent-2:#8d80ff; --accent-glow:rgba(108,92,255,.45); --accent-soft:rgba(108,92,255,.16);
+  --good:#4fd18b; --warn:#f2b46d; --bad:#f2716b;
+  --mint:#8fe3cf; --mint-ink:#0d2c25; --peach:#f5c29b; --peach-ink:#3d210d;
+  --font:"Geist",ui-sans-serif,-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+  --r-lg:24px; --r-md:18px; --r-sm:12px;
+  --sbw:272px;
+  --g1:#5b6cff; --g2:#d062ff; --logo-bg:#ffffff;
+}
+html[data-area="buy"]{--accent:#24b08f; --accent-2:#5fd8b8; --accent-glow:rgba(36,176,143,.42); --accent-soft:rgba(36,176,143,.16); --g1:#1fa385; --g2:#a6ecd9; --logo-bg:#8fe3cf}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.i.sm{width:18px;height:18px}
+svg.i.xs{width:15px;height:15px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:var(--sbw) minmax(0,1fr);gap:20px;min-height:100%;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));transition:grid-template-columns .25s ease}
+.app.rail{--sbw:84px}
+.side{position:sticky;top:16px;height:calc(100dvh - 32px);background:var(--panel);border-radius:var(--r-lg);padding:20px 14px 14px;display:flex;flex-direction:column;gap:6px;z-index:30}
+.side-scroll{display:flex;flex-direction:column;gap:2px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;margin:0 -4px;padding:0 4px}
+.brand{display:flex;align-items:center;gap:12px;padding:0 4px 14px}
+.logo{width:48px;height:48px;border-radius:14px;background:var(--logo-bg);transition:background .25s;color:#0c0c0e;display:grid;place-items:center;flex:none}
+.logo svg{width:26px;height:26px;stroke-width:2.4}
+.brand b{font-size:19px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.collapse{position:absolute;right:-20px;top:24px;width:40px;height:40px;border-radius:50%;background:var(--card-2);border:4px solid var(--bg);display:grid;place-items:center;color:var(--ink)}
+.collapse:hover{background:var(--card-3)}
+.search{display:flex;align-items:center;gap:10px;height:44px;border:1px solid var(--line-2);border-radius:14px;padding:0 8px 0 12px;color:var(--ink-3);margin-bottom:10px;background:transparent;width:100%;text-align:left}
+.search span{flex:1;white-space:nowrap}
+kbd{font:500 12px var(--font);color:var(--ink-2);border:1px solid var(--line-2);border-radius:7px;min-width:24px;height:24px;display:inline-grid;place-items:center;padding:0 5px}
+.nav{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border-radius:14px;border:0;background:transparent;color:var(--ink-2);width:100%;text-align:left;position:relative;font-size:15px;flex:none}
+.nav:hover{background:rgba(255,255,255,.03);color:var(--ink)}
+.nav.on{background:var(--card-2);color:var(--ink);font-weight:500}
+.nav.on.glow{background:linear-gradient(90deg,var(--card-2) 55%,rgba(108,92,255,.28));overflow:hidden}
+.nav.on.glow::after{content:"";position:absolute;right:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--accent);box-shadow:0 0 12px 2px var(--accent-glow)}
+.nav .lbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{min-width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-weight:600;font-size:14px;padding:0 6px}
+.badge.mint{background:var(--mint);color:var(--mint-ink)}
+.badge.peach{background:var(--peach);color:var(--peach-ink)}
+.nav .chev{color:var(--ink-3)}
+.tree{margin:2px 0 4px 23px;padding-left:0;display:flex;flex-direction:column;gap:2px;position:relative}
+.tree::before{content:"";position:absolute;left:0;top:0;bottom:22px;border-left:1.5px solid var(--card-3)}
+.sub{display:flex;align-items:center;gap:8px;height:44px;margin-left:16px;padding:0 12px;border-radius:14px;border:0;background:transparent;color:var(--ink-2);text-align:left;position:relative;font-size:15px}
+.sub::before{content:"";position:absolute;left:-16px;top:12px;width:12px;height:10px;border-left:1.5px solid var(--card-3);border-bottom:1.5px solid var(--card-3);border-bottom-left-radius:8px}
+.sub.on{background:var(--card-2);color:var(--ink);font-weight:500}
+.sub .lbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.divider{height:1px;background:var(--line);margin:10px 4px}
+.group{font-size:13px;color:var(--ink-3);padding:6px 12px 4px}
+.ai-card{border:1px solid var(--line-2);border-radius:var(--r-md);padding:14px;margin-top:8px;display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.015)}
+.ai-card h4{margin:0;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500}
+.ai-card h4 em{font-style:normal;color:var(--ink-3)}
+.ai-card p{margin:0 0 6px;font-size:13px;color:var(--ink-2);line-height:1.45}
+.btn-glow{height:44px;border-radius:12px;border:0;background:var(--accent);color:#fff;font-weight:500;box-shadow:0 0 22px var(--accent-glow);display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn-glow:hover{filter:brightness(1.08)}
+.btn-glow:active{transform:scale(.98)}
+.status-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.me{display:flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:var(--r-md);padding:10px 12px;margin-top:10px;background:transparent;width:100%;text-align:left}
+.ava{width:40px;height:40px;border-radius:12px;background:var(--card-3);display:grid;place-items:center;font-weight:600;flex:none;color:var(--ink)}
+.me .who{flex:1;min-width:0;line-height:1.3}
+.me .who b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me .who span{font-size:13px;color:var(--ink-3);white-space:nowrap}
+.me .ud{display:flex;flex-direction:column;color:var(--ink-3)}
+/* rail */
+.app.rail .brand b,.app.rail .nav .lbl,.app.rail .nav .badge,.app.rail .nav .chev,.app.rail .search span,.app.rail .search kbd,.app.rail .group,.app.rail .tree,.app.rail .ai-card p,.app.rail .ai-card h4 span,.app.rail .ai-card h4 em,.app.rail .me .who,.app.rail .me .ud{display:none}
+.app.rail .brand{justify-content:center;padding-inline:0}
+.app.rail .nav,.app.rail .search{justify-content:center;padding:0}
+.app.rail .ai-card{padding:8px;border:0;background:transparent}
+.app.rail .ai-card h4{display:none}
+.app.rail .btn-glow .bl{display:none}
+.app.rail .me{justify-content:center;padding:8px;border:0}
+.app.rail .nav .rail-dot{display:block}
+.rail-dot{display:none;position:absolute;top:8px;right:14px;width:8px;height:8px;border-radius:50%;background:var(--peach)}
+
+/* ---------- main ---------- */
+main{min-width:0;display:flex;flex-direction:column;gap:20px;padding-bottom:24px}
+.phone-only{display:none}
+.page-head{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:14px 4px 4px}
+.page-head h1{margin:0;font-size:44px;line-height:1;font-weight:600;letter-spacing:-.035em;flex:1;min-width:200px;text-wrap:balance}
+.chip{height:40px;border-radius:14px;border:0;background:var(--card);color:var(--ink-2);display:inline-flex;align-items:center;gap:8px;padding:0 14px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:500}
+.chip:hover{background:var(--card-2)}
+.chip.accent{background:var(--accent);color:#fff;box-shadow:0 0 18px var(--accent-glow)}
+.pills{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:0 4px}
+.pills::-webkit-scrollbar{display:none}
+.pill{height:40px;border-radius:999px;border:0;background:transparent;color:var(--ink-2);padding:0 16px;white-space:nowrap;font-size:15px}
+.pill.on{background:var(--card-2);color:var(--ink);font-weight:500}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--card);border-radius:var(--r-lg);padding:18px;min-width:0;position:relative;overflow:hidden}
+.card.btn{border:0;text-align:left;color:inherit;width:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start}
+.card.btn:hover{background:#202126}
+.card.span2{grid-column:span 2}
+.card.span4{grid-column:1/-1}
+.k{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2)}
+.k svg{color:var(--ink-2)}
+.big{font-size:38px;line-height:1.05;font-weight:600;letter-spacing:-.03em;margin-top:10px}
+.mid{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.muted{color:var(--ink-2)}
+.dim{color:var(--ink-3)}
+.foot{font-size:14px;color:var(--ink-2);line-height:1.45;margin-top:10px}
+.foot b{color:var(--ink);font-weight:500}
+.delta{font-size:13px;color:var(--good);margin-top:6px;display:flex;align-items:center;gap:4px}
+.delta.bad{color:var(--bad)}
+.h2{font-size:18px;font-weight:600;letter-spacing:-.01em;margin:6px 4px 0}
+.hscroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:0 4px 2px}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll .card{flex:0 0 clamp(150px,22%,220px)}
+.round{width:44px;height:44px;border-radius:50%;border:0;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent-2);flex:none}
+.round.solid{background:var(--accent);color:#fff;box-shadow:0 0 0 8px var(--accent-soft)}
+.list{background:var(--card);border-radius:var(--r-lg);padding:6px 6px}
+.row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;border-radius:14px}
+.row+.row{box-shadow:0 -1px 0 var(--line)}
+.row.btn{border:0;background:transparent;width:100%;text-align:left}
+.row.btn:hover{background:rgba(255,255,255,.03)}
+.row .t{flex:1;min-width:0}
+.row .t b{font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t span{font-size:13px;color:var(--ink-3)}
+.loc{font-size:13px;color:var(--ink-2);background:var(--card-2);border:0;border-radius:8px;padding:4px 8px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.loc:hover{background:var(--card-3);color:var(--ink)}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);white-space:nowrap;border:0;background:transparent;padding:4px 0;min-width:76px}
+.st i{width:8px;height:8px;border-radius:50%}
+.btn{border:0}
+.b{height:44px;border-radius:14px;border:0;background:var(--card-2);color:var(--ink);padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:500;white-space:nowrap}
+.b:hover{background:var(--card-3)}
+.b:active,.btn-glow:active,.chip:active{transform:scale(.98)}
+.b.pri{background:var(--accent);color:#fff;box-shadow:0 0 18px var(--accent-glow)}
+.b.pri:hover{filter:brightness(1.08)}
+.b.ghost{background:transparent;color:var(--accent-2);padding:0 6px}
+input.f,select.f,textarea.f{width:100%;height:46px;background:var(--card-2);border:1px solid transparent;border-radius:14px;padding:0 14px;color:var(--ink);outline:none}
+textarea.f{height:auto;padding:12px 14px;resize:vertical;line-height:1.45}
+input.f:focus,select.f:focus,textarea.f:focus{border-color:var(--accent)}
+.err{color:var(--bad);font-size:13px;min-height:0}
+.seg{display:inline-flex;background:var(--card-2);border-radius:12px;padding:3px;gap:2px}
+.seg button{height:34px;border:0;background:transparent;color:var(--ink-2);border-radius:9px;padding:0 12px;font-size:14px;white-space:nowrap}
+.seg button.on{background:var(--card-3);color:var(--ink);font-weight:500}
+.toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--card-3);color:var(--ink);padding:10px 16px;border-radius:999px;font-size:14px;transition:.25s;z-index:80;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(560px,100%);background:var(--panel);border-radius:28px 28px 0 0;padding:10px 20px calc(24px + env(safe-area-inset-bottom,0px));z-index:50;transition:transform .28s cubic-bezier(.2,.8,.2,1);max-height:92dvh;overflow:auto}
+.sheet.on{transform:translate(-50%,0)}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--card-3);margin:0 auto 14px}
+
+/* gauge + mini charts */
+.gauge{display:block;margin:4px auto 0;width:100%;max-width:200px}
+.minigrid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:14px;max-width:220px}
+.minigrid i{aspect-ratio:1.6;border-radius:4px;background:var(--card-2);position:relative}
+.minigrid i.u{background:var(--card-3)}
+.minigrid i.w::after,.minigrid i.x::after{content:"";position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--warn)}
+.minigrid i.x::after{background:var(--bad)}
+.track{position:relative;height:4px;border-radius:2px;background:var(--card-3);margin:26px 0 8px}
+.track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.track .knob{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(255,255,255,.08)}
+
+/* storage */
+.akro{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.drw{height:64px;border-radius:12px;border:0;background:var(--card-2);color:var(--ink-3);font-size:13px;position:relative;text-align:left;padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between}
+.drw.has{background:var(--card-3);color:var(--ink)}
+.drw.sel{box-shadow:0 0 0 2px var(--accent),0 0 18px var(--accent-glow)}
+.drw .d{position:absolute;top:9px;right:9px;width:7px;height:7px;border-radius:50%}
+.drw small{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.label-prev{background:#fff;color:#111;border-radius:6px;display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+pre.zpl{background:var(--bg);border-radius:12px;padding:12px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink-2);white-space:pre-wrap;word-break:break-all;margin:12px 0 0}
+
+/* steps */
+.prog{display:flex;gap:6px}
+.prog button{flex:1;height:22px;border:0;background:transparent;padding:0;display:flex;align-items:center}
+.prog button span{width:100%;height:4px;border-radius:2px;background:var(--card-3)}
+.prog button.done span{background:var(--accent)}
+.prog button.cur span{background:var(--ink)}
+.safety{display:flex;gap:10px;align-items:flex-start;color:var(--warn);font-size:14px;background:rgba(242,180,109,.08);border-radius:14px;padding:12px 14px}
+
+/* ---------- 3D viewer ---------- */
+.viewer{display:grid;grid-template-columns:240px minmax(0,1fr) 300px;gap:14px;min-height:calc(100dvh - 190px)}
+.vcanvas{position:relative;background:#101113;border-radius:var(--r-lg);overflow:hidden;min-height:520px}
+.vcanvas canvas{position:absolute;inset:0;display:block;touch-action:none}
+.vbar{position:absolute;left:12px;right:12px;top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;pointer-events:none}
+.vbar>*{pointer-events:auto}
+.vbar .seg{background:rgba(24,25,29,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.vbottom{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;pointer-events:none}
+.vbottom>*{pointer-events:auto}
+.slider{background:rgba(24,25,29,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:8px 14px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);flex:1;min-width:220px}
+.slider input{flex:1;accent-color:var(--accent)}
+.slider b{color:var(--ink);font-weight:500;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
+.vpanel{background:var(--card);border-radius:var(--r-lg);padding:14px;min-width:0;display:flex;flex-direction:column;gap:10px;max-height:calc(100dvh - 190px);overflow:auto}
+.vpanel h3{margin:4px 4px 0;font-size:15px;font-weight:600}
+.lay{display:flex;align-items:center;gap:10px;height:42px;border-radius:12px;padding:0 10px;border:0;background:transparent;color:var(--ink);width:100%;text-align:left}
+.lay:hover{background:rgba(255,255,255,.03)}
+.lay .sw{width:14px;height:14px;border-radius:4px;flex:none}
+.lay .n{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+.lay .c{font-size:12px;color:var(--ink-3)}
+.lay.off .n,.lay.off .c{color:var(--ink-3);text-decoration:line-through}
+.props{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:14px}
+.props dt{color:var(--ink-3)}
+.props dd{margin:0;text-align:right;overflow-wrap:anywhere}
+.bom{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:0;background:transparent;width:100%;text-align:left;color:var(--ink)}
+.bom:hover,.bom.on{background:var(--card-2)}
+.bom.on{box-shadow:inset 3px 0 0 var(--accent)}
+.bom .q{font-weight:600;min-width:38px;text-align:right}
+.bom .t{flex:1;min-width:0;font-size:14px;line-height:1.35}
+.bom .t span{display:block;font-size:12px;color:var(--ink-3)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:34px;height:34px;border-radius:10px;border:2px solid transparent;padding:0}
+.swatch.on{border-color:#fff}
+.param{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:14px}
+.param input[type=range]{grid-column:1/-1;accent-color:var(--accent);width:100%}
+.param output{color:var(--ink);font-weight:500}
+.outliner-in-right{display:none;flex-direction:column;gap:6px}
+.stor-grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:start}
+.hint{position:absolute;right:14px;bottom:70px;font-size:12px;color:var(--ink-3);pointer-events:none}
+
+/* ---------- iPad portrait ---------- */
+html.m-compact .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.m-compact .viewer{grid-template-columns:minmax(0,1fr) 300px}
+html.m-compact .viewer .vleft{display:none}
+html.m-compact .viewer .vright .outliner-in-right{display:flex}
+html.m-compact .stor-grid{grid-template-columns:minmax(0,1fr)}
+/* ---------- iPhone ---------- */
+html.m-phone .app{grid-template-columns:minmax(0,1fr);gap:14px;padding-block:6px}
+html.m-phone .app.rail{--sbw:0px}
+html.m-phone .side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(300px,86vw);border-radius:0 28px 28px 0;transform:translateX(-105%);transition:transform .25s ease;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-left:max(14px,env(safe-area-inset-left,0px));z-index:60}
+html.m-phone .app.drawer .side{transform:none}
+html.m-phone .collapse{display:none}
+html.m-phone .app.rail .brand b,html.m-phone .app.rail .nav .lbl,html.m-phone .app.rail .nav .badge,html.m-phone .app.rail .nav .chev,html.m-phone .app.rail .search span,html.m-phone .app.rail .search kbd,html.m-phone .app.rail .group,html.m-phone .app.rail .tree,html.m-phone .app.rail .ai-card p,html.m-phone .app.rail .me .who,html.m-phone .app.rail .me .ud{display:revert}
+html.m-phone .app.rail .ai-card h4{display:flex}
+html.m-phone .app.rail .btn-glow .bl{display:inline}
+html.m-phone .phone-only{display:flex}
+html.m-phone .desk-only{display:none!important}
+html.m-phone .page-head h1{font-size:34px}
+html.m-phone .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+html.m-phone .card{padding:16px;border-radius:22px}
+html.m-phone .big{font-size:32px}
+html.m-phone .hscroll .card{flex:0 0 42%}
+html.m-phone main{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+html.m-phone .viewer{grid-template-columns:minmax(0,1fr);min-height:0}
+html.m-phone .vcanvas{min-height:0;height:58dvh}
+html.m-phone .vpanel{max-height:none}
+html.m-phone .akro{grid-template-columns:repeat(4,minmax(0,1fr))}
+html.m-phone .slider{min-width:0}
+.ptop{align-items:center;gap:10px;padding:6px 2px 0}
+.ptop .ws{display:flex;align-items:center;gap:10px;flex:1;border:0;background:transparent;padding:0;font-size:22px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.ptop .ws .logo{width:40px;height:40px;border-radius:12px}
+.ptop .ws .logo svg{width:22px;height:22px}
+.ibtn{width:42px;height:42px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:var(--ink)}
+.ibtn:hover{background:var(--card)}
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:none;gap:6px;background:rgba(38,39,45,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:26px;padding:8px 14px;z-index:35;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.tab{width:78px;border:0;background:transparent;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;padding:4px 0}
+.tab .ic{width:34px;height:30px;display:grid;place-items:center;border-radius:10px}
+.tab.on{color:var(--ink)}
+.tab.on .ic{color:var(--accent-2)}
+.tab .plus{width:30px;height:30px;border-radius:50%;background:var(--card-3);display:grid;place-items:center}
+html.m-phone .tabbar{display:flex}
+
+
+[hidden]{display:none!important}
+html:not(.m-phone) .phone-only{display:none!important}
+.area-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--card);border-radius:14px;padding:4px;margin:0 0 12px}
+.area-switch button{height:40px;border:0;border-radius:10px;background:transparent;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;min-width:0}
+.area-switch button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.area-switch button.on{background:var(--card-3);color:var(--ink);font-weight:500}
+.area-switch button.on svg{color:var(--accent-2)}
+.app.rail .area-switch{grid-template-columns:1fr}
+.app.rail .area-switch span{display:none}
+html.m-phone .app.rail .area-switch{grid-template-columns:1fr 1fr}
+html.m-phone .app.rail .area-switch span{display:inline}
+.ai-card h4{white-space:nowrap}
+.state-pill{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;background:rgba(242,180,109,.1);color:var(--warn);font-size:13px;white-space:nowrap;align-self:center}
+.page-head .state-pill{margin-right:auto;margin-left:-4px}
+.mini{display:block;height:4px;border-radius:2px;background:var(--card-3);margin-top:14px;overflow:hidden}
+.mini i{display:block;height:4px;border-radius:2px;background:var(--accent)}
+.note.subtle{background:var(--card);color:var(--ink-2)}
+.note.subtle svg{color:var(--warn)}
+.chk-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.searchbox{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;height:46px;background:var(--card);border-radius:14px;padding:0 14px;color:var(--ink-3)}
+.searchbox input{flex:1;min-width:0;border:0;background:transparent;outline:none;color:var(--ink);font-size:16px}
+.chk-seg{background:var(--card);overflow-x:auto;max-width:100%;scrollbar-width:none}
+.chk-seg button{display:inline-flex;align-items:center;gap:6px;height:40px}
+.chk-seg .dot{width:8px;height:8px;border-radius:50%}
+.fam-head{display:flex;align-items:center;gap:12px;margin:14px 4px 8px;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.fam-head span:first-child{flex:1}
+.fam-head .dim{font-size:13px;font-weight:400;min-width:38px;text-align:right}
+.chk-row{color:var(--ink)}
+.ring{width:16px;height:16px;border-radius:50%;border:2px solid var(--c);flex:none;position:relative}
+.ring::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--c);opacity:.9}
+.chk-st{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);font-size:13px;font-weight:500;white-space:nowrap;min-width:0}
+.opt-row{display:flex;align-items:center;gap:14px;width:100%;min-height:60px;border:0;border-radius:16px;background:var(--card);color:var(--ink);padding:8px 16px;text-align:left}
+.opt-row.on{box-shadow:inset 0 0 0 2px var(--c);background:var(--card-2)}
+.opt-row b{font-weight:500}
+/* iOS and device tuning */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,a,.drw,.pill,.tab,.nav{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+input.f,select.f,textarea.f{font-size:16px}
+html.dev-tablet .nav,html.dev-tablet .sub{height:52px}
+html.dev-tablet .b,html.dev-tablet .chip{height:48px}
+html.dev-tablet .pill{height:44px}
+html.dev-tablet .row{min-height:60px}
+html.dev-tablet kbd{display:none}
+html.m-compact .side{top:12px;height:calc(100dvh - 24px)}
+.note{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(242,180,109,.08);color:var(--warn);border-radius:var(--r-md);padding:12px 14px;font-size:14px;line-height:1.45}
+.note .b{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- Workshop Navigator look (same palette and style as the Purchase Checklist page) ---------- */
+:root{color-scheme:light;
+  --bg:#f3f6fa;--panel:#ffffff;--card:#ffffff;--card-2:#eef3f8;--card-3:#e1e9f1;
+  --line:#e6edf3;--line-2:#dce4ee;--ink:#15243a;--ink-2:#465d74;--ink-3:#708196;
+  --accent:#1565a5;--accent-2:#1378ba;--accent-glow:rgba(21,101,165,.22);--accent-soft:rgba(21,101,165,.10);
+  --good:#2e9d5b;--warn:#b7791f;--bad:#c9483d;
+  --mint:#e9f5ed;--mint-ink:#235139;--peach:#fff1d6;--peach-ink:#6b5213;
+  --font:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-lg:12px;--r-md:12px;--r-sm:8px;
+  --g1:#173a5c;--g2:#1565a5;--logo-bg:#ffffff;--navy:#122d4b;--navy-2:#173a5c;--head:#14375c}
+html[data-area="buy"]{--accent:#1565a5;--accent-2:#1378ba;--accent-glow:rgba(21,101,165,.22);--accent-soft:rgba(21,101,165,.10);--g1:#173a5c;--g2:#1565a5;--logo-bg:#ffffff}
+body{background:var(--bg);color:var(--ink)}
+.card,.list,.vpanel,.searchbox,.chk-seg,.opt-row{border:1px solid var(--line-2)}
+.card.btn{border:1px solid var(--line-2)}.card.btn:hover{background:#f7fafc}
+.row.btn:hover,.lay:hover,.bom:hover{background:rgba(21,101,165,.05)}
+.page-head h1{color:var(--head);font-size:34px;font-weight:700;letter-spacing:-.5px}
+.big,.mid{color:var(--head)}.h2,.fam-head{color:var(--head)}
+.b{background:#fff;border:1px solid #b7c6d5;color:#18334f;border-radius:8px;font-weight:650}
+.b:hover{background:#f3f6fa}.b.pri{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:none}.b.pri:hover{filter:brightness(.95)}
+.b.ghost{border:0;background:transparent}
+.chip{border:1px solid var(--line-2);border-radius:8px}.chip.accent{box-shadow:none;border-color:var(--accent)}
+.btn-glow,.round.solid{box-shadow:none}
+input.f,select.f,textarea.f{background:#fff;border:1px solid #bac8d6;border-radius:7px}
+.pill{border-radius:8px}.pill.on{background:var(--navy-2);color:#fff}
+.seg{background:var(--card-2)}.seg button.on{background:#fff;box-shadow:0 1px 2px rgba(18,45,75,.12)}
+.toast{background:#123b5e;color:#fff}
+.note,.state-pill,.safety{background:#fff6df;border:1px solid #e8d59a;color:#6b5213}
+.note svg,.note.subtle svg{color:#b7791f}.note.subtle{background:#fff;border-color:var(--line-2);color:var(--ink-2)}
+pre.zpl{background:#f3f6fa;border:1px solid var(--line-2)}
+.drw{border:1px solid var(--line)}.drw.has{background:#e9f1f8;color:var(--ink)}
+.track .knob{box-shadow:0 0 0 4px rgba(21,101,165,.15)}
+.swatch.on{border-color:var(--accent)}
+.vcanvas{background:#16283c}.hint{color:#c7d7e6}
+.vbar .seg,.slider{background:rgba(255,255,255,.94);border:1px solid var(--line-2)}
+.tabbar{background:rgba(255,255,255,.95);border:1px solid var(--line-2);box-shadow:0 8px 30px rgba(18,45,75,.16)}
+.tab{color:var(--ink-3)}.tab.on{color:var(--navy-2)}.tab.on .ic{color:var(--accent)}.tab .plus{background:var(--accent);color:#fff}
+.scrim{background:rgba(18,45,75,.35)}
+/* navy sidebar, like the Checklist page header */
+.side{background:var(--navy);color:#fff}
+.side .brand b{color:#fff}
+.side .logo{background:#fff;color:var(--navy)}
+.side .nav,.side .sub{color:#c7d7e6}
+.side .nav:hover,.side .sub:hover{background:rgba(255,255,255,.08);color:#fff}
+.side .nav.on,.side .sub.on{background:rgba(255,255,255,.14);color:#fff}
+.side .nav.on.glow{background:rgba(255,255,255,.14)}
+.side .nav.on.glow::after{background:#8cc2ee;box-shadow:0 0 10px rgba(140,194,238,.55)}
+.side .nav .chev,.side .group{color:#9fb4c8}
+.side .search{border-color:rgba(255,255,255,.22);color:#c7d7e6}.side kbd{border-color:rgba(255,255,255,.22);color:#c7d7e6}
+.side .divider{background:rgba(255,255,255,.12)}
+.side .tree::before,.side .sub::before{border-color:rgba(255,255,255,.22)}
+.side .area-switch{background:rgba(255,255,255,.08)}.side .area-switch button{color:#c7d7e6}
+.side .area-switch button.on{background:#fff;color:var(--navy)}.side .area-switch button.on svg{color:var(--accent)}
+.side .ai-card{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.05)}.side .ai-card p,.side .ai-card h4 em{color:#c7d7e6}
+.side .btn-glow{background:#fff;color:var(--navy)}
+.side .me{border-color:rgba(255,255,255,.18);color:#fff}.side .me .who span,.side .me .ud{color:#c7d7e6}
+.side .ava{background:rgba(255,255,255,.14);color:#fff}
+.side .badge.mint{background:#3ccf7a;color:#08311b}.side .badge.peach{background:#f6c564;color:#3d2a06}
+.collapse{background:#fff;border-color:var(--bg);color:var(--navy);box-shadow:0 2px 8px rgba(18,45,75,.2)}.collapse:hover{background:#f3f6fa}
+a.nav,a.ibtn{text-decoration:none;color:inherit}
+.side a.navlink{color:#c7d7e6}
+/* phone toolbar under the header */
+html.m-phone .ptop .ws .logo{background:var(--navy-2);color:#fff}
+/* part images (Bolt Depot thumbnails) */
+.pthumb{flex:none;width:64px;height:32px;border-radius:7px;background:#fff;border:1px solid #e3e9f0;display:grid;place-items:center;overflow:hidden}
+.pthumb img{max-width:58px;max-height:28px;width:auto;height:auto;display:block}
+.pthumb.none{color:#b4c1cf;background:#f6f8fb}
+html.m-phone .pthumb{width:52px;height:28px}html.m-phone .pthumb img{max-width:46px;max-height:24px}
+/* live indicator */
+.livedot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#9fb4c8;margin-right:6px;vertical-align:0;flex:none}
+.livedot.ok{background:#3ccf7a;animation:livepulse 1.6s ease-in-out infinite}.livedot.busy{background:#f2b632}.livedot.err{background:#ff6b5b}
+.ptop .livedot{margin:0 4px}
+@keyframes livepulse{0%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,122,.7)}50%{opacity:.35}70%{box-shadow:0 0 0 6px rgba(60,207,122,0)}100%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,122,0)}}
+@media (prefers-reduced-motion:reduce){.livedot.ok{animation:none}}
+
+/* top header: identical to the Checklist page */
+.wn-header{background:var(--wn-brand,#173a5c);color:#fff;padding:23px max(20px,calc((100vw - 1240px)/2));padding-top:max(23px,calc(env(safe-area-inset-top,0px) + 12px));font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wn-header h1{margin:0;font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.25;color:#fff}
+.wn-header p{margin:6px 0 0;color:#c7d7e6;font-size:13px;line-height:1.4}
+.wn-topbar{display:flex;gap:8px;align-items:center;margin:-6px 0 12px;flex-wrap:wrap}
+.wn-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;line-height:1.5;cursor:pointer;text-decoration:none;font-family:inherit;height:auto}
+.wn-chip:hover{background:rgba(255,255,255,.16)}
+.wn-chip.dotonly{padding:7px 9px}
+.wn-chip.dotonly #wnSyncText{display:none}
+.wn-dot{width:8px;height:8px;border-radius:50%;background:#9fb4c3;flex:none}
+.wn-dot.ok{background:#3ccf7a;animation:livepulse 1.6s ease-in-out infinite}.wn-dot.err{background:#ff6b5b}
+.wn-switch{display:inline-flex;gap:2px;padding:3px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08)}
+.wn-switch a{color:#dbe6f0;text-decoration:none;font-size:12px;font-weight:650;padding:4px 12px;border-radius:999px;white-space:nowrap;line-height:1.5}
+.wn-switch a:hover{color:#fff;background:rgba(255,255,255,.1)}
+.wn-switch a.on{background:#fff;color:#14375c}
+html.m-phone .wn-header{padding-left:18px;padding-right:18px}
+</style>
+</head>
+<body>
+
+
+<header class="wn-header"><div class="wn-topbar"><a class="wn-chip" id="wnSync" href="#" title="Live"><span class="wn-dot" id="wnDot"></span><span id="wnSyncText">Live</span></a><button type="button" class="wn-chip" data-go="settings">&#9881; Settings</button><nav class="wn-switch" aria-label="Switch page"><a href="index.html">Checklist</a><a class="on" href="workshop.html" aria-current="page">Workshop App</a></nav></div><h1>Workshop App</h1><p>Inventory · Storage · Projects · Labels · AI planner</p></header>
+<div class="app" id="app">
+  <aside class="side" id="side" aria-label="Main menu">
+    <button class="collapse desk-only" id="collapse" aria-label="Collapse sidebar" aria-expanded="true"></button>
+    <div class="brand"><div class="logo" aria-hidden="true"></div><b>Workshop</b></div>
+    <div class="area-switch" id="area-switch" role="tablist" aria-label="Area"></div>
+    <button class="search" id="side-search"><span>Search…</span><kbd>⌘</kbd><kbd>F</kbd></button>
+    <div class="side-scroll" id="nav"></div>
+    <div class="ai-card" id="ai-card"></div>
+    <button class="me" id="me"></button>
+  </aside>
+  <main id="main">
+    <div class="phone-only ptop" id="ptop"></div>
+    <div class="phone-only pills" id="ptabs" role="tablist"></div>
+    <div class="page-head desk-only" id="phead"></div>
+    <div id="page"></div>
+    <section class="viewer" id="viewer" hidden>
+      <div class="vpanel vleft" id="v-left"></div>
+      <div class="vcanvas" id="v-canvas">
+        <div class="vbar" id="v-bar"></div>
+        <div class="hint" id="v-hint">Drag to orbit · pinch or scroll to zoom · two fingers to pan · tap a part</div>
+        <div class="vbottom" id="v-bottom"></div>
+      </div>
+      <div class="vpanel vright" id="v-right"></div>
+    </section>
+  </main>
+  <nav class="tabbar" id="tabbar" aria-label="Tab bar"></nav>
+</div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/seed.js"></script>
+<script src="js/parts.js"></script>
+<script src="js/sync.js"></script>
+<script>WN.init(WN_SEED)</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// Shed calculator, a line-for-line port of workshop_ai/shed.py.
+// tests/test_parity.py runs both and fails if any quantity or 3D part differs.
+(function (root) {
+  const STOCK_FT = [8, 10, 12, 14, 16];
+  const SECTION = { '1x4': [0.75, 3.5], '1x6': [0.75, 5.5], '2x4': [1.5, 3.5], '2x6': [1.5, 5.5], '2x8': [1.5, 7.25], '2x10': [1.5, 9.25], '4x4': [3.5, 3.5] };
+  const pyRound = (x, nd) => { const m = Math.pow(10, nd); const v = x * m; const f = Math.floor(v); const d = v - f; let r = Math.abs(d - 0.5) < 1e-9 ? (f % 2 === 0 ? f : f + 1) : Math.round(v); return (r / m) + 0; };
+  const _r = (x, nd = 2) => pyRound(x, nd);
+  const g = (x) => String(+x);
+  function stockLen(inches) {
+    for (const ft of STOCK_FT) if (ft * 12 >= inches - 1e-6) return ft;
+    throw new Error(`a ${(inches / 12).toFixed(1)} ft piece is longer than 16 ft stock`);
+  }
+  function sheetLayout(across, along, sw = 48, sl = 96) {
+    const rows = Math.ceil(across / sw - 1e-9);
+    const full = Math.floor(along / sl);
+    const rem = along - full * sl;
+    let sheets = rows * full;
+    if (rem > 1e-6) { const per = Math.max(1, Math.floor(sl / rem)); sheets += Math.ceil(rows / per); }
+    return sheets;
+  }
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  function fmtIn(inches) {
+    const e = Math.round(inches * 8); const whole = Math.floor(e / 8), frac = e % 8;
+    if (frac === 0) return `${whole} in`;
+    const d = gcd(frac, 8); return `${whole} ${frac / d}/${8 / d} in`;
+  }
+  const DEFAULTS = { width_ft: 8, depth_ft: 10, wall_height_ft: 8, roof_pitch: 6, overhang_in: 6, door_width_in: 48, door_height_in: 80, windows: 1, window_in: 24 };
+  function validate(s) {
+    const checks = [
+      [6 <= s.width_ft && s.width_ft <= 16, 'width must be 6 to 16 ft'],
+      [6 <= s.depth_ft && s.depth_ft <= 16, 'depth must be 6 to 16 ft'],
+      [6 <= s.wall_height_ft && s.wall_height_ft <= 10, 'wall height must be 6 to 10 ft'],
+      [3 <= s.roof_pitch && s.roof_pitch <= 12, 'roof pitch must be 3 to 12 (rise per 12)'],
+      [0 <= s.overhang_in && s.overhang_in <= 18, 'overhang must be 0 to 18 in'],
+      [24 <= s.door_width_in && s.door_width_in <= s.width_ft * 12 - 24, 'door must be at least 24 in and leave 12 in of wall each side'],
+      [60 <= s.door_height_in && s.door_height_in <= s.wall_height_ft * 12 - 12, 'door must be at least 60 in and fit under a header'],
+      [0 <= s.windows && s.windows <= 2, '0 to 2 windows'],
+    ];
+    const bad = checks.filter(c => !c[0]).map(c => c[1]);
+    if (bad.length) throw new Error(bad.join('; '));
+  }
+
+  function designShed(input) {
+    const spec = { ...DEFAULTS };
+    for (const k of Object.keys(DEFAULTS)) if (input && input[k] != null) spec[k] = k === 'windows' ? Math.trunc(+input[k]) : +input[k];
+    validate(spec);
+    const W = spec.width_ft * 12, D = spec.depth_ft * 12, H = spec.wall_height_ft * 12;
+    const p = spec.roof_pitch, o = spec.overhang_in, k = p / 12;
+    const slope = Math.sqrt(1 + k * k), pitchDeg = Math.atan(k) * 180 / Math.PI;
+    const warnings = [];
+
+    const rafter = spec.width_ft <= 12 ? '2x6' : '2x8';
+    const ridge = rafter === '2x6' ? '2x8' : '2x10';
+    const rafterOc = spec.width_ft <= 10 ? 24 : 16;
+    const joist = '2x6', joistOc = 16, studOc = 16;
+    if (spec.width_ft > 12) warnings.push('Spans over 12 ft use 2x8 rafters at 16 in on center. Confirm against your local snow load.');
+    if (p < 4) warnings.push('Pitch under 4/12: asphalt shingles need double underlayment. Consider metal roofing.');
+
+    const skids = Math.ceil(W / 48) + 1;
+    const skidX = []; for (let i = 0; i < skids; i++) skidX.push(1.75 + i * (W - 3.5) / (skids - 1));
+    const padW = spec.width_ft + 2, padD = spec.depth_ft + 2, padSqft = padW * padD;
+    const gravelCy = Math.ceil(padSqft * (4 / 12) / 27 * 1.1 * 2) / 2;
+
+    const floorJoists = Math.floor(D / joistOc) + 1;
+    const joistLen = W - 3;
+    const floorSheets = sheetLayout(W, D);
+    const ySkid = SECTION['4x4'][1];
+    const yJoistTop = ySkid + SECTION[joist][1];
+    const y0 = yJoistTop + 0.75;
+    const yTop = y0 + H;
+
+    const studLen = H - 4.5;
+    const precut = Math.abs(studLen - 92.625) < 0.01;
+    const sideLen = D - 7;
+    const walls = [W, W, sideLen, sideLen];
+    const studs = walls.reduce((a, L) => a + Math.floor(L / studOc) + 1, 0) + 4 + 4 + 4 * spec.windows;
+    const doorHeaderLen = spec.door_width_in + 3;
+    const winHeaderLen = spec.window_in + 3;
+
+    const rise = (W / 2) * k;
+    const gableHeights = [];
+    for (let xg = studOc; xg < W - 0.1; xg += studOc) {
+      const h = (W / 2 - Math.abs(xg - W / 2)) * k - 1.5;
+      if (h > 6 && Math.abs(xg - W / 2) >= 2) gableHeights.push(h);
+    }
+    const gableSum = gableHeights.reduce((a, b) => a + b, 0);
+    const gablePieces = gableHeights.length ? Math.ceil(2 * gableSum * 1.15 / 96) : 0;
+
+    const plateTop = {}, platePt = {};
+    for (const L of walls) {
+      const n = Math.ceil(L / 192 - 1e-9); const ft = stockLen(L / n);
+      platePt[ft] = (platePt[ft] || 0) + n; plateTop[ft] = (plateTop[ft] || 0) + 2 * n;
+    }
+
+    const rd = SECTION[rafter][1];
+    const run = W / 2 - 0.75;
+    const rafterLen = (run + o) * slope;
+    const rafterStock = stockLen(rafterLen + 3);
+    const pairs = Math.floor(D / rafterOc) + 1;
+    const ties = Math.ceil(pairs / 2);
+    const tieLen = W / 2;
+    const tieBoards = Math.ceil(ties / Math.max(1, Math.floor(96 / tieLen)));
+    const slopeLen = (W / 2 + o) * slope;
+    const roofSheets = 2 * sheetLayout(slopeLen, D);
+    const roofSqft = 2 * slopeLen * D / 144;
+    const squares = roofSqft / 100;
+    const bundles = Math.ceil(squares * 3 * 1.10);
+    const ridgeCap = Math.max(1, Math.ceil((D / 12) / 30));
+    const feltRolls = Math.ceil(roofSqft * 1.10 / 400);
+    const dripPieces = Math.ceil((2 * D + 4 * slopeLen) / 120);
+    const hTies = pairs * 2;
+
+    const sidingH = yTop - ySkid;
+    const panelLen = sidingH <= 96 ? 96 : 108;
+    if (sidingH > 108) warnings.push('Over 9 ft of siding height needs a horizontal Z-flashed joint.');
+    const wallPanels = [W, W, D, D].reduce((a, L) => a + Math.ceil(L / 48 - 1e-9), 0);
+    const gablePanels = Math.ceil(2 * (W * rise / 2) / (48 * 96) * 1.15);
+    const sidingPanels = wallPanels + gablePanels;
+    const sidingSqft = (2 * W + 2 * D) * sidingH / 144 + W * rise / 144;
+    const fasciaBoards = Math.ceil((2 * D + 4 * slopeLen) / 144);
+
+    const sumv = (o) => Object.values(o).reduce((a, b) => a + b, 0);
+    const framePieces = skids + floorJoists + 2 + studs + gablePieces + sumv(plateTop) + sumv(platePt) + 2 * pairs + ties;
+    const framingLb = Math.ceil(framePieces * 12 / 49);
+    const sheathingLb = Math.ceil((roofSheets + sidingPanels) * 70 / 106);
+    const deckScrewLb = Math.ceil(floorSheets * 60 / 90);
+    const roofingNailLb = Math.ceil(squares * 1.10 * 320 / 140);
+    const paintGal = Math.ceil(sidingSqft * 2 / 350);
+    const leaves = spec.door_width_in >= 48 ? 2 : 1;
+
+    const M = [];
+    const add = (key, group, item, qty, unit, note = '', estimate = false) => M.push({ key, group, item, qty, unit, note, estimate });
+    add('gravel', 'Foundation', 'Crushed gravel (3/4 in), 4 in deep', gravelCy, 'cu yd', `${g(padW)} x ${g(padD)} ft pad`);
+    add('fabric', 'Foundation', 'Landscape fabric', Math.ceil(padSqft), 'sq ft');
+    add('skid', 'Foundation', `4x4 pressure-treated skid, ${stockLen(D)} ft`, skids, 'pcs', 'ground-contact rated');
+    add('joist', 'Floor', `2x6 pressure-treated joist, ${stockLen(joistLen)} ft`, floorJoists, 'pcs', `${joistOc} in on center`);
+    add('rim', 'Floor', `2x6 pressure-treated rim, ${stockLen(D)} ft`, 2, 'pcs');
+    add('floor_sheet', 'Floor', '3/4 in tongue-and-groove plywood, 4x8', floorSheets, 'sheets');
+    if (precut) add('stud', 'Walls', '2x4 precut stud, 92 5/8 in', studs, 'pcs');
+    else add('stud', 'Walls', `2x4 stud, ${stockLen(studLen)} ft`, studs, 'pcs', `cut to ${fmtIn(studLen)}`);
+    for (const ft of Object.keys(platePt).map(Number).sort((a, b) => a - b)) add('plate_pt', 'Walls', `2x4 pressure-treated bottom plate, ${ft} ft`, platePt[ft], 'pcs');
+    for (const ft of Object.keys(plateTop).map(Number).sort((a, b) => a - b)) add('plate_top', 'Walls', `2x4 top plate, ${ft} ft`, plateTop[ft], 'pcs', 'doubled');
+    add('door_header', 'Walls', `2x6 door header, ${stockLen(doorHeaderLen)} ft`, 2, 'pcs', 'doubled, 1/2 in plywood spacer');
+    if (spec.windows) add('win_header', 'Walls', '2x4 window header stock, 8 ft', Math.ceil(spec.windows * 2 * winHeaderLen / 96), 'pcs');
+    if (gablePieces) add('gable_stud', 'Walls', '2x4 gable stud stock, 8 ft', gablePieces, 'pcs');
+    add('rafter', 'Roof', `${rafter} rafter, ${rafterStock} ft`, pairs * 2, 'pcs', `${rafterOc} in on center`);
+    add('ridge', 'Roof', `${ridge} ridge board, ${stockLen(D)} ft`, 1, 'pcs');
+    add('collar', 'Roof', '2x4 collar tie stock, 8 ft', tieBoards, 'pcs', 'every other rafter pair');
+    add('roof_sheet', 'Roof', '7/16 in OSB roof sheathing, 4x8', roofSheets, 'sheets');
+    add('felt', 'Roof', '#15 felt underlayment, 4-square roll', feltRolls, 'rolls');
+    add('drip', 'Roof', 'Drip edge, 10 ft', dripPieces, 'pcs', 'eaves under felt, rakes over');
+    add('shingle', 'Roof', 'Architectural shingles', bundles, 'bundles', `${squares.toFixed(1)} squares + 10% waste`);
+    add('ridge_cap', 'Roof', 'Ridge cap shingles', ridgeCap, 'bundles', '', true);
+    add('siding', 'Siding', `T1-11 siding panel, 4x${panelLen / 12}`, sidingPanels, 'sheets', 'door is cut from the opening');
+    add('corner_trim', 'Siding', '1x4 corner trim, 8 ft', 8, 'pcs');
+    add('fascia', 'Siding', '1x6 fascia, 12 ft', fasciaBoards, 'pcs');
+    add('h_tie', 'Hardware', 'Hurricane tie (H2.5A style)', hTies, 'pcs', 'one per rafter at the wall');
+    add('hanger_nail', 'Hardware', 'Hanger nails, 1 1/2 in', hTies * 10, 'pcs', '', true);
+    add('hinge', 'Hardware', 'Heavy strap hinges', leaves * 3, 'pcs');
+    add('hasp', 'Hardware', 'Hasp and padlock', 1, 'set');
+    if (leaves === 2) add('barrel', 'Hardware', 'Barrel bolt (inactive leaf)', 2, 'pcs');
+    if (spec.windows) add('window', 'Hardware', `Shed window, ${g(spec.window_in)} x ${g(spec.window_in)} in`, spec.windows, 'pcs');
+    add('nails16', 'Fasteners', '16d galvanized framing nails', framingLb, 'lb', '', true);
+    add('nails8', 'Fasteners', '8d galvanized ring-shank nails', sheathingLb, 'lb', 'sheathing and siding', true);
+    add('deck_screw', 'Fasteners', '2 1/2 in exterior deck screws', deckScrewLb, 'lb', 'floor deck', true);
+    add('roof_nail', 'Fasteners', '1 1/4 in roofing nails', roofingNailLb, 'lb', '', true);
+    add('paint', 'Finish', 'Exterior paint or stain', paintGal, 'gal', 'two coats', true);
+    add('caulk', 'Finish', 'Exterior caulk', 3, 'tubes', '', true);
+
+    const C = [];
+    const cut = (part, lumber, qty, len, stock, note = '') => C.push({ part, lumber, qty, length_in: _r(len), length: fmtIn(len), stock_ft: stock, note });
+    cut('Skid', '4x4 PT', skids, D, stockLen(D));
+    cut('Rim joist', '2x6 PT', 2, D, stockLen(D));
+    cut('Floor joist', '2x6 PT', floorJoists, joistLen, stockLen(joistLen));
+    cut('Wall stud', '2x4', studs, studLen, precut ? 8 : stockLen(studLen), precut ? 'precut' : '');
+    cut('Front and back wall plates', '2x4', 6, W, stockLen(W / Math.ceil(W / 192)), '1 PT bottom + 2 top per wall');
+    cut('Side wall plates', '2x4', 6, sideLen, stockLen(sideLen / Math.ceil(sideLen / 192)), '1 PT bottom + 2 top per wall');
+    cut('Door header', '2x6', 2, doorHeaderLen, stockLen(doorHeaderLen));
+    cut('Door jack stud', '2x4', 2, spec.door_height_in - 1.5, 8);
+    cut('Rafter', rafter, pairs * 2, rafterLen, rafterStock, `plumb cut ${pitchDeg.toFixed(1)} deg, 3 1/2 in birdsmouth seat`);
+    cut('Ridge board', ridge, 1, D, stockLen(D));
+    cut('Collar tie', '2x4', ties, tieLen, 8, `ends cut at ${pitchDeg.toFixed(1)} deg`);
+    if (spec.windows) cut('Window header', '2x4', spec.windows * 2, winHeaderLen, 8);
+    const uniq = [...new Set(gableHeights.map(h => _r(h, 2)))].sort((a, b) => a - b);
+    uniq.forEach((h, i) => { const n = 2 * gableHeights.filter(x => Math.abs(_r(x, 2) - h) < 0.001).length; cut(`Gable stud ${i + 1}`, '2x4', n, h, 8, `top cut at ${pitchDeg.toFixed(1)} deg`); });
+
+    const tools = [
+      ['Circular saw', true, 'All framing and sheet cuts'], ['Drill/driver', true, 'Deck screws and pilot holes'],
+      ['Framing hammer', true, 'Framing and sheathing nails'], ['Speed square', true, `Marking the ${pitchDeg.toFixed(1)} deg rafter cuts`],
+      ['Framing square', true, 'Laying out the birdsmouth'], ['Tape measure, 25 ft', true, 'Everything'],
+      ['4 ft level', true, 'Leveling skids and plumbing walls'], ['Chalk line', true, 'Shingle courses and sheet layout'],
+      ['Step ladder, 6 ft', true, 'Rafters and roofing'], ['Shovel, rake and hand tamper', true, 'Gravel pad'],
+      ['Utility knife', true, 'Felt and shingles'], ['Tin snips', true, 'Drip edge'], ['Sawhorses', true, 'Cutting station'],
+      ['Safety glasses, hearing protection, gloves', true, 'All steps'], ['Framing nailer', false, 'Saves hours of hammering'],
+      ['Roofing nailer', false, 'Faster, consistent shingle nailing'], ['Miter saw', false, 'Fast, square repeat cuts'],
+      ['Impact driver', false, 'Driving long screws'],
+    ].map(([name, required, why]) => ({ name, required, why }));
+
+    const steps = [
+      ['Check permits and setbacks', 'Call your building department with the footprint and height before buying lumber.', 'Call 811 before digging.', ['foundation']],
+      ['Build the gravel pad', `Lay fabric and 4 in of compacted gravel, ${g(padW)} x ${g(padD)} ft, level within 1/4 in.`, 'Tamp in 2 in layers; lift with your legs.', ['foundation']],
+      ['Set the skids', `Place ${skids} skids along the depth and level them to each other.`, '', ['foundation']],
+      ['Frame the floor', `Nail the rims to ${floorJoists} joists at ${joistOc} in on center. Square it by matching the diagonals.`, 'Wear gloves; treated lumber splinters.', ['floor']],
+      ['Lay the floor deck', `Glue and screw ${floorSheets} sheets, staggering the end joints.`, '', ['floor']],
+      ['Frame and raise the walls', `Build each wall flat on the deck with ${fmtIn(studLen)} studs at ${studOc} in on center. Raise, plumb, brace, and nail the corners.`, 'Raise walls with a helper; brace before letting go.', ['walls']],
+      ['Add the double top plate', 'Overlap the second plate at the corners to lock the walls together.', '', ['walls']],
+      ['Cut and set the rafters', `Cut one pattern pair (${fmtIn(rafterLen)}, ${pitchDeg.toFixed(1)} deg plumb cut) and test-fit it. Cut ${pairs * 2}, set the ridge, and nail pairs at ${rafterOc} in on center.`, 'Work from a stable ladder; never stand on the top step.', ['roof_framing']],
+      ['Install ties and gable studs', 'Add collar ties, hurricane ties, and the gable-end studs.', '', ['roof_framing', 'walls']],
+      ['Sheath the roof', `Nail ${roofSheets} OSB sheets with the long edge across the rafters, staggered.`, "Stay off the roof when it's wet.", ['sheathing']],
+      ['Shingle the roof', 'Drip edge on the eaves, felt, drip edge on the rakes, then shingles from the bottom up, then the ridge cap.', 'Use toe boards or a harness above 6/12.', ['roofing']],
+      ['Side the walls', `Hang ${sidingPanels} T1-11 panels. Cut out the door opening and save the cutout.`, '', ['siding']],
+      ['Build the door and trim', 'Frame the door from the cutout with 2x4 backing, hang it on strap hinges, then add corner trim and fascia.', '', ['openings', 'trim']],
+      ['Paint and seal', 'Caulk the trim joints, then prime and paint.', 'Ventilate; wear a mask when spraying.', ['siding', 'trim']],
+    ].map(([title, detail, safety, layers]) => ({ title, detail, safety, layers }));
+
+    // ---------------- 3D scene ----------------
+    const parts = [];
+    const r2 = (v) => _r(v, 2), r4 = (v) => _r(v, 4);
+    const beam = (kind, layer, mat, bom, a, b, size, up = [0, 1, 0]) => parts.push({ type: 'beam', kind, layer, material: mat, bom, a: a.map(r2), b: b.map(r2), section: typeof size === 'string' ? [...SECTION[size]] : [...size], up: up.map(r4) });
+    const slab = (kind, layer, mat, bom, pts, thickness, normal) => parts.push({ type: 'slab', kind, layer, material: mat, bom, points: pts.map(q => q.map(r2)), thickness, normal: normal.map(r4) });
+    const rectZ = (x0, x1, ya, yb, z) => [[x0, ya, z], [x1, ya, z], [x1, yb, z], [x0, yb, z]];
+    const rectX = (z0, z1, ya, yb, x) => [[x, ya, z0], [x, ya, z1], [x, yb, z1], [x, yb, z0]];
+
+    slab('Gravel pad', 'foundation', 'gravel', 'gravel', [[-12, 0, -12], [W + 12, 0, -12], [W + 12, 0, D + 12], [-12, 0, D + 12]], 4, [0, -1, 0]);
+    for (const x0 of skidX) beam('Skid', 'foundation', 'lumber_pt', 'skid', [x0, ySkid / 2, 0], [x0, ySkid / 2, D], '4x4');
+    const yj = ySkid + SECTION[joist][1] / 2;
+    for (const x0 of [0.75, W - 0.75]) beam('Rim joist', 'floor', 'lumber_pt', 'rim', [x0, yj, 0], [x0, yj, D], joist);
+    for (let i = 0; i < floorJoists; i++) { const z = Math.min(0.75 + i * joistOc, D - 0.75); beam('Floor joist', 'floor', 'lumber_pt', 'joist', [1.5, yj, z], [W - 1.5, yj, z], joist); }
+    slab('Floor deck', 'floor', 'plywood', 'floor_sheet', [[0, yJoistTop, 0], [W, yJoistTop, 0], [W, yJoistTop, D], [0, yJoistTop, D]], 0.75, [0, 1, 0]);
+
+    const doorA = W / 2 - spec.door_width_in / 2, doorB = W / 2 + spec.door_width_in / 2;
+    const doorTop = y0 + spec.door_height_in;
+    const winTop = y0 + Math.min(spec.door_height_in, H - 12);
+    const winBot = winTop - spec.window_in;
+    const winA = D / 2 - spec.window_in / 2, winB = D / 2 + spec.window_in / 2;
+
+    function studRun(length, place, openings, up) {
+      const pos = []; for (let i = 0; i <= Math.floor(length / studOc); i++) pos.push(i * studOc);
+      if (pos[pos.length - 1] < length - 1.5) pos.push(length);
+      for (let t of pos) {
+        t = Math.min(Math.max(t, 0.75), length - 0.75);
+        if (openings.some(([a, b]) => a - 2.3 <= t && t <= b + 2.3)) continue;
+        beam('Wall stud', 'walls', 'lumber', 'stud', place(t, y0 + 1.5), place(t, yTop - 3), '2x4', up);
+      }
+    }
+    function opening(place, a, b, top, bottom, headerSize, headerBom, kind, up) {
+      for (const t of [a - 2.25, b + 2.25]) beam('King stud', 'walls', 'lumber', 'stud', place(t, y0 + 1.5), place(t, yTop - 3), '2x4', up);
+      for (const t of [a - 0.75, b + 0.75]) beam('Jack stud', 'walls', 'lumber', 'stud', place(t, bottom == null ? y0 + 1.5 : bottom - 1.5), place(t, top), '2x4', up);
+      const hd = SECTION[headerSize][1];
+      beam(`${kind} header`, 'walls', 'lumber', headerBom, place(a - 1.5, top + hd / 2), place(b + 1.5, top + hd / 2), headerSize, [0, 1, 0]);
+      if (bottom != null) beam(`${kind} sill`, 'walls', 'lumber', 'win_header', place(a, bottom - 0.75), place(b, bottom - 0.75), [3.5, 1.5]);
+      for (let t = a + 8; t < b - 4; t += studOc) {
+        if (top + hd < yTop - 4) beam('Cripple', 'walls', 'lumber', 'stud', place(t, top + hd), place(t, yTop - 3), '2x4', up);
+        if (bottom != null && bottom - 1.5 > y0 + 4) beam('Cripple', 'walls', 'lumber', 'stud', place(t, y0 + 1.5), place(t, bottom - 1.5), '2x4', up);
+      }
+    }
+    const front = (t, y) => [t, y, 1.75], back = (t, y) => [t, y, D - 1.75];
+    const left = (t, y) => [1.75, y, t], right = (t, y) => [W - 1.75, y, t];
+    const ZN = [0, 0, 1], XN = [1, 0, 0];
+    studRun(W, front, [[doorA, doorB]], ZN);
+    opening(front, doorA, doorB, doorTop, null, '2x6', 'door_header', 'Door', ZN);
+    studRun(W, back, [], ZN);
+    const sideOpen = [[winA - 3.5, winB - 3.5]];
+    studRun(sideLen, (t, y) => left(3.5 + t, y), spec.windows >= 1 ? sideOpen : [], XN);
+    studRun(sideLen, (t, y) => right(3.5 + t, y), spec.windows >= 2 ? sideOpen : [], XN);
+    if (spec.windows >= 1) opening(left, winA, winB, winTop, winBot, '2x4', 'win_header', 'Window', XN);
+    if (spec.windows >= 2) opening(right, winA, winB, winTop, winBot, '2x4', 'win_header', 'Window', XN);
+    const plateRows = [[y0 + 0.75, 'lumber_pt', 'plate_pt'], [yTop - 2.25, 'lumber', 'plate_top'], [yTop - 0.75, 'lumber', 'plate_top']];
+    for (const zc of [1.75, D - 1.75]) for (const [yy, mat, bom] of plateRows) {
+      if (bom === 'plate_pt' && zc === 1.75) {
+        beam('Bottom plate', 'walls', mat, bom, [0, yy, zc], [doorA - 1.5, yy, zc], [3.5, 1.5]);
+        beam('Bottom plate', 'walls', mat, bom, [doorB + 1.5, yy, zc], [W, yy, zc], [3.5, 1.5]);
+      } else beam(bom === 'plate_pt' ? 'Bottom plate' : 'Top plate', 'walls', mat, bom, [0, yy, zc], [W, yy, zc], [3.5, 1.5]);
+    }
+    for (const xc of [1.75, W - 1.75]) for (const [yy, mat, bom] of plateRows)
+      beam(bom === 'plate_pt' ? 'Bottom plate' : 'Top plate', 'walls', mat, bom, [xc, yy, 3.5], [xc, yy, D - 3.5], [3.5, 1.5]);
+    for (const zc of [1.75, D - 1.75]) for (let xg = studOc; xg < W - 0.1; xg += studOc) {
+      const h = (W / 2 - Math.abs(xg - W / 2)) * k - 1.5;
+      if (h > 6 && Math.abs(xg - W / 2) >= 2) beam('Gable stud', 'walls', 'lumber', 'gable_stud', [xg, yTop, zc], [xg, yTop + h, zc], '2x4', ZN);
+    }
+
+    const lift = rd * slope / 2;
+    const yRidge = yTop + rise + lift;
+    beam('Ridge board', 'roof_framing', 'lumber', 'ridge', [W / 2, yRidge, 0], [W / 2, yRidge, D], ridge);
+    const rafterZ = []; for (let i = 0; i < pairs; i++) rafterZ.push(Math.min(0.75 + i * rafterOc, D - 0.75));
+    for (const z of rafterZ) for (const sgn of [-1, 1]) {
+      const xa = W / 2 + sgn * (W / 2 + o);
+      beam('Rafter', 'roof_framing', 'lumber', 'rafter', [xa, yTop - o * k + lift, z], [W / 2 - sgn * 0.75, yRidge, z], rafter, [-sgn * k / slope, 1 / slope, 0]);
+    }
+    rafterZ.forEach((z, i) => { if (i % 2 === 0) { const yt = yTop + rise * 2 / 3; beam('Collar tie', 'roof_framing', 'lumber', 'collar', [W / 2 - tieLen / 2, yt, z], [W / 2 + tieLen / 2, yt, z], '2x4'); } });
+
+    for (const sgn of [-1, 1]) {
+      const nx = sgn * k / slope, ny = 1 / slope;
+      const xe = W / 2 + sgn * (W / 2 + o);
+      const ye = yTop - o * k + rd * slope;
+      const yr = yTop + rise + rd * slope;
+      const base = [[xe, ye, 0], [xe, ye, D], [W / 2, yr, D], [W / 2, yr, 0]];
+      slab('Roof sheathing', 'sheathing', 'osb', 'roof_sheet', base, 0.4375, [nx, ny, 0]);
+      const off = 0.4375;
+      const top = base.map(q => [q[0] + nx * off, q[1] + ny * off, q[2]]);
+      const ext = 0.75;
+      top[0] = [top[0][0] + sgn * ext / slope, top[0][1] - k * ext / slope, -1.5];
+      top[1] = [top[1][0] + sgn * ext / slope, top[1][1] - k * ext / slope, D + 1.5];
+      top[2][2] = D + 1.5; top[3][2] = -1.5;
+      slab('Shingles', 'roofing', 'shingle', 'shingle', top, 0.3, [nx, ny, 0]);
+      beam('Fascia', 'trim', 'trim', 'fascia', [xe + sgn * 0.375, ye - rd * slope / 2, 0], [xe + sgn * 0.375, ye - rd * slope / 2, D], '1x6', [0, 1, 0]);
+    }
+    beam('Ridge cap', 'roofing', 'shingle', 'ridge_cap', [W / 2, yTop + rise + rd * slope + 0.9, -1.5], [W / 2, yTop + rise + rd * slope + 0.9, D + 1.5], [12, 0.5]);
+
+    const ys = ySkid, t11 = 0.59;
+    slab('Siding', 'siding', 'siding', 'siding', rectZ(0, doorA, ys, yTop, 0), t11, [0, 0, -1]);
+    slab('Siding', 'siding', 'siding', 'siding', rectZ(doorB, W, ys, yTop, 0), t11, [0, 0, -1]);
+    slab('Siding', 'siding', 'siding', 'siding', rectZ(doorA, doorB, doorTop, yTop, 0), t11, [0, 0, -1]);
+    slab('Siding', 'siding', 'siding', 'siding', rectZ(0, W, ys, yTop, D), t11, [0, 0, 1]);
+    for (const [zc, nz] of [[0, -1], [D, 1]]) slab('Gable siding', 'siding', 'siding', 'siding', [[0, yTop, zc], [W, yTop, zc], [W / 2, yTop + rise, zc]], t11, [0, 0, nz]);
+    for (const [xc, nx, hasWin] of [[0, -1, spec.windows >= 1], [W, 1, spec.windows >= 2]]) {
+      if (hasWin) {
+        slab('Siding', 'siding', 'siding', 'siding', rectX(0, winA, ys, yTop, xc), t11, [nx, 0, 0]);
+        slab('Siding', 'siding', 'siding', 'siding', rectX(winB, D, ys, yTop, xc), t11, [nx, 0, 0]);
+        slab('Siding', 'siding', 'siding', 'siding', rectX(winA, winB, ys, winBot, xc), t11, [nx, 0, 0]);
+        slab('Siding', 'siding', 'siding', 'siding', rectX(winA, winB, winTop, yTop, xc), t11, [nx, 0, 0]);
+        slab('Window glass', 'openings', 'glass', 'window', rectX(winA, winB, winBot, winTop, xc + nx * -1.75), 0.25, [nx, 0, 0]);
+        for (const [za, zb, ya, yb] of [[winA - 3.5, winA, winBot - 3.5, winTop + 3.5], [winB, winB + 3.5, winBot - 3.5, winTop + 3.5]])
+          slab('Window trim', 'trim', 'trim', 'corner_trim', rectX(za, zb, ya, yb, xc + nx * t11), 0.75, [nx, 0, 0]);
+        for (const [ya, yb] of [[winTop, winTop + 3.5], [winBot - 3.5, winBot]])
+          slab('Window trim', 'trim', 'trim', 'corner_trim', rectX(winA, winB, ya, yb, xc + nx * t11), 0.75, [nx, 0, 0]);
+      } else slab('Siding', 'siding', 'siding', 'siding', rectX(0, D, ys, yTop, xc), t11, [nx, 0, 0]);
+    }
+    for (const [cx, cz, sx, sz] of [[0, 0, -1, -1], [W, 0, 1, -1], [0, D, -1, 1], [W, D, 1, 1]]) {
+      beam('Corner trim', 'trim', 'trim', 'corner_trim', [cx + sx * (t11 + 0.375), ys, cz - sz * 1.75], [cx + sx * (t11 + 0.375), yTop, cz - sz * 1.75], '1x4', [0, 0, 1]);
+      beam('Corner trim', 'trim', 'trim', 'corner_trim', [cx - sx * 1.0, ys, cz + sz * (t11 + 0.375)], [cx - sx * 1.0, yTop, cz + sz * (t11 + 0.375)], '1x4', [1, 0, 0]);
+    }
+    const gap = 0.25;
+    const leafEdges = leaves === 2 ? [[doorA + gap, W / 2 - gap / 2], [W / 2 + gap / 2, doorB - gap]] : [[doorA + gap, doorB - gap]];
+    for (const [la, lb] of leafEdges) {
+      slab('Door leaf', 'openings', 'siding', 'siding', rectZ(la, lb, y0 + gap, doorTop - gap, -t11), 0.59, [0, 0, -1]);
+      slab('Door trim', 'openings', 'trim', 'corner_trim', rectZ(la, lb, doorTop - 4.5, doorTop - gap, -t11 - 0.59), 0.75, [0, 0, -1]);
+      slab('Door trim', 'openings', 'trim', 'corner_trim', rectZ(la, lb, y0 + gap, y0 + 4.5, -t11 - 0.59), 0.75, [0, 0, -1]);
+      const hingeX = la < W / 2 ? la : lb;
+      const inner = hingeX === la ? 1 : -1;
+      for (const fy of [0.15, 0.5, 0.85]) {
+        const yy = y0 + fy * spec.door_height_in;
+        beam('Strap hinge', 'openings', 'metal', 'hinge', [hingeX - inner * 3, yy, -t11 - 1.45], [hingeX + inner * 12, yy, -t11 - 1.45], [0.12, 1.5]);
+      }
+    }
+    beam('Hasp', 'openings', 'metal', 'hasp', [W / 2 - 2.5, y0 + 40, -t11 - 1.5], [W / 2 + 2.5, y0 + 40, -t11 - 1.5], [0.15, 1.75]);
+
+    const layers = [
+      { id: 'foundation', name: 'Foundation' }, { id: 'floor', name: 'Floor' }, { id: 'walls', name: 'Wall framing' },
+      { id: 'roof_framing', name: 'Roof framing' }, { id: 'sheathing', name: 'Roof sheathing' }, { id: 'roofing', name: 'Roofing' },
+      { id: 'siding', name: 'Siding' }, { id: 'trim', name: 'Trim' }, { id: 'openings', name: 'Doors and windows' },
+    ];
+    const summary = {
+      title: `${g(spec.width_ft)} x ${g(spec.depth_ft)} ft gable shed`,
+      floor_area_sqft: _r(spec.width_ft * spec.depth_ft, 1), wall_height_in: _r(H),
+      ridge_height_in: _r(yTop + rise + rd * slope + 0.75, 1),
+      roof_pitch: `${g(p)}/12 (${pitchDeg.toFixed(1)} deg)`, roof_area_sqft: _r(roofSqft, 1),
+      rafter: `${rafter} at ${rafterOc} in on center`, studs, rafters: pairs * 2, floor_joists: floorJoists,
+    };
+    warnings.push('Not a stamped plan. Check local code, snow load, and permit rules before building.');
+    return { kind: 'shed', spec, summary, materials: M, cut_list: C, tools, steps, warnings, scene: { units: 'in', up: 'y', layers, parts } };
+  }
+
+  const api = { designShed, stockLen, sheetLayout, fmtIn, SECTION };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.ShedCalc = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function () {
+'use strict';
+// ------------------------------------------------------------ helpers
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const P = {
+  home: 'M4 11.2 12 4.5l8 6.7V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z',
+  box: 'M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6zM4.3 7.7 12 12l7.7-4.3M12 12v8.6',
+  grid: 'M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z',
+  hammer: 'M13.5 4.5 19.5 10.5 17.8 12.2 15.8 10.2 7 19a1.8 1.8 0 0 1-2.6-2.6l8.8-8.8-1.4-1.4zM13.5 4.5 15 3',
+  cube: 'M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6zM12 12l8-4.4M12 12 4 7.6M12 12v8.8',
+  cart: 'M3 4h2.2l2 10.2a1.2 1.2 0 0 0 1.2 1h8.4a1.2 1.2 0 0 0 1.2-.9L20 8H6M9 20h.01M17 20h.01',
+  tag: 'M3.5 12V4.5H11l9 9-7.5 7.5zM7.6 7.6h.01',
+  spark: 'M12 3.5l1.8 5.2 5.2 1.8-5.2 1.8L12 17.5l-1.8-5.2L5 10.5l5.2-1.8zM18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z',
+  search: 'M10.8 4a6.8 6.8 0 1 0 0 13.6 6.8 6.8 0 0 0 0-13.6zM20 20l-4.2-4.2',
+  bell: 'M6.5 16v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14zM10 20.5a2 2 0 0 0 4 0',
+  cal: 'M4.5 6.5h15v13h-15zM4.5 10.5h15M8.5 3.5v4M15.5 3.5v4',
+  menu: 'M4 7h16M4 12h16M4 17h10',
+  cl: 'M14.5 6l-6 6 6 6', cr: 'M9.5 6l6 6-6 6', cd: 'M6 9.5l6 6 6-6', cu: 'M6 14.5l6-6 6 6',
+  plus: 'M12 5v14M5 12h14', x: 'M6 6l12 12M18 6 6 18', check: 'M5 12.5l4.5 4.5L19 7.5',
+  printer: 'M7 9V4h10v5M7 17H5.2a1.2 1.2 0 0 1-1.2-1.2V11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4.8a1.2 1.2 0 0 1-1.2 1.2H17M7 13.5h10V20H7z',
+  layers: 'M12 4 3 8.5l9 4.5 9-4.5zM3 12.5l9 4.5 9-4.5M3 16.5l9 4.5 9-4.5',
+  eye: 'M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12zM12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
+  eyeoff: 'M3.5 3.5l17 17M10.6 6.1c.5-.1.9-.1 1.4-.1 6 0 9.5 6 9.5 6a16 16 0 0 1-3 3.6M6.6 6.6C4 8.3 2.5 12 2.5 12s3.5 6.5 9.5 6.5c1.6 0 3-.4 4.3-1M10.2 10.2a2.6 2.6 0 0 0 3.6 3.6',
+  gear: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 2.8v2.4M12 18.8v2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M2.8 12h2.4M18.8 12h2.4M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7',
+  help: 'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17zM9.6 9.6a2.4 2.4 0 1 1 3.4 2.2c-.6.3-1 .9-1 1.6v.4M12 16.8h.01',
+  alert: 'M12 4.2 3 19.5h18zM12 10v4M12 16.8h.01',
+  cpu: 'M7 7h10v10H7zM10 3.5V7M14 3.5V7M10 17v3.5M14 17v3.5M3.5 10H7M3.5 14H7M17 10h3.5M17 14h3.5',
+  cloud: 'M7.5 18a4 4 0 0 1-.7-7.9 5.8 5.8 0 0 1 11.2 1.6 3.2 3.2 0 0 1-.5 6.3z',
+  globe: 'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17zM3.5 12h17M12 3.5c2.4 2.4 3.5 5.2 3.5 8.5s-1.1 6.1-3.5 8.5c-2.4-2.4-3.5-5.2-3.5-8.5s1.1-6.1 3.5-8.5z',
+  pin: 'M12 20.5s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10zM12 8.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4z',
+  dl: 'M12 4v11M7 10.5l5 5 5-5M5 20h14',
+  ul: 'M12 20V9M7 13.5l5-5 5 5M5 4h14',
+  play: 'M8 5.5v13l10.5-6.5z',
+  nut: 'M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4zM12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8z',
+  ruler: 'M3.5 16.5 16.5 3.5l4 4-13 13zM7.5 12.5l2 2M10.5 9.5l2 2M13.5 6.5l2 2',
+  bolt: 'M13 3 5 13.5h6L10 21l8-10.5h-6z',
+  shelf: 'M5.5 4v16M18.5 4v16M5.5 8.5h13M5.5 13.5h13M5.5 18.5h13',
+  shed: 'M3 11.5 12 4.5l9 7M5.5 10v10h13V10M10 20v-5h4v5',
+  user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 20.5a7.5 7.5 0 0 1 15 0',
+  focus: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',
+  wifi: 'M4.5 9.5a11 11 0 0 1 15 0M7.5 12.8a6.5 6.5 0 0 1 9 0M10.5 16a2.2 2.2 0 0 1 3 0M12 19h.01',
+  clock: 'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17zM12 7.5V12l3 2',
+  clip: 'M9 4h6v2.5H9zM8 5H6v15.5h12V5h-2M9 12l2 2 4-4M9 17h6',
+  zap: 'M13 3 5 13.5h6L10 21l8-10.5h-6z',
+};
+const I = (n, c = '') => `<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="${P[n] || ''}"/></svg>`;
+const LS = { get(k, d) { try { const v = localStorage.getItem('wn.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('wn.' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } } };
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+function openSheet(html, bind) { $('sheet').innerHTML = '<div class="grab"></div>' + html; $('sheet').classList.add('on'); $('scrim').classList.add('on'); if (bind) bind(); }
+function closeSheet() { $('sheet').classList.remove('on'); if (!$('app').classList.contains('drawer')) $('scrim').classList.remove('on'); }
+
+// ------------------------------------------------------------ data (sample garage, marked as examples)
+const SAMPLE_INV = [
+  { n: 'Drill/driver, 20V', c: 'Power tools', l: 'R2', t: 1 }, { n: 'Impact driver, 20V', c: 'Power tools', l: 'R2', t: 1 },
+  { n: 'Circular saw 7-1/4"', c: 'Power tools', l: 'C1-D3', t: 1 }, { n: 'Random orbit sander', c: 'Power tools', l: 'C1-D4', t: 1 },
+  { n: 'Speed square', c: 'Measuring', l: 'C1-D1', t: 1 }, { n: 'Tape measure, 25 ft', c: 'Measuring', l: 'C1-D1', t: 1 },
+  { n: 'Stud finder', c: 'Measuring', l: 'C1-D1', t: 1 }, { n: '4 ft level', c: 'Measuring', l: 'R2', t: 1 },
+  { n: 'Bar clamps 24" (x4)', c: 'Hand tools', l: 'R2', t: 1 }, { n: 'Framing hammer', c: 'Hand tools', l: 'C1-D2', t: 1 },
+  { n: 'Utility knife', c: 'Hand tools', l: 'C1-D2', t: 1 }, { n: 'Safety glasses, hearing protection, gloves', c: 'Safety', l: 'S1', t: 1 },
+  { n: '1/4"-20 x 1" hex bolts', c: 'Fasteners', l: 'A1-03', s: 'plenty' }, { n: '1/4"-20 hex nuts', c: 'Fasteners', l: 'A1-04', s: 'plenty' },
+  { n: '1/4" flat washers', c: 'Fasteners', l: 'A1-05', s: 'plenty' }, { n: 'M6 flat washers', c: 'Fasteners', l: 'A1-08', s: 'out' },
+  { n: 'Plastic drywall anchors', c: 'Fasteners', l: 'A1-10', s: 'plenty' }, { n: '#8 x 1-1/4" wood screws', c: 'Fasteners', l: 'A1-14', s: 'low' },
+  { n: '#8 x 2-1/2" wood screws', c: 'Fasteners', l: 'A1-15', s: 'plenty' }, { n: '#10 x 3" wood screws', c: 'Fasteners', l: 'A1-16', s: 'plenty' },
+  { n: '16-14 AWG butt connectors', c: 'Electrical', l: 'A1-20', s: 'plenty' }, { n: '16-14 AWG ring terminals', c: 'Electrical', l: 'A1-21', s: 'low' },
+  { n: 'Spade terminals', c: 'Electrical', l: 'A1-22', s: 'plenty' }, { n: 'Wood glue', c: 'Supplies', l: 'S1', s: 'plenty' },
+  { n: 'Exterior caulk', c: 'Supplies', l: 'S1', s: 'low' }, { n: '120-grit sanding discs', c: 'Supplies', l: 'B4', s: 'low' },
+];
+let INV = SAMPLE_INV.map(x => ({ ...x }));
+const LOCS = [...Array(24)].map((_, i) => 'A1-' + String(i + 1).padStart(2, '0')).concat(['C1-D1', 'C1-D2', 'C1-D3', 'C1-D4', 'R2', 'S1', 'B4']);
+const ln = (l) => l.startsWith('A1-') ? 'Cabinet A1, drawer ' + l.slice(3) : l.startsWith('C1-') ? 'Tool chest, drawer ' + l.slice(4) : ({ R2: 'Wall rack', S1: 'Shelf', B4: 'Bin B4' })[l] || l;
+const STOCK = { plenty: ['Plenty', 'var(--good)'], low: ['Low', 'var(--warn)'], out: ['Out', 'var(--bad)'], avail: ['Ready', 'var(--good)'], insuf: ['Short', 'var(--warn)'], miss: ['Missing', 'var(--bad)'], unv: ['Check', 'var(--ink-3)'], owned: ['Owned', 'var(--ink-3)'] };
+const st = (k) => `<span class="st"><i style="background:${STOCK[k][1]}"></i>${STOCK[k][0]}</span>`;
+const SHELF_REQ = [
+  { n: 'Circular saw 7-1/4"', l: 'C1-D3', s: 'avail' }, { n: 'Drill/driver, 20V', l: 'R2', s: 'avail' }, { n: 'Speed square', l: 'C1-D1', s: 'avail' },
+  { n: 'Bar clamps 24" (x4)', l: 'R2', s: 'avail' }, { n: 'Wood glue', l: 'S1', s: 'avail' }, { n: '#8 x 1-1/4" wood screws', l: 'A1-14', s: 'insuf', note: 'Need about 40, drawer is low' },
+  { n: '1x10 pine board, 8 ft (x3)', l: '', s: 'miss' }, { n: 'Pocket-hole jig', l: '', s: 'miss', alt: 'Use the #8 x 2-1/2" screws you own instead', altL: 'A1-15' },
+  { n: '120-grit sanding discs', l: 'B4', s: 'unv' },
+];
+const SHELF_STEPS = [
+  { title: 'Measure and mark', detail: 'Mark three 34 1/2 in shelves and two 48 in sides on the pine boards.', safety: 'Check for knots where you plan to cut.', layers: ['carcass'], tools: [['Tape measure', 'C1-D1'], ['Speed square', 'C1-D1']] },
+  { title: 'Cut boards', detail: 'Cut along your marks, guiding the saw against the speed square.', safety: 'Wear eye and hearing protection. Support both sides of the cut.', layers: ['carcass'], tools: [['Circular saw', 'C1-D3']] },
+  { title: 'Assemble frame', detail: 'Glue and clamp the top and bottom shelves to the sides, then drive screws through the sides.', safety: 'Drill pilot holes 3/4 in from board ends to avoid splitting.', layers: ['carcass', 'shelves'], tools: [['Bar clamps', 'R2'], ['Wood glue', 'S1'], ['Drill/driver', 'R2'], ['#8 x 2-1/2" screws', 'A1-15']] },
+  { title: 'Attach back cleats', detail: 'Screw two 1x4 cleats across the back for racking strength and wall mounting.', safety: "Anchor the shelf to studs so it can't tip.", layers: ['cleats'], tools: [['Drill/driver', 'R2'], ['#8 x 1-1/4" screws', 'A1-14'], ['Stud finder', 'C1-D1']] },
+  { title: 'Sand and finish', detail: 'Sand all faces and edges smooth.', safety: 'Wear a dust mask.', layers: ['carcass', 'shelves', 'cleats'], tools: [['Random orbit sander', 'C1-D4'], ['120-grit discs', 'B4']] },
+];
+let SHOP = [{ n: 'M6 flat washers', why: 'Restock', l: 'A1-08', d: false }, { n: '16-14 AWG ring terminals', why: 'Restock', l: 'A1-21', d: false }, { n: '120-grit sanding discs', why: 'Restock', l: 'B4', d: false }, { n: 'Exterior caulk', why: 'Restock', l: 'S1', d: false }];
+
+const S = {
+  area: LS.get('area', 'workshop'), chkStat: 'all',
+  mode: 'loading', sample: true, loaded: false, readOnly: false, alerts: [], chkFam: 'All', chkQ: '', chkDraft: false, devOverride: LS.get('dev', 'auto'), railManual: false, device: null,
+  screen: LS.get('screen', 'home'), rail: LS.get('rail', false), projOpen: true,
+  proj: 'shed', pmode: 'ready', q: '', cat: 'All', sel: 'A1-14', labels: {}, queue: [],
+  steps: { shelf: 2, shed: 0 }, done: { shelf: [true, true, false, false, false], shed: [] },
+  shelfReq: SHELF_REQ.map(r => ({ ...r })),
+  ai: { primary: 'qwen', fallback: true, internet: false, url: 'http://192.168.1.20:8787', model: 'Qwen/Qwen3.8-27B', claude: 'claude-sonnet-5-5', prompt: 'Build an 8 x 10 shed with a double door and one window', plan: null, err: '' },
+  shed: { width_ft: 8, depth_ft: 10, wall_height_ft: 8, roof_pitch: 6, overhang_in: 6, door_width_in: 48, door_height_in: 80, windows: 1 },
+  v: { project: 'shed', mode: 'material', explode: 0, build: 99, off: {}, sel: null, bom: null, tab: 'materials', siding: 'Barn red', trim: 'Warm white', roof: 'Charcoal', err: '' },
+};
+let SHED = ShedCalc.designShed(S.shed);
+S.done.shed = SHED.steps.map(() => false);
+
+// ------------------------------------------------------------ derived
+const low = () => INV.filter(x => x.s === 'low' || x.s === 'out');
+function match(name) {
+  const tok = (s) => new Set(s.toLowerCase().split(/[^a-z0-9#/.-]+/).filter(w => w.length > 1));
+  const want = tok(name); let best = null, score = 0;
+  for (const it of INV) { const have = tok(it.n); let hit = 0; want.forEach(w => { if (have.has(w)) hit++; }); const sc = hit / Math.max(1, want.size); if (sc > score) { score = sc; best = it; } }
+  return score >= 0.6 ? best : null;
+}
+function shedReq() {
+  return SHED.tools.filter(t => t.required).map(t => { const m = match(t.name); return { n: t.name, l: m ? m.l : '', s: m ? 'avail' : 'miss', note: t.why }; });
+}
+const req = (p) => p === 'shelf' ? S.shelfReq : shedReq();
+const steps = (p) => p === 'shelf' ? SHELF_STEPS : SHED.steps;
+const PROJ = { shelf: { title: 'Garage storage shelf', sub: '36 x 48 in, 3 shelves, pine', icon: 'shelf' }, shed: { title: 'Backyard shed', sub: '', icon: 'shed' } };
+const shedSub = () => `${SHED.summary.title.replace(' gable shed', '')}, ${SHED.summary.roof_pitch.split(' ')[0]} gable roof`;
+
+// ------------------------------------------------------------ navigation
+const SCREENS = [
+  ['home', 'Home', 'home'], ['inv', 'Inventory', 'box'], ['stor', 'Storage', 'grid'], ['proj', 'Projects', 'hammer'],
+  ['viewer', '3D viewer', 'cube'], ['shop', 'Shopping', 'cart'], ['chk', 'Checklist', 'clip'], ['lab', 'Labels', 'tag'],
+];
+const OTHER = [['ai', 'AI Hub', 'spark'], ['settings', 'Settings', 'gear'], ['help', 'Help', 'help']];
+const TITLES = { bhome: 'Purchasing', alerts: 'Reorder alerts', chk: 'Purchase checklist', home: 'Workshop', inv: 'Inventory', stor: 'Storage', proj: 'Projects', viewer: '3D viewer', shop: 'Shopping list', lab: 'Labels', ai: 'AI Hub', settings: 'Settings', help: 'Help' };
+
+const AREAS = {
+  workshop: {
+    name: 'Workshop', logo: 'nut', home: 'home',
+    nav: [['home', 'Home', 'home'], ['inv', 'Inventory', 'box'], ['stor', 'Storage', 'grid'], ['proj', 'Projects', 'hammer'], ['viewer', '3D viewer', 'cube'], ['lab', 'Labels', 'tag']],
+    other: [['ai', 'AI Hub', 'spark'], ['settings', 'Settings', 'gear']],
+    pills: [['home', 'Overview'], ['inv', 'Inventory'], ['stor', 'Storage'], ['proj', 'Projects'], ['viewer', '3D'], ['lab', 'Labels']],
+  },
+  buy: {
+    name: 'Purchasing', logo: 'cart', home: 'bhome',
+    nav: [['bhome', 'Overview', 'home'], ['chk', 'Checklist', 'clip'], ['shop', 'Shopping list', 'cart'], ['alerts', 'Reorder alerts', 'bell']],
+    other: [['settings', 'Settings', 'gear']],
+    pills: [['bhome', 'Overview'], ['chk', 'Checklist'], ['shop', 'Shopping'], ['alerts', 'Alerts']],
+  },
+};
+const AREA_OF = { bhome: 'buy', chk: 'buy', shop: 'buy', alerts: 'buy' };
+function areaFor(id) { return AREA_OF[id] || (['settings', 'help'].includes(id) ? S.area : 'workshop'); }
+function renderChrome() {
+  const app = $('app'), A = AREAS[S.area];
+  document.documentElement.dataset.area = S.area;
+  app.classList.toggle('rail', S.rail);
+  $('collapse').innerHTML = I(S.rail ? 'cr' : 'cl', 'sm');
+  $('collapse').setAttribute('aria-expanded', String(!S.rail));
+  $('collapse').setAttribute('aria-label', S.rail ? 'Expand sidebar' : 'Collapse sidebar');
+  document.querySelector('.brand .logo').innerHTML = I(A.logo);
+  document.querySelector('.brand b').textContent = A.name;
+  $('area-switch').innerHTML = Object.entries(AREAS).map(([k, a]) => `<button class="${S.area === k ? 'on' : ''}" data-area="${k}" role="tab" aria-selected="${S.area === k}" title="${a.name}">${I(a.logo, 'sm')}<span>${a.name}</span></button>`).join('');
+  $('side-search').innerHTML = I('search', 'sm') + `<span>${S.area === 'buy' ? 'Search checklist…' : 'Search…'}</span><kbd>⌘</kbd><kbd>F</kbd>`;
+  const lowN = low().length, shopN = SHOP.filter(s => !s.d).length, needN = CHK.filter(c => c.status === 'need').length;
+  const badge = {
+    inv: lowN ? `<span class="badge peach">${lowN}</span>` : '', lab: S.queue.length ? `<span class="badge mint">${S.queue.length}</span>` : '',
+    chk: needN ? `<span class="badge mint">${needN}</span>` : '', shop: shopN ? `<span class="badge peach">${shopN}</span>` : '', alerts: S.alerts.length ? `<span class="badge peach">${S.alerts.length}</span>` : '',
+  };
+  let h = '';
+  for (const [id, label, ic] of A.nav) {
+    const on = S.screen === id;
+    if (id === 'proj') {
+      h += `<button class="nav ${on ? 'on' : ''}" data-go="proj" title="${label}">${I(ic)}<span class="lbl">${label}</span><span class="chev" data-toggle-proj>${I(S.projOpen ? 'cu' : 'cd', 'sm')}</span></button>`;
+      if (S.projOpen) h += `<div class="tree">${['shelf', 'shed'].map(p => `<button class="sub ${on && S.proj === p ? 'on' : ''}" data-proj="${p}"><span class="lbl">${PROJ[p].title}</span>${on && S.proj === p ? I('cr', 'sm') : ''}</button>`).join('')}</div>`;
+      continue;
+    }
+    h += `<button class="nav ${on ? 'on glow' : ''}" data-go="${id}" title="${label}">${I(ic)}<span class="lbl">${label}</span>${badge[id] || ''}${badge[id] ? '<i class="rail-dot"></i>' : ''}</button>`;
+  }
+  h += '<div class="divider"></div><div class="group">Other</div>';
+  h += `<a class="nav navlink" href="index.html" title="Purchase Checklist">${I('clip')}<span class="lbl">Purchase Checklist</span>${I('cr', 'sm')}</a>`;
+  for (const [id, label, ic] of A.other) h += `<button class="nav ${S.screen === id ? 'on glow' : ''}" data-go="${id}" title="${label}">${I(ic)}<span class="lbl">${label}</span></button>`;
+  $('nav').innerHTML = h;
+  $('ai-card').innerHTML = S.area === 'buy'
+    ? `<h4>${I('cart', 'sm')}<span>Restock run</span></h4><p>${shopN} on your shopping list, ${S.alerts.length} reorder alert${S.alerts.length === 1 ? '' : 's'}.</p><button class="btn-glow" data-go="shop">${I('cart', 'sm')}<span class="bl">Open shopping list</span></button>`
+    : `<h4>${I('spark', 'sm')}<span>Workshop AI</span></h4><p>Qwen 3.8 plans any build from your dimensions and checks it against your inventory.</p><button class="btn-glow" data-go="ai">${I('spark', 'sm')}<span class="bl">Plan a project</span></button>`;
+  const ws = WN.status, signed = !!WN.user, online = navigator.onLine !== false, lst = signed && online ? 'ok' : 'off';
+  const lbl = !signed ? 'Sign in on the Checklist page' : online ? 'Live' : 'Offline';
+  $('me').innerHTML = `<span class="ava">MG</span><span class="who"><b>Main garage</b><span><i class="livedot ${lst}"></i>${lbl}</span></span><span class="ud">${I('cu', 'xs')}${I('cd', 'xs')}</span>`;
+  $('me').title = ws.msg || '';
+  const hd = $('wnDot'), ht = $('wnSyncText'), hc = $('wnSync');
+  if (hd) { hd.className = 'wn-dot' + (lst === 'off' ? '' : ' ' + lst); ht.textContent = !signed ? 'Sign in' : online ? 'Live' : 'Offline'; hc.classList.remove('dotonly'); hc.title = !signed ? 'Sign in on the Checklist page' : online ? 'Live: changes sync to all your devices instantly' : 'Offline: changes are saved here and sync when you reconnect'; hc.setAttribute('href', signed ? '#' : 'index.html'); }
+  const brand = (WN.doc && WN.doc.settings && WN.doc.settings.brand) || '#173a5c'; document.documentElement.style.setProperty('--wn-brand', brand);
+  // phone header, pills, tab bar
+  const preview = S.mode === 'offline' ? '<span class="state-pill">Preview</span>' : '';
+  $('ptop').innerHTML = `<button class="ibtn" id="open-drawer" aria-label="Open menu">${I('menu')}</button><button class="ws" id="area-menu" aria-label="Switch area"><span class="logo">${I(A.logo)}</span>${A.name} ${I('cd', 'xs')}</button>${preview}<i class="livedot ${WN.user && navigator.onLine !== false ? 'ok' : 'off'}" title="${WN.user ? (navigator.onLine !== false ? 'Live' : 'Offline') : 'Sign in on the Checklist page'}"></i><a class="ibtn" href="index.html" aria-label="Purchase Checklist">${I('clip')}</a><button class="ibtn" aria-label="Reorder alerts" data-go="alerts">${I('bell')}</button>`;
+  $('ptabs').innerHTML = A.pills.map(([id, l]) => `<button class="pill ${S.screen === id ? 'on' : ''}" role="tab" aria-selected="${S.screen === id}" data-go="${id}">${l}</button>`).join('');
+  const third = S.area === 'buy' ? ['shop', 'Shopping', 'cart'] : ['ai', 'AI Hub', 'spark'];
+  $('tabbar').innerHTML = `<button class="tab" id="tab-create"><span class="ic"><span class="plus">${I('plus', 'sm')}</span></span>${S.area === 'buy' ? 'Add' : 'Create'}</button><button class="tab ${S.screen === A.home ? 'on' : ''}" data-go="${A.home}"><span class="ic">${I('home')}</span>Home</button><button class="tab ${S.screen === third[0] ? 'on' : ''}" data-go="${third[0]}"><span class="ic">${I(third[2])}</span>${third[1]}</button>`;
+  const heads = {
+    home: `<button class="chip accent" id="h-create">${I('plus', 'sm')}Create</button>`,
+    bhome: `<button class="chip" id="chk-import">${I('ul', 'sm')}Paste your list</button><button class="chip accent" data-go="chk">${I('clip', 'sm')}Open checklist</button>`,
+    chk: `<button class="chip" id="chk-import">${I('ul', 'sm')}Paste your list</button><button class="chip" id="chk-to-shop">${I('cart', 'sm')}Need items to shopping</button>`,
+    shop: SHOP.some(s => s.d) ? `<button class="chip" id="clear-bought">${I('check', 'sm')}Clear purchased</button>` : '',
+    inv: `<button class="chip" data-act="import-inv">${I('ul', 'sm')}Import spreadsheet</button><button class="chip accent" id="h-add">${I('plus', 'sm')}Add items</button>`,
+    stor: `<button class="chip" id="h-queue">${I('printer', 'sm')}Queue all labels</button>`,
+    proj: `<button class="chip accent" data-go="ai">${I('spark', 'sm')}Plan a project</button>`,
+    viewer: `<button class="chip" id="h-import">${I('ul', 'sm')}Import scene</button><input type="file" id="scene-file" accept=".json,application/json" hidden>`,
+  };
+  $('phead').innerHTML = `<h1>${TITLES[S.screen]}</h1>${S.mode === 'offline' ? '<span class="state-pill">Preview · changes not saved</span>' : ''}${heads[S.screen] || ''}`;
+}
+
+function go(id) {
+  const a = areaFor(id);
+  if (a !== S.area) { S.area = a; LS.set('area', a); }
+  S.screen = id; LS.set('screen', id);
+  $('app').classList.remove('drawer'); $('scrim').classList.remove('on');
+  render();
+  window.scrollTo({ top: 0 });
+}
+function openAreaMenu() {
+  openSheet(`<div class="mid" style="margin-bottom:12px">Switch area</div><div style="display:flex;flex-direction:column;gap:8px">${Object.entries(AREAS).map(([k, a]) => `<button class="opt-row ${S.area === k ? 'on' : ''}" data-switch="${k}" style="--c:var(--accent)">${I(a.logo)}<span class="t" style="flex:1"><b>${a.name}</b><span class="dim" style="display:block;font-size:13px">${k === 'buy' ? 'Purchase checklist, shopping list, reorder alerts' : 'Inventory, storage, projects, 3D, labels'}</span></span>${S.area === k ? I('check', 'sm') : ''}</button>`).join('')}</div>`, () => {
+    $('sheet').querySelectorAll('[data-switch]').forEach(b => b.onclick = () => { closeSheet(); go(AREAS[b.dataset.switch].home); });
+  });
+}
+
+// ------------------------------------------------------------ screens
+function gaugeSVG(frac, label, sub) {
+  const r = 70, cx = 90, cy = 88, a0 = Math.PI * 0.8, a1 = Math.PI * 2.2, L = r * (a1 - a0);
+  const pt = (a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const [x0, y0] = pt(a0), [x1, y1] = pt(a1);
+  const d = `M${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 1 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+  const ak = a0 + (a1 - a0) * frac, [kx, ky] = pt(ak);
+  return `<svg class="gauge" viewBox="0 0 180 150" role="img" aria-label="${esc(label)} ${esc(sub)}"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" style="stop-color:var(--g1)"/><stop offset="1" style="stop-color:var(--g2)"/></linearGradient></defs>
+  <path d="${d}" fill="none" stroke="#e1e9f1" stroke-width="12" stroke-linecap="round"/>
+  <path d="${d}" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(L * frac).toFixed(1)} 999"/>
+  <rect x="${(kx - 2.5).toFixed(1)}" y="${(ky - 9).toFixed(1)}" width="5" height="18" rx="2.5" fill="#14375c" transform="rotate(${(ak * 180 / Math.PI + 90).toFixed(1)} ${kx.toFixed(1)} ${ky.toFixed(1)})"/>
+  <text x="90" y="92" text-anchor="middle" fill="#14375c" font-size="34" font-weight="700" font-family="Inter, system-ui">${esc(label)}</text>
+  <text x="90" y="114" text-anchor="middle" fill="#708196" font-size="13" font-family="Inter, system-ui">${esc(sub)}</text></svg>`;
+}
+
+function home() {
+  const rq = req('shed'), ready = rq.filter(r => r.s === 'avail').length;
+  const sd = S.done.shelf, nd = sd.filter(Boolean).length, cur = SHELF_STEPS[Math.min(S.steps.shelf, 4)];
+  const lw = low(), used = new Set(INV.filter(x => x.l.startsWith('A1')).map(x => x.l));
+  const mg = LOCS.slice(0, 24).map(l => { const its = INV.filter(x => x.l === l); const c = its.some(x => x.s === 'out') ? 'x' : its.some(x => x.s === 'low') ? 'w' : ''; return `<i class="${used.has(l) ? 'u' : ''} ${c}"></i>`; }).join('');
+  const isEl = x => /electric/i.test(x.c), isSup = x => /suppl|plumbing|spring|misc/i.test(x.c), isFast = x => !x.t && !isEl(x) && !isSup(x), lowOf = f => INV.filter(x => f(x) && (x.s === 'low' || x.s === 'out')).length;
+  const tools = INV.filter(x => x.t).length, fast = INV.filter(isFast).length, elec = INV.filter(x => !x.t && isEl(x)).length, sup = INV.filter(x => !x.t && isSup(x)).length;
+  return `${alertsCard()}<div class="grid">
+    <button class="card btn" data-go="stor"><div class="k">${I('pin', 'sm')}Restock</div><div class="big">${lw.length} items</div>${'<div class="minigrid" aria-hidden="true">' + mg + '</div>'}<div class="foot">Most are in <b>Cabinet A1</b></div></button>
+    <button class="card btn" data-proj-open="shed"><div class="k">${I('shed', 'sm')}Shed readiness</div>${gaugeSVG(ready / rq.length, `${ready}/${rq.length}`, 'tools ready')}<div class="foot" style="display:flex;justify-content:space-between;margin-top:0"><span>Owned</span><span>To buy</span></div></button>
+    <button class="card btn" data-proj-open="shelf"><div class="k">${I('shelf', 'sm')}Shelf build</div><div class="big">Step ${nd + 1}</div><div class="track"><div class="fill" style="width:${nd / 5 * 100}%"></div><div class="knob" style="left:${nd / 5 * 100}%"></div></div><div class="foot">Next up<br><b>${esc(cur.title)}</b></div></button>
+    <button class="card btn" data-go="viewer"><div class="k">${I('cube', 'sm')}3D model</div><div class="big">${SHED.scene.parts.length} parts</div>
+      <svg viewBox="0 0 200 70" style="width:100%;margin-top:6px" aria-hidden="true"><path d="M0 52 C40 52 60 50 80 46 S110 16 125 16 150 44 200 50" fill="none" stroke="#b7c6d5" stroke-width="2"/><path d="M98 30 C108 16 114 14 125 14 S142 18 150 30" fill="none" stroke="#1565a5" stroke-width="4" stroke-linecap="round"/><circle cx="98" cy="30" r="4" fill="#fff" stroke="#1565a5" stroke-width="2"/><circle cx="150" cy="30" r="4" fill="#fff" stroke="#1565a5" stroke-width="2"/></svg>
+      <div class="foot" style="margin-top:0">${esc(SHED.summary.title)}</div></button>
+  </div>
+  <div class="h2">Inventory</div>
+  <div class="hscroll">
+    ${[['bolt', 'Tools', tools, 0, 'in the registry'], ['nut', 'Fasteners', fast, lowOf(isFast)], ['zap', 'Electrical', elec, lowOf(isEl)], ['box', 'Supplies', sup, lowOf(isSup)], ['grid', 'Drawers used', used.size + '/24', 0, `${24 - used.size} free`]].map(([ic, k, v, n, note]) => `<button class="card btn" data-go="inv"><div class="k">${I(ic, 'sm')}${k}</div><div class="big" style="font-size:30px">${v}</div><div class="delta ${n ? 'bad' : ''}">${n ? '▼ ' + n + ' low or out' : note || 'All stocked'}</div></button>`).join('')}
+  </div>
+  <div class="card" style="display:flex;align-items:center;gap:16px"><div style="flex:1;min-width:0"><div class="k">${I('printer', 'sm')}Drawer labels</div><div class="foot" style="font-size:15px;color:var(--ink)">Queue a label for every drawer and print them on your Zebra ZD421.</div></div><button class="round solid" id="home-queue" aria-label="Queue all labels">${I('printer', 'sm')}</button></div>`;
+}
+
+function inv() {
+  const cats = ['All', 'Power tools', 'Hand tools', 'Measuring', 'Fasteners', 'Electrical', 'Supplies'];
+  return `<div style="display:flex;gap:10px"><input class="f" id="q" placeholder="Search by name, size, or drawer" value="${esc(S.q)}"><button class="b pri phone-only" id="add-item" aria-label="Add items">${I('plus', 'sm')}</button></div>
+  <div class="pills">${cats.map(c => `<button class="pill ${S.cat === c ? 'on' : ''}" data-cat="${esc(c)}">${c}</button>`).join('')}</div>
+  <div class="list" id="res">${invRows()}</div>
+  <div class="dim" style="font-size:13px;padding:0 6px">Sample inventory. Tap a stock level to change it.</div>`;
+}
+function invRows() {
+  const q = S.q.toLowerCase();
+  const r = INV.map((x, i) => [x, i]).filter(([x]) => (S.cat === 'All' || x.c === S.cat) && (x.n + ' ' + x.c + ' ' + x.l).toLowerCase().includes(q));
+  if (!r.length) return '<div class="row"><div class="t"><b>No matches</b><span>Try a size like 1/4 or a drawer like A1-14.</span></div></div>';
+  return r.map(([x, i]) => `<div class="row">${x.t ? '' : WNParts.thumb({ name: x.n, category: x.c })}<div class="t"><b>${esc(x.n)}</b><span>${x.c}</span></div>${x.l ? `<button class="loc" data-locate="${x.l}">${I('pin', 'xs')}${x.l}</button>` : '<span class="loc">No drawer yet</span>'}${x.t ? st('owned') : `<button class="st" data-cyc="${i}" aria-label="Change stock level">${st(x.s).replace(/^<span class="st">|<\/span>$/g, '')}</button>`}</div>`).join('');
+}
+
+function stor() {
+  const its = INV.filter(x => x.l === S.sel);
+  const cells = LOCS.slice(0, 24).map(l => { const it = INV.filter(x => x.l === l); const w = it.some(x => x.s === 'out') ? 'var(--bad)' : it.some(x => x.s === 'low') ? 'var(--warn)' : ''; return `<button class="drw ${it.length ? 'has' : ''} ${S.sel === l ? 'sel' : ''}" data-sel="${l}" aria-label="Drawer ${l}"><span>${l.slice(3)}</span>${w ? `<i class="d" style="background:${w}"></i>` : ''}<small>${it[0] ? esc(it[0].n) : 'Empty'}</small></button>`; }).join('');
+  const other = ['C1-D1', 'C1-D2', 'C1-D3', 'C1-D4', 'R2', 'S1', 'B4'].map(l => { const it = INV.filter(x => x.l === l); return `<button class="row btn" data-sel="${l}"><span class="loc">${l}</span><span class="t"><b>${ln(l)}</b><span>${it.map(x => esc(x.n)).join(', ') || 'Empty'}</span></span>${S.sel === l ? I('check', 'sm') : ''}</button>`; }).join('');
+  return `<div class="grid stor-grid">
+    <div class="card" style="grid-column:auto"><div class="k" style="margin-bottom:12px">${I('grid', 'sm')}Akro-Mils cabinet A1 · 24 drawers</div><div class="akro">${cells}</div></div>
+    <div class="card"><div class="k">${I('pin', 'sm')}Selected</div><div class="mid" style="margin-top:8px">${ln(S.sel)}</div><div class="dim" style="font-size:13px">${its.length} item${its.length === 1 ? '' : 's'}</div>
+      <div style="margin:10px -12px">${its.map(x => `<div class="row"><div class="t"><b>${esc(x.n)}</b></div>${x.t ? st('owned') : st(x.s)}</div>`).join('') || '<div class="row"><div class="t"><span>Empty. Add what goes here.</span></div></div>'}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="b pri" id="print-one">${I('printer', 'sm')}${S.labels[S.sel] ? 'Reprint label' : 'Print label'}</button><button class="b" id="queue-one">${S.queue.includes(S.sel) ? 'In queue' : 'Add to queue'}</button></div></div>
+  </div>
+  <div class="h2">Tool chest, rack, shelf, and bins</div><div class="list">${other}</div>`;
+}
+
+function proj() {
+  if (S.pmode === 'guide') return guide();
+  const p = S.proj, rq = req(p), ready = rq.filter(r => r.s === 'avail').length, sp = steps(p), nd = (S.done[p] || []).filter(Boolean).length;
+  const need = rq.filter(r => r.s === 'miss' || r.s === 'insuf');
+  const onList = need.every(r => SHOP.some(s => s.n === r.n));
+  const list = ['shelf', 'shed'].map(id => `<button class="pill ${p === id ? 'on' : ''}" data-proj="${id}">${PROJ[id].title}</button>`).join('');
+  return `<div class="pills">${list}</div>
+  <div class="grid">
+    <div class="card span2"><div class="k">${I(PROJ[p].icon, 'sm')}${p === 'shed' ? esc(shedSub()) : PROJ[p].sub}</div><div class="big">${PROJ[p].title}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="b pri" id="start-build">${I('play', 'sm')}${nd ? 'Continue build' : 'Start build'}</button><button class="b" data-open3d="${p}">${I('cube', 'sm')}Open in 3D</button></div></div>
+    <div class="card">${gaugeSVG(ready / rq.length, `${ready}/${rq.length}`, p === 'shed' ? 'tools ready' : 'parts ready')}</div>
+    <div class="card"><div class="k">${I('layers', 'sm')}Build</div><div class="big">${nd}/${sp.length}</div><div class="track"><div class="fill" style="width:${nd / sp.length * 100}%"></div><div class="knob" style="left:${nd / sp.length * 100}%"></div></div><div class="foot">steps done</div></div>
+  </div>
+  <div class="h2">${p === 'shed' ? 'Tools for this build' : 'Parts check'}</div>
+  <div class="list">${rq.map((r, i) => `<div class="row"><div class="t"><b>${esc(r.n)}</b>${r.note ? `<span>${esc(r.note)}</span>` : ''}${r.alt && r.s === 'miss' ? `<button class="b ghost" data-alt="${i}" style="height:30px">${esc(r.alt)}</button>` : ''}${r.s === 'unv' ? `<span style="display:flex;gap:6px;margin-top:4px"><button class="b ghost" data-ver="${i}:1" style="height:30px">Found it</button><button class="b ghost" data-ver="${i}:0" style="height:30px">Don't have</button></span>` : ''}</div>${r.l ? `<button class="loc" data-locate="${r.l}">${I('pin', 'xs')}${r.l}</button>` : ''}${st(r.s)}</div>`).join('')}</div>
+  ${need.length ? `<div><button class="b" id="add-missing">${onList ? I('check', 'sm') + 'On your shopping list' : I('cart', 'sm') + 'Add missing to shopping list'}</button></div>` : ''}
+  ${p === 'shed' ? `<div class="h2">Materials · ${SHED.materials.length} lines from the calculator</div><div class="list">${SHED.materials.slice(0, 8).map(m => `<div class="row"><div class="t"><b>${esc(m.item)}</b><span>${esc(m.group)}${m.estimate ? ' · estimate' : ''}</span></div><b>${m.qty} ${m.unit}</b></div>`).join('')}<button class="row btn" data-open3d="shed"><span class="t"><b style="color:var(--accent-2)">See all ${SHED.materials.length} in the 3D viewer</b></span>${I('cr', 'sm')}</button></div>` : ''}`;
+}
+
+function guide() {
+  const p = S.proj, sp = steps(p), done = S.done[p];
+  if (done.every(Boolean)) return `<div class="card" style="text-align:center;padding:40px 18px"><div style="color:var(--good)">${I('check')}</div><div class="big">Project complete</div><div class="foot">Materials you used were deducted from inventory.</div><div style="display:flex;gap:8px;justify-content:center;margin-top:16px"><button class="b" data-go="home">Home</button><button class="b" id="reset-build">Build again</button></div></div>`;
+  const i = S.steps[p], s = sp[i];
+  const TOOLS_BY_LAYER = { foundation: ['Shovel, rake and hand tamper', '4 ft level', 'Tape measure, 25 ft'], floor: ['Circular saw', 'Drill/driver', 'Framing square', 'Tape measure, 25 ft'], walls: ['Circular saw', 'Framing hammer', '4 ft level', 'Speed square'], roof_framing: ['Speed square', 'Circular saw', 'Step ladder, 6 ft', 'Framing hammer'], sheathing: ['Circular saw', 'Framing hammer', 'Chalk line'], roofing: ['Utility knife', 'Tin snips', 'Chalk line', 'Step ladder, 6 ft'], siding: ['Circular saw', 'Framing hammer', '4 ft level'], openings: ['Drill/driver', 'Circular saw'], trim: ['Circular saw', 'Framing hammer'] };
+  const tools = s.tools || (TOOLS_BY_LAYER[(s.layers || [])[0]] || []).map(n => { const m = match(n); return [n, m ? m.l : '']; });
+  return `<div><button class="b ghost" id="back-ready">${I('cl', 'sm')}${PROJ[p].title}</button></div>
+  <div class="card"><div class="prog">${sp.map((_, k) => `<button class="${done[k] ? 'done' : ''} ${k === i ? 'cur' : ''}" data-step="${k}" aria-label="Step ${k + 1}"><span></span></button>`).join('')}</div>
+    <div class="dim" style="font-size:13px;margin-top:14px">Step ${i + 1} of ${sp.length}${done[i] ? ' · done' : ''}</div>
+    <div class="big" style="margin-top:2px">${esc(s.title)}</div>
+    <p style="font-size:17px;color:var(--ink-2);max-width:62ch;margin:10px 0 16px">${esc(s.detail)}</p>
+    ${tools.length ? `<div class="k" style="margin-bottom:6px">You'll need</div><div class="list" style="background:var(--card-2);margin-bottom:14px">${tools.map(([n, l]) => `<div class="row"><div class="t"><b>${esc(n)}</b></div>${l ? `<button class="loc" data-locate="${l}">${I('pin', 'xs')}${l}</button>` : st('miss')}</div>`).join('')}</div>` : ''}
+    ${s.safety ? `<div class="safety">${I('alert', 'sm')}<span>${esc(s.safety)}</span></div>` : ''}
+    <div style="display:flex;gap:10px;margin-top:18px"><button class="b" id="prev-step">Back</button><button class="b" data-open3d="${p}" data-build="${i}">${I('cube', 'sm')}<span class="desk-only">See it in 3D</span></button><button class="b pri" id="next-step" style="flex:1">${i === sp.length - 1 ? 'Finish project' : 'Done, next step'}</button></div>
+  </div>`;
+}
+
+function shop() {
+  const gs = [...new Set(SHOP.map(s => s.why))];
+  return `${gs.map(g => `<div class="h2">${esc(g)}</div><div class="list">${SHOP.map((s, i) => s.why !== g ? '' : `<label class="row" style="cursor:pointer"><input type="checkbox" data-buy="${i}" ${s.d ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--accent)"><span class="t"><b style="${s.d ? 'color:var(--ink-3);text-decoration:line-through' : ''}">${esc(s.n)}</b><span>${s.d ? 'Restocked' + (s.l ? ' in ' + s.l : '') : s.l ? 'Goes in ' + s.l : 'Needs a home'}</span></span></label>`).join('')}</div>`).join('') || '<div class="card"><div class="mid">Nothing to buy</div><div class="foot">Missing project parts and low stock show up here.</div></div>'}
+  ${SHOP.some(s => s.d) ? '<div><button class="b ghost" id="clear-bought">Clear purchased</button></div>' : ''}
+  <div class="dim" style="font-size:13px;padding:0 6px">Synced to your iPhone. Checking an item restocks it.</div>`;
+}
+
+function lab() {
+  return `<div class="grid">
+    <div class="card span2" style="display:flex;gap:16px;align-items:center"><span class="round">${I('printer', 'sm')}</span><div style="flex:1;min-width:0"><div class="mid">Zebra ZD421</div><div class="muted" style="font-size:14px">203 dpi · Bluetooth LE · ready</div></div><span class="st"><i style="background:var(--good)"></i>Ready</span></div>
+    <div class="card"><div class="k">${I('tag', 'sm')}Queued</div><div class="big">${S.queue.length}</div></div>
+    <div class="card"><div class="k">${I('check', 'sm')}Printed</div><div class="big">${Object.keys(S.labels).length}</div></div>
+  </div>
+  <div class="h2">Queue</div>
+  <div class="list">${S.queue.map(l => `<div class="row"><span class="loc">${l}</span><div class="t"><b>${ln(l)}</b><span>${esc((INV.find(x => x.l === l) || {}).n || 'Empty')}</span></div><button class="ibtn" data-unq="${l}" aria-label="Remove ${l}">${I('x', 'sm')}</button></div>`).join('') || '<div class="row"><div class="t"><b>No labels queued</b><span>Open a drawer in Storage and tap Print label, or queue a whole cabinet.</span></div></div>'}</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="b" id="queue-all">${I('grid', 'sm')}Queue cabinet A1</button>${S.queue.length ? `<button class="b pri" id="print-queue">${I('printer', 'sm')}Print ${S.queue.length} label${S.queue.length > 1 ? 's' : ''}</button>` : ''}</div>`;
+}
+
+function aiHub() {
+  const a = S.ai;
+  const tog = (key, on) => `<button class="seg" data-tog="${key}" role="switch" aria-checked="${on}" style="padding:3px"><span style="display:block;width:44px;height:26px;border-radius:13px;background:${on ? 'var(--accent)' : 'var(--card-3)'};position:relative;transition:.2s"><i style="position:absolute;top:3px;left:${on ? 21 : 3}px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s"></i></span></button>`;
+  const plan = a.plan;
+  return `<div class="grid">
+    <div class="card span2"><div class="k">${I('cpu', 'sm')}Local model</div><div class="mid" style="margin-top:8px">Qwen 3.8 · 27B</div><div class="muted" style="font-size:14px">Runs on your computer. Nothing leaves the house.</div>
+      <div style="display:grid;gap:8px;margin-top:14px"><label class="dim" for="ai-url" style="font-size:13px">Bridge address</label><input class="f" id="ai-url" value="${esc(a.url)}"><label class="dim" for="ai-model" style="font-size:13px">Model</label><input class="f" id="ai-model" value="${esc(a.model)}"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px"><span class="status-dot" style="background:var(--warn)"></span><span class="muted" style="font-size:14px;flex:1">Not reachable from this preview page</span><span class="badge mint" style="font-size:12px">Primary</span></div></div>
+    <div class="card span2"><div class="k">${I('cloud', 'sm')}Cloud model</div><div class="mid" style="margin-top:8px">Claude</div><div class="muted" style="font-size:14px">Used when the local model is off, or when you pick it.</div>
+      <div style="display:grid;gap:8px;margin-top:14px"><label class="dim" for="ai-claude" style="font-size:13px">Model</label><input class="f" id="ai-claude" value="${esc(a.claude)}"><div class="dim" style="font-size:13px">The API key lives on the bridge as ANTHROPIC_API_KEY, never in the app.</div></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px"><span class="muted" style="font-size:14px;flex:1">Fall back to Claude</span>${tog('fallback', a.fallback)}</div></div>
+    <div class="card span4" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span class="round">${I('globe', 'sm')}</span><div style="flex:1;min-width:200px"><div class="mid" style="font-size:18px">Internet access</div><div class="muted" style="font-size:14px">${a.internet ? 'On: the planner can search prices and code details.' : 'Off: the planner uses only your inventory and the calculators.'}</div></div>${tog('internet', a.internet)}</div>
+  </div>
+  <div class="h2">Plan a project</div>
+  <div class="card"><textarea class="f" id="ai-prompt" rows="3" placeholder="Build an 8 x 10 shed with a double door">${esc(a.prompt)}</textarea><div class="err" id="ai-err">${esc(a.err)}</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap"><span class="dim" style="font-size:13px;flex:1;min-width:200px">This preview runs the shed calculator on the page. The installed app sends your request to the bridge.</span><button class="btn-glow" id="ai-run" style="width:auto;padding:0 20px">${I('spark', 'sm')}Plan it</button></div></div>
+  ${plan ? `<div class="card"><div class="k">${I('check', 'sm')}Plan ready</div><div class="big">${esc(plan.summary.title)}</div><div class="foot">${plan.materials.length} materials, ${plan.cut_list.length} cut-list lines, ${plan.steps.length} steps, ${plan.scene.parts.length} 3D parts. ${esc(plan.summary.rafter)}.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="b pri" data-open3d="shed">${I('cube', 'sm')}Open in 3D</button><button class="b" data-proj-open="shed">${I('hammer', 'sm')}See readiness</button></div></div>` : ''}`;
+}
+function simple(t, body) { return `<div class="card"><div class="mid">${t}</div><div class="foot">${body}</div></div>`; }
+
+// ------------------------------------------------------------ render + bind
+function render() {
+  queueMicrotask(persistState);
+  renderChrome();
+  const isV = S.screen === 'viewer';
+  $('viewer').hidden = !isV;
+  const map = { home, inv, stor, proj, shop, lab, chk: checklist, bhome, alerts: alertsView, ai: aiHub, settings, help: () => simple('Help', 'Ask the AI Hub anything about a build, or open a project to follow it step by step.') };
+  $('page').innerHTML = isV ? '' : `<div style="display:flex;flex-direction:column;gap:16px">${banner()}${map[S.screen]()}</div>`;
+  if (isV) Viewer.show();
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button,[data-go],label');
+  if (!t) return;
+  const d = t.dataset;
+  if (e.target.closest('[data-toggle-proj]')) { e.stopPropagation(); S.projOpen = !S.projOpen; renderChrome(); return; }
+  if (d.go) return go(d.go);
+  if (d.proj) { S.proj = d.proj; S.pmode = 'ready'; return go('proj'); }
+  if (d.projOpen) { S.proj = d.projOpen; S.pmode = 'ready'; return go('proj'); }
+  if (d.open3d) { Viewer.load(d.open3d, d.build != null ? +d.build : 99); return go('viewer'); }
+  if (d.cat) { S.cat = d.cat; return render(); }
+  if (d.locate) { S.sel = d.locate; return go('stor'); }
+  if (d.sel) { S.sel = d.sel; return render(); }
+  if (d.cyc) { const it = INV[+d.cyc], o = ['plenty', 'low', 'out']; setStock(it, o[(o.indexOf(it.s) + 1) % 3]); return; }
+  if (d.chk) return stepChk(d.chk);
+  if (d.chkfam) { S.chkFam = d.chkfam; return S.screen === 'chk' ? render() : go('chk'); }
+  if (d.chkstat) { S.chkStat = d.chkstat; return S.screen === 'chk' ? render() : go('chk'); }
+  if (d.chkopen) return chkSheet(d.chkopen);
+  if (d.area) return go(AREAS[d.area].home);
+  if (d.restock) { const a = S.alerts[+d.restock]; const it = a && INV.find(x => (x.id || x.n) === a.part); if (it) setStock(it, 'plenty'); else { S.alerts.splice(+d.restock, 1); save('alerts'); render(); } return; }
+  if (d.dismiss) { S.alerts.splice(+d.dismiss, 1); save('alerts'); return render(); }
+  if (d.dev) { S.devOverride = d.dev; LS.set('dev', d.dev); S.railManual = false; detectDevice(); render(); Viewer.resize(); return; }
+  if (d.act === 'import-inv') return importInv();
+  if (d.alt) { const r = S.shelfReq[+d.alt]; Object.assign(r, { n: '#8 x 2-1/2" wood screws', note: 'Instead of a pocket-hole jig', l: r.altL, s: 'avail' }); delete r.alt; return render(); }
+  if (d.ver) { const [i, f] = d.ver.split(':'); S.shelfReq[+i].s = f === '1' ? 'avail' : 'miss'; return render(); }
+  if (d.step) { S.steps[S.proj] = +d.step; return render(); }
+  if (d.unq) { S.queue = S.queue.filter(x => x !== d.unq); return render(); }
+  if (d.tog) { S.ai[d.tog] = !S.ai[d.tog]; return render(); }
+  switch (t.id) {
+    case 'collapse': S.railManual = true; S.rail = !S.rail; LS.set('rail', S.rail); renderChrome(); Viewer.resize(); return;
+    case 'area-menu': return openAreaMenu();
+    case 'open-drawer': $('app').classList.add('drawer'); $('scrim').classList.add('on'); return;
+    case 'side-search': if (S.area === 'buy') { go('chk'); setTimeout(() => $('chk-q') && $('chk-q').focus(), 0); return; } return go('inv');
+    case 'tab-create': case 'h-create': return S.area === 'buy' ? openChkImport() : openCreate();
+    case 'h-add': case 'add-item': return openAdd();
+    case 'h-queue': case 'home-queue': case 'queue-all': { const ls = LOCS.slice(0, 24).filter(l => INV.some(x => x.l === l)); let n = 0; ls.forEach(l => { if (!S.queue.includes(l)) { S.queue.push(l); n++; } }); toast(n ? `Queued ${n} labels` : 'Already queued'); return render(); }
+    case 'queue-one': if (!S.queue.includes(S.sel)) S.queue.push(S.sel); toast(`Added ${S.sel} to the queue`); return render();
+    case 'print-one': return openLabel(S.sel);
+    case 'print-queue': return printLabels(S.queue.slice());
+    case 'add-missing': req(S.proj).filter(r => r.s === 'miss' || r.s === 'insuf').forEach(r => addShop(r.n, PROJ[S.proj].title, r.l)); toast('Added to your shopping list'); return render();
+    case 'start-build': S.pmode = 'guide'; return render();
+    case 'back-ready': S.pmode = 'ready'; return render();
+    case 'prev-step': S.steps[S.proj] = Math.max(0, S.steps[S.proj] - 1); return render();
+    case 'next-step': { const p = S.proj, n = steps(p).length; S.done[p][S.steps[p]] = true; if (S.steps[p] < n - 1) S.steps[p]++; else { const s = INV.find(x => x.n.startsWith('#8 x 1-1/4')); if (s) setStock(s, s.s === 'plenty' ? 'low' : 'out'); } return render(); }
+    case 'reset-build': S.done[S.proj] = steps(S.proj).map(() => false); S.steps[S.proj] = 0; return render();
+    case 'clear-bought': return clearBought();
+    case 'chk-import': return openChkImport();
+    case 'chk-starter': CHK = draftChecklist(); S.chkDraft = true; save('checklist'); toast('Starter list loaded'); return render();
+    case 'chk-to-shop': { const need = CHK.filter(c => c.status === 'need'); need.forEach(c => addShop(c.item, 'Checklist', c.loc)); toast(need.length ? `Added ${need.length} items to your shopping list` : 'Nothing marked Need'); return render(); }
+    case 'h-import': return $('scene-file').click();
+    case 'ai-run': return runPlan();
+  }
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'q') { S.q = e.target.value; $('res').innerHTML = invRows(); }
+  if (e.target.id === 'chk-q') { S.chkQ = e.target.value; const q = S.chkQ.toLowerCase(); const rows = CHK.filter(c => (S.chkFam === 'All' || c.fam === S.chkFam) && (S.chkStat === 'all' || c.status === S.chkStat) && (c.item + ' ' + c.fam).toLowerCase().includes(q)); $('chk-rows').innerHTML = chkRows(rows, [...new Set(rows.map(c => c.fam))]); }
+  if (e.target.id === 'ai-prompt') { S.ai.prompt = e.target.value; $('ai-err').textContent = ''; }
+  if (['ai-url', 'ai-model', 'ai-claude'].includes(e.target.id)) S.ai[{ 'ai-url': 'url', 'ai-model': 'model', 'ai-claude': 'claude' }[e.target.id]] = e.target.value;
+});
+document.addEventListener('change', (e) => {
+  if (e.target.dataset.buy != null) {
+    buyShop(+e.target.dataset.buy, e.target.checked);
+  }
+  if (e.target.id === 'scene-file') Viewer.importFile(e.target.files[0]);
+});
+$('scrim').addEventListener('click', () => { closeSheet(); $('app').classList.remove('drawer'); $('scrim').classList.remove('on'); });
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f') { e.preventDefault(); const t = S.area === 'buy' ? 'chk' : 'inv'; go(t); setTimeout(() => { const el = $(t === 'chk' ? 'chk-q' : 'q'); if (el) el.focus(); }, 0); }
+  if (e.key === 'Escape') { closeSheet(); $('app').classList.remove('drawer'); $('scrim').classList.remove('on'); }
+});
+
+function openCreate() {
+  openSheet(`<div class="mid" style="margin-bottom:12px">Create</div><div class="list" style="background:var(--card)">
+    <button class="row btn" data-go="ai" onclick="">${I('spark')}<span class="t"><b>New project</b><span>Describe it and the AI plans it</span></span>${I('cr', 'sm')}</button>
+    <button class="row btn" id="c-add">${I('plus')}<span class="t"><b>Add items</b><span>Fast entry, a whole drawer at a time</span></span>${I('cr', 'sm')}</button>
+    <button class="row btn" id="c-label">${I('printer')}<span class="t"><b>Print a label</b><span>Zebra ZD421</span></span>${I('cr', 'sm')}</button></div>`, () => {
+    $('sheet').querySelector('[data-go]').addEventListener('click', closeSheet);
+    $('c-add').onclick = () => { closeSheet(); setTimeout(openAdd, 200); };
+    $('c-label').onclick = () => { closeSheet(); setTimeout(() => openLabel(S.sel), 200); };
+  });
+}
+function openAdd(loc) {
+  let type = 'cons', stock = 'plenty';
+  const body = () => `<div class="mid" style="margin-bottom:12px">Add items</div><div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:8px"><input class="f" id="an" placeholder="Item name" autocomplete="off"><select class="f" id="al"><option value="">No drawer yet</option>${LOCS.map(l => `<option ${l === (loc || S.sel) ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><div class="seg" id="at"><button data-v="tool">Tool</button><button data-v="cons" class="on">Supply</button></div><div class="seg" id="as"><button data-v="plenty" class="on">Plenty</button><button data-v="low">Low</button><button data-v="out">Out</button></div></div>
+    <div class="err" id="aerr"></div><div class="dim" id="amsg" style="font-size:13px;min-height:20px"></div>
+    <div style="display:flex;gap:10px;margin-top:6px"><button class="b" id="adone" style="flex:1">Done</button><button class="b pri" id="ago" style="flex:2">Add</button></div>`;
+  openSheet(body(), () => {
+    const segs = (id, set) => $(id).addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; [...$(id).children].forEach(x => x.classList.toggle('on', x === b)); set(b.dataset.v); });
+    segs('at', v => { type = v; $('as').style.display = v === 'tool' ? 'none' : ''; }); segs('as', v => stock = v);
+    const add = () => { const n = $('an').value.trim(); if (!n) { $('aerr').textContent = 'Enter an item name first'; $('an').focus(); return; }
+      const l = $('al').value; addInv(type === 'tool' ? { n, c: 'Hand tools', l, t: 1 } : { n, c: l.startsWith('A1') ? 'Fasteners' : 'Supplies', l, s: stock });
+      $('amsg').textContent = `Added ${n} to ${l}. Drawer stays selected for the next one.`; $('an').value = ''; $('an').focus(); if (S.screen === 'inv') $('res').innerHTML = invRows(); renderChrome(); };
+    $('ago').onclick = add; $('an').onkeydown = (e) => { if (e.key === 'Enter') add(); }; $('an').oninput = () => $('aerr').textContent = '';
+    $('adone').onclick = () => { closeSheet(); render(); };
+    setTimeout(() => $('an').focus(), 250);
+  });
+}
+const LSIZES = { drawer: ['Drawer 1.5 x 0.5 in', 305, 102], bin: ['Bin 2 x 1 in', 406, 203], shelf: ['Shelf 4 x 2 in', 812, 406] };
+function zpl(l, size, copies) {
+  const [, w, h] = LSIZES[size], big = Math.round(h * 0.42), sm = Math.max(18, Math.round(h * 0.14)); const its = INV.filter(x => x.l === l); const name = its.length ? its[0].n + (its.length > 1 ? ' +' + (its.length - 1) : '') : '';
+  return ['^XA', `^PW${w}^LL${h}`, `^CF0,${big}`, `^FO16,12^FD${l}^FS`, name ? `^CF0,${sm}` : '', name ? `^FO16,${18 + big}^FD${name}^FS` : '', size !== 'drawer' ? `^FO${w - Math.round(h * 0.95)},12^BQN,2,${Math.max(2, Math.round(h / 55))}^FDQA,WN:${l}^FS` : '', copies > 1 ? `^PQ${copies}` : '', '^XZ'].filter(Boolean).join('\n');
+}
+function openLabel(l) {
+  let size = 'drawer', copies = 1, showZ = false;
+  const draw = () => { const [, w, h] = LSIZES[size], pw = 260, ph = Math.round(pw * h / w); const its = INV.filter(x => x.l === l);
+    return `<div class="mid" style="margin-bottom:14px">Label for ${l}</div><div style="background:var(--bg);border-radius:18px;padding:22px 12px"><div class="label-prev" style="width:${pw}px;height:${ph}px;max-width:100%"><div style="flex:1;min-width:0"><div style="font-size:${Math.round(ph * .38)}px;line-height:1;font-weight:700">${l}</div><div style="font-size:${Math.max(11, Math.round(ph * .12))}px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${its[0] ? esc(its[0].n) : ''}</div></div>${size !== 'drawer' ? `<svg width="${Math.round(ph * .75)}" height="${Math.round(ph * .75)}" viewBox="0 0 7 7" aria-hidden="true"><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="#111"/><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="#fff"/></svg>` : ''}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><div class="seg" id="lsz">${Object.entries(LSIZES).map(([k, v]) => `<button data-v="${k}" class="${k === size ? 'on' : ''}">${v[0]}</button>`).join('')}</div><div class="seg"><button id="lminus" aria-label="Fewer copies">−</button><button class="on" style="min-width:56px">${copies} ${copies > 1 ? 'copies' : 'copy'}</button><button id="lplus" aria-label="More copies">+</button></div></div>
+    ${showZ ? `<pre class="zpl">${esc(zpl(l, size, copies))}</pre>` : ''}
+    <div style="display:flex;gap:10px;margin-top:16px;align-items:center"><button class="b ghost" id="lz">${showZ ? 'Hide ZPL' : 'View ZPL'}</button><span style="flex:1"></span><button class="b pri" id="lprint">${I('printer', 'sm')}Print on ZD421</button></div>`; };
+  const bind = () => { $('lsz').onclick = (e) => { const b = e.target.closest('button'); if (b) { size = b.dataset.v; refresh(); } }; $('lminus').onclick = () => { copies = Math.max(1, copies - 1); refresh(); }; $('lplus').onclick = () => { copies = Math.min(20, copies + 1); refresh(); }; $('lz').onclick = () => { showZ = !showZ; refresh(); }; $('lprint').onclick = () => { closeSheet(); printLabels([l], copies); }; };
+  const refresh = () => { $('sheet').innerHTML = '<div class="grab"></div>' + draw(); bind(); };
+  openSheet(draw(), bind);
+}
+function printLabels(list, copies = 1) { toast('Sending to ZD421…'); setTimeout(() => { list.forEach(l => S.labels[l] = 1); S.queue = S.queue.filter(q => !list.includes(q)); const n = list.length * copies; toast(`Printed ${n} label${n > 1 ? 's' : ''}`); render(); }, 1100); }
+
+function runPlan() {
+  const txt = S.ai.prompt.trim();
+  if (!txt) { $('ai-err').textContent = 'Describe what you want to build first'; return; }
+  if (!/shed/i.test(txt)) { S.ai.err = 'In this preview only sheds have a calculator. The bridge plans anything else with Qwen or Claude.'; return render(); }
+  const m = txt.match(/(\d+(?:\.\d+)?)\s*(?:'|ft|feet)?\s*(?:x|by|×)\s*(\d+(?:\.\d+)?)/i);
+  const spec = { ...S.shed };
+  if (m) { spec.width_ft = Math.min(+m[1], +m[2]); spec.depth_ft = Math.max(+m[1], +m[2]); }
+  if (/single door/i.test(txt)) spec.door_width_in = 36; if (/double door/i.test(txt)) spec.door_width_in = 48;
+  const wm = txt.match(/(\d|one|two|no)\s+windows?/i); if (wm) spec.windows = { no: 0, one: 1, two: 2 }[wm[1].toLowerCase()] ?? Math.min(2, +wm[1]);
+  try { SHED = ShedCalc.designShed(spec); S.shed = spec; S.done.shed = SHED.steps.map(() => false); S.steps.shed = 0; S.ai.plan = SHED; S.ai.err = ''; Viewer.dirty = true; }
+  catch (err) { S.ai.err = err.message; S.ai.plan = null; }
+  render();
+}
+
+// ------------------------------------------------------------ device detection (iPhone / iPad / computer)
+function detectDevice() {
+  const ua = navigator.userAgent || '', w = window.innerWidth || 1024, h = window.innerHeight || 768;
+  const tp = navigator.maxTouchPoints || 0;
+  const iPad = /iPad/.test(ua) || (/Macintosh/.test(ua) && tp > 1);
+  const iPhone = /iPhone|iPod/.test(ua);
+  const auto = iPhone ? 'phone' : iPad ? 'tablet' : (w <= 740 ? 'phone' : (tp > 0 && Math.min(w, h) >= 600 ? 'tablet' : 'desktop'));
+  const kind = S.devOverride === 'auto' ? auto : S.devOverride;
+  const layout = (kind === 'phone' || w <= 740) ? 'phone' : kind;
+  const portrait = h >= w;
+  const root = document.documentElement;
+  ['dev-phone', 'dev-tablet', 'dev-desktop', 'm-phone', 'm-compact', 'portrait', 'landscape'].forEach(c => root.classList.remove(c));
+  root.classList.add('dev-' + kind, portrait ? 'portrait' : 'landscape');
+  if (layout === 'phone') root.classList.add('m-phone', 'm-compact');
+  else if (w <= 1180) root.classList.add('m-compact');
+  const prev = S.device;
+  S.device = { auto, kind, layout, portrait, w, h };
+  if (kind === 'tablet' && layout !== 'phone' && !S.railManual) S.rail = portrait;
+  return !prev || prev.layout !== layout || prev.portrait !== portrait || prev.kind !== kind;
+}
+let rzT;
+window.addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(() => { const before = S.device && S.device.portrait; if (detectDevice()) { if (S.device.portrait !== before) { S.railManual = false; detectDevice(); } render(); } Viewer.resize(); }, 150); });
+
+// ------------------------------------------------------------ saving (shared Workshop Navigator document, live-synced by js/sync.js)
+// The purchase checklist IS the Navigator's item list, and stored checklist items ARE inventory.
+// Tools, supplies, shopping and alerts live in doc.app. Every save is written at once and pushed to
+// other devices within a fraction of a second.
+const LIST_NAMES = ['inventory', 'checklist', 'shopping', 'alerts'];
+const live = () => S.mode === 'live' && !S.readOnly;
+const newId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function getList(name) { return name === 'inventory' ? INV : name === 'checklist' ? CHK : name === 'shopping' ? SHOP : S.alerts; }
+const chkStatus = (it) => it.store ? 'stored' : it.buy ? 'purchased' : it.ordered ? 'ordered' : 'need';
+function reconcile(oldArr, next) {
+  const m = new Map((oldArr || []).filter(o => o && o.id != null).map(o => [String(o.id), o]));
+  return next.map(n => { const o = m.get(String(n.id)); if (!o) return n; for (const k of Object.keys(o)) if (!(k in n)) delete o[k]; return Object.assign(o, n); });
+}
+function fromDoc() {
+  const d = WN.doc;
+  CHK = reconcile(CHK, d.items.filter(it => !it.archived).map(it => ({ id: it.id, fam: it.category || 'Other', item: it.name, qty: '', status: chkStatus(it), loc: it.location || '', category: it.category })));
+  const derived = d.items.filter(it => it.store && !it.archived).map(it => ({ id: it.id, n: it.name, c: it.category || 'Other', l: it.location || '', s: it.stock || 'plenty', _src: 'chk' }));
+  INV = reconcile(INV, [...derived, ...d.app.inventory.map(x => ({ ...x }))]);
+  SHOP = reconcile(SHOP, d.app.shopping.map(x => ({ ...x })));
+  S.alerts = reconcile(S.alerts, d.app.alerts.map(x => ({ ...x })));
+  S.sample = false; S.chkDraft = false;
+  applyState(d.app.state);
+}
+function nextHW() { const n = [...WN.doc.items.map(x => x.id), ...Object.keys(WN.doc.del || {}).filter(k => k.startsWith('items:')).map(k => k.slice(6))].map(x => Number((String(x).match(/(\d+)$/) || [])[1] || 0)); return 'HW-' + String(Math.max(0, ...n) + 1).padStart(4, '0'); }
+const noSrc = (o) => { const c = { ...o }; delete c._src; return c; };
+function toDoc(name) {
+  const d = WN.doc, byId = new Map(d.items.map(i => [String(i.id), i]));
+  if (name === 'checklist') {
+    for (const c of CHK) {
+      let it = byId.get(String(c.id));
+      if (!it) { it = { id: nextHW(), category: c.fam || 'Other', name: c.item, buy: false, store: false, qty: '', location: '', notes: c.qty ? 'Qty ' + c.qty : '' }; d.items.push(it); byId.set(it.id, it); c.id = it.id; }
+      const bought = c.status === 'purchased' || c.status === 'stored', stored = c.status === 'stored';
+      if (it.buy !== bought) it.buy = bought;
+      if (it.store !== stored) it.store = stored;
+      if (c.status === 'ordered') it.ordered = true; else if (it.ordered) it.ordered = false;
+      if (stored && (c.loc || '') !== (it.location || '')) it.location = c.loc || '';
+    }
+  } else if (name === 'inventory') {
+    for (const x of INV) {
+      if (x._src !== 'chk') continue;
+      const it = byId.get(String(x.id)); if (!it) continue;
+      if ((x.l || '') !== (it.location || '')) it.location = x.l || '';
+      if ((x.s || 'plenty') !== (it.stock || 'plenty')) it.stock = x.s || 'plenty';
+    }
+    d.app.inventory = INV.filter(x => x._src !== 'chk' && x.id != null).map(noSrc);
+  } else if (name === 'shopping') d.app.shopping = SHOP.map(noSrc);
+  else if (name === 'alerts') d.app.alerts = S.alerts.map(noSrc);
+}
+function stateOut() {
+  return { queue: S.queue.slice(), steps: { ...S.steps }, done: JSON.parse(JSON.stringify(S.done)), shelfReq: S.shelfReq.map(r => ({ n: r.n, s: r.s })),
+    shed: { ...S.shed }, ai: { primary: S.ai.primary, fallback: S.ai.fallback, internet: S.ai.internet, url: S.ai.url, model: S.ai.model, claude: S.ai.claude, prompt: S.ai.prompt },
+    look: { siding: S.v.siding, trim: S.v.trim, roof: S.v.roof } };
+}
+let lastState = '';
+function applyState(st) {
+  if (!st || !st.u) { lastState = JSON.stringify(stateOut()); return; }
+  if (Array.isArray(st.queue)) S.queue = st.queue.slice();
+  if (st.shed && JSON.stringify(st.shed) !== JSON.stringify(S.shed)) { try { S.shed = { ...S.shed, ...st.shed }; SHED = ShedCalc.designShed({ ...S.shed, door_height_in: Math.min(S.shed.door_height_in || 80, S.shed.wall_height_ft * 12 - 12) }); Viewer.dirty = true; } catch (e) { } }
+  if (st.steps) S.steps = { ...S.steps, ...st.steps };
+  if (st.done) { if (Array.isArray(st.done.shelf)) S.done.shelf = st.done.shelf.slice(); if (Array.isArray(st.done.shed) && st.done.shed.length === SHED.steps.length) S.done.shed = st.done.shed.slice(); }
+  if (Array.isArray(st.shelfReq)) st.shelfReq.forEach(x => { const r = S.shelfReq.find(y => y.n === x.n); if (r && x.s) r.s = x.s; });
+  if (st.ai) Object.assign(S.ai, st.ai);
+  if (st.look) Object.assign(S.v, st.look);
+  lastState = JSON.stringify(stateOut());
+}
+function persistState() {
+  if (!live()) return;
+  const j = JSON.stringify(stateOut()); if (j === lastState) return;
+  lastState = j; WN.doc.app.state = JSON.parse(j); WN.commit();
+}
+function save(name) {
+  if (!live()) return;
+  toDoc(name); WN.commit();
+}
+let refreshT;
+function refresh() {
+  const a = document.activeElement;
+  if (a && $('page').contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) { renderChrome(); return; }
+  if (S.screen === 'viewer') { renderChrome(); return; }
+  render();
+}
+async function initStore() {
+  S.mode = 'live'; fromDoc(); S.loaded = true; render();
+  setInterval(persistState, 1500);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistState(); });
+  window.addEventListener('pagehide', persistState);
+  WN.on('change', () => { fromDoc(); clearTimeout(refreshT); refreshT = setTimeout(refresh, 30); });
+  window.addEventListener('online', () => renderChrome()); window.addEventListener('offline', () => renderChrome());
+  WN.on('auth', () => renderChrome());
+}
+
+// ------------------------------------------------------------ inventory changes and low-stock alerts
+function addInv(item) {
+  if (item && item.from === 'checklist') return null;
+  if (S.sample && S.mode === 'live') { INV = []; S.sample = false; }
+  const it = { id: newId('p'), ...item };
+  INV.push(it); save('inventory'); return it;
+}
+function setStock(it, level) {
+  if (!it || it.s === level) return;
+  it.s = level;
+  if (S.mode === 'live' && S.sample) { toast("Sample item, not saved. Add your own items to start."); return render(); }
+  save('inventory');
+  if (level === 'low' || level === 'out') raiseAlert(it, level);
+  if (level === 'plenty') clearAlerts(it);
+  render();
+}
+function raiseAlert(it, level) {
+  const where = it.l ? ' in ' + it.l : '';
+  toast(level === 'out' ? `${it.n} is out${where}. Reorder now.` : `Heads up: ${it.n} is low${where}. Time to reorder.`);
+  const key = it.id || it.n;
+  const a = { id: newId('a'), part: key, n: it.n, l: it.l || '', level, at: Date.now() };
+  S.alerts = [a, ...S.alerts.filter(x => x.part !== key)];
+  save('alerts');
+  addShop(it.n, level === 'out' ? 'Out of stock' : 'Reorder', it.l);
+}
+function clearAlerts(it) {
+  const key = it.id || it.n, before = S.alerts.length;
+  S.alerts = S.alerts.filter(a => a.part !== key);
+  if (S.alerts.length !== before) save('alerts');
+}
+function addShop(n, why, l) {
+  if (SHOP.some(s => s.n === n && !s.d)) return;
+  SHOP.push({ id: newId('s'), n, why, l: l || '', d: false, at: Date.now() }); save('shopping');
+}
+function buyShop(i, done) {
+  const s = SHOP[i]; if (!s) return;
+  s.d = done; save('shopping');
+  if (done) {
+    const it = INV.find(x => x.n === s.n); if (it && !it.t && it.s !== 'plenty') setStock(it, 'plenty');
+    const r = S.shelfReq.find(x => x.n === s.n); if (r) r.s = 'avail';
+    const c = CHK.find(x => x.item === s.n && (x.status === 'need' || x.status === 'ordered')); if (c) { c.status = 'purchased'; save('checklist'); }
+  }
+  render();
+}
+function clearBought() { SHOP = SHOP.filter(s => !s.d); save('shopping'); render(); }
+function alertsCard() {
+  if (!S.alerts.length) return '';
+  return `<div class="card"><div class="k">${I('bell', 'sm')}Reorder alerts<span class="badge peach" style="margin-left:auto">${S.alerts.length}</span></div>
+  <div style="margin:8px -12px 0">${S.alerts.slice(0, 4).map((a, i) => `<div class="row"><span class="st"><i style="background:${a.level === 'out' ? 'var(--bad)' : 'var(--warn)'}"></i>${a.level === 'out' ? 'Out' : 'Low'}</span><div class="t"><b>${esc(a.n)}</b><span>${a.l ? esc(a.l) + ' · ' : ''}on your shopping list</span></div><button class="ibtn" data-dismiss="${i}" aria-label="Dismiss alert for ${esc(a.n)}">${I('x', 'sm')}</button></div>`).join('')}</div>
+  <div style="margin-top:8px"><button class="b" data-go="${S.area === 'buy' ? 'alerts' : 'shop'}">${I('cart', 'sm')}${S.area === 'buy' ? 'See all alerts' : 'Open in Purchasing'}</button></div></div>`;
+}
+function banner() {
+  let msg = '', act = '';
+  if (S.readOnly) msg = "You can view this workshop but can't change it.";
+  else if (S.mode === 'live' && S.sample && ['inv', 'stor'].includes(S.screen)) { msg = "You're seeing sample items. Add an item or import your inventory spreadsheet to start your real inventory."; act = `<button class="b" data-act="import-inv">${I('ul', 'sm')}Import spreadsheet</button>`; }
+  return msg ? `<div class="note">${I('alert', 'sm')}<span style="flex:1;min-width:180px">${msg}</span>${act}</div>` : '';
+}
+
+// ------------------------------------------------------------ inventory spreadsheet import
+function loadXLSX() {
+  return new Promise((res, rej) => {
+    if (window.XLSX) return res(window.XLSX);
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => window.XLSX ? res(window.XLSX) : rej(new Error('missing')); s.onerror = () => rej(new Error('load')); document.head.appendChild(s);
+  });
+}
+function importInv() {
+  const f = document.createElement('input'); f.type = 'file'; f.accept = '.xlsx,.xls,.csv';
+  f.onchange = () => { if (f.files && f.files[0]) readInvFile(f.files[0]); };
+  f.click();
+}
+async function readInvFile(file) {
+  toast('Reading ' + file.name + '…');
+  let X; try { X = await loadXLSX(); } catch (e) { return toast("Couldn't load the spreadsheet reader. Check your connection and try again."); }
+  let rows;
+  try { const wb = X.read(await file.arrayBuffer(), { type: 'array' }); const ws = wb.Sheets.Inventory || wb.Sheets[wb.SheetNames[0]]; rows = X.utils.sheet_to_json(ws, { defval: '' }); }
+  catch (e) { return toast("That file couldn't be read. Use the Workshop inventory template (.xlsx or .csv)."); }
+  const pick = (r, ...keys) => { for (const k of Object.keys(r)) { if (keys.includes(k.toLowerCase().replace(/[^a-z]/g, ''))) return String(r[k]).trim(); } return ''; };
+  const items = [];
+  for (const r of rows) {
+    const n = pick(r, 'name'); if (!n) continue;
+    const notes = pick(r, 'notes'); if (/^example row/i.test(notes)) continue;
+    const tool = pick(r, 'type').toLowerCase().startsWith('tool');
+    let s = pick(r, 'stock').toLowerCase(); if (!['plenty', 'low', 'out'].includes(s)) s = 'plenty';
+    const it = { n, c: pick(r, 'category') || 'Other', l: pick(r, 'location').toUpperCase() };
+    const extra = { brand: pick(r, 'brand'), model: pick(r, 'model'), spec: pick(r, 'sizespec', 'size', 'spec'), notes, qty: pick(r, 'quantity') };
+    Object.keys(extra).forEach(k => { if (extra[k]) it[k] = extra[k]; });
+    if (tool) it.t = 1; else it.s = s;
+    items.push(it);
+  }
+  if (!items.length) return toast("No items found. Fill in the Name column on the Inventory tab.");
+  const base = S.sample ? [] : INV;
+  const key = (x) => (x.n + '|' + (x.l || '')).toLowerCase();
+  const have = new Map(base.map(x => [key(x), x]));
+  const upd = items.filter(x => have.has(key(x))).length;
+  const unknown = [...new Set(items.filter(x => x.l && !LOCS.includes(x.l)).map(x => x.l))];
+  const noLoc = items.filter(x => !x.l).length, tools = items.filter(x => x.t).length;
+  openSheet(`<div class="mid" style="margin-bottom:6px">Import ${items.length} items</div><div class="foot" style="margin-top:0">From ${esc(file.name)}. Check the summary, then import.</div>
+  <div class="list" style="background:var(--card);margin-top:12px">
+    <div class="row"><div class="t"><b>${items.length - upd} new</b><span>Added to your inventory</span></div></div>
+    <div class="row"><div class="t"><b>${upd} updated</b><span>Same name and drawer as an item you already have</span></div></div>
+    <div class="row"><div class="t"><b>${tools} tools, ${items.length - tools} supplies</b><span>Stock levels come from the Stock column</span></div></div>
+    <div class="row"><div class="t"><b>${noLoc} without a drawer</b><span>You can sort them into drawers later</span></div></div>
+    ${unknown.length ? `<div class="row"><div class="t"><b>${unknown.length} new drawer code${unknown.length > 1 ? 's' : ''}</b><span>${esc(unknown.slice(0, 8).join(', '))}${unknown.length > 8 ? '…' : ''}</span></div></div>` : ''}
+  </div>${S.mode !== 'live' ? `<div class="foot">Preview mode: the import shows here but isn't saved.</div>` : ''}
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="b" id="imp-cancel" style="flex:1">Cancel</button><button class="b pri" id="imp-go" style="flex:2">Import</button></div>`, () => {
+    $('imp-cancel').onclick = closeSheet;
+    $('imp-go').onclick = () => {
+      if (S.sample) { INV = []; S.sample = false; }
+      const map = new Map(INV.map(x => [key(x), x]));
+      items.forEach(x => { const ex = map.get(key(x)); if (ex) Object.assign(ex, x); else { const it = { id: newId('p'), ...x }; INV.push(it); map.set(key(it), it); } });
+      unknown.forEach(l => { if (!LOCS.includes(l)) LOCS.push(l); });
+      save('inventory'); closeSheet(); toast(`Imported ${items.length} items`); go('inv');
+    };
+  });
+}
+
+// ------------------------------------------------------------ purchase checklist
+let CHK = [];
+const CHK_STATUS = { need: ['Need', 'var(--ink-3)'], ordered: ['Ordered', 'var(--warn)'], purchased: ['Purchased', 'var(--accent-2)'], stored: ['Stored', 'var(--good)'] };
+const CHK_ORDER = ['need', 'ordered', 'purchased', 'stored'];
+function draftChecklist() {
+  const out = []; let o = 0;
+  const add = (fam, item) => out.push({ id: 'd' + String(++o).padStart(3, '0'), fam, item, status: 'need', loc: '', draft: true });
+  const fams = [['#6-32', 'Phillips pan machine screw', ['1/2"', '3/4"', '1"']], ['#8-32', 'Phillips pan machine screw', ['1/2"', '3/4"', '1"']],
+    ['#10-24', 'Phillips pan machine screw', ['1/2"', '1"', '1-1/2"']], ['#10-32', 'Phillips pan machine screw', ['1/2"', '3/4"', '1"']],
+    ['1/4"-20', 'hex bolt', ['3/4"', '1"', '1-1/2"', '2"']], ['5/16"-18', 'hex bolt', ['1"', '1-1/2"', '2"']], ['3/8"-16', 'hex bolt', ['1"', '1-1/2"', '2"']]];
+  for (const [t, kind, lens] of fams) {
+    const dia = t.split('-')[0];
+    lens.forEach(L => add(t, `${t} x ${L} ${kind}`));
+    add(t, `${t} hex nut`); add(t, `${t} nylon lock nut`); add(t, `${dia} flat washer`); add(t, `${dia} split lock washer`);
+  }
+  ['1/4"-20 threaded rod, 3 ft', '5/16"-18 threaded rod, 3 ft', '3/8"-16 threaded rod, 3 ft', '1/4"-20 coupling nut', '5/16"-18 coupling nut', '3/8"-16 coupling nut'].forEach(x => add('Threaded rod', x));
+  ['#8 plastic drywall anchor', 'Self-drilling drywall anchor', '1/8" toggle bolt', '3/16" toggle bolt', '1/4" x 2-1/4" sleeve anchor', '3/8" x 3" sleeve anchor', '3/16" x 1-3/4" concrete screw', '1/4" x 2-1/4" concrete screw'].forEach(x => add('Anchors', x));
+  ['22-18 AWG butt connector', '16-14 AWG butt connector', '12-10 AWG butt connector', '16-14 AWG #8 ring terminal', '16-14 AWG #10 ring terminal', '16-14 AWG 1/4" ring terminal', '16-14 AWG spade terminal', '16-14 AWG female quick disconnect', '16-14 AWG male quick disconnect', 'Small wire nut (yellow)', 'Medium wire nut (red)', 'Heat-shrink tubing assortment'].forEach(x => add('Electrical connectors', x));
+  ['Cotter pin assortment', '1/4" clevis pin', '1/4"-20 eye bolt', '5/16" U-bolt', '#8 cup washer', '1/4"-20 T-nut', '1/4"-20 threaded insert', '#12 hose clamp'].forEach(x => add('Specialty', x));
+  return out;
+}
+function famCategory(f) { return /electric/i.test(f) ? 'Electrical' : 'Fasteners'; }
+function stepChk(id) {
+  const c = CHK.find(x => x.id === id); if (!c) return;
+  const next = CHK_ORDER[(CHK_ORDER.indexOf(c.status) + 1) % CHK_ORDER.length];
+  if (next === 'stored') return storeChk(c);
+  c.status = next; save('checklist'); render();
+}
+function storeChk(c) {
+  const ex = INV.find(x => !S.sample && x.n.toLowerCase() === c.item.toLowerCase());
+  if (ex) { c.status = 'stored'; c.loc = ex.l || ''; save('checklist'); if (!ex.t && ex.s !== 'plenty') setStock(ex, 'plenty'); else render(); return toast(`${c.item} is already in your inventory`); }
+  openSheet(`<div class="mid" style="margin-bottom:4px">Put away</div><div class="foot" style="margin-top:0">${esc(c.item)}</div>
+  <label class="dim" for="put-loc" style="font-size:13px;display:block;margin:14px 0 6px">Which drawer?</label>
+  <select class="f" id="put-loc"><option value="">No drawer yet</option>${LOCS.map(l => `<option ${l === S.sel ? 'selected' : ''}>${l}</option>`).join('')}</select>
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="b" id="put-cancel" style="flex:1">Cancel</button><button class="b pri" id="put-go" style="flex:2">Mark stored</button></div>`, () => {
+    $('put-cancel').onclick = closeSheet;
+    $('put-go').onclick = () => {
+      const l = $('put-loc').value;
+      addInv({ n: c.item, c: famCategory(c.fam), l, s: 'plenty', from: 'checklist' });
+      c.status = 'stored'; c.loc = l; save('checklist');
+      closeSheet(); toast(`Stored${l ? ' in ' + l : ''} and added to your inventory`); render();
+    };
+  });
+}
+function parseList(text) {
+  let fam = 'Other'; const out = [];
+  text.split(/\r?\n/).forEach(raw => {
+    let line = raw.replace(/^\s*(?:[-*•▪☐☑✓✔]\s*|\[[ xX]?\]\s*|\d+[.)]\s+)/, '').trim();
+    if (!line) return;
+    if (/:$/.test(line) && !/[\t|,]/.test(line)) { fam = line.slice(0, -1).trim() || fam; return; }
+    const parts = line.split(/\t|\s*\|\s*/).length > 1 ? line.split(/\t|\s*\|\s*/) : line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+    const p = parts.map(s => s.trim().replace(/^"(.*)"$/, '$1')).filter(Boolean);
+    if (p.length >= 2) {
+      if (/^(family|category|group)$/i.test(p[0])) return;
+      out.push({ fam: p[0], item: p[1], qty: p[2] || '' });
+    } else out.push({ fam, item: line, qty: '' });
+  });
+  return out;
+}
+function openChkImport() {
+  openSheet(`<div class="mid" style="margin-bottom:4px">Paste your list</div>
+  <div class="foot" style="margin-top:0">One item per line. A line ending in a colon starts a group, like <b>Machine screws:</b>. Spreadsheet rows (family, item, quantity) work too.</div>
+  <textarea class="f" id="chk-text" rows="9" style="margin-top:12px" placeholder="Machine screws:&#10;#8-32 x 3/4&quot; pan machine screw&#10;#8-32 hex nut"></textarea>
+  <div class="err" id="chk-err"></div>
+  <div style="display:flex;gap:10px;margin-top:12px"><button class="b" id="chk-cancel" style="flex:1">Cancel</button><button class="b pri" id="chk-go" style="flex:2">Add to checklist</button></div>`, () => {
+    $('chk-cancel').onclick = closeSheet;
+    $('chk-text').oninput = () => { $('chk-err').textContent = ''; };
+    $('chk-go').onclick = () => {
+      const items = parseList($('chk-text').value);
+      if (!items.length) { $('chk-err').textContent = 'Paste at least one item first.'; return; }
+      const have = new Set(CHK.map(c => c.item.toLowerCase())); let added = 0;
+      items.forEach(x => { if (have.has(x.item.toLowerCase())) return; have.add(x.item.toLowerCase()); CHK.push({ id: newId('c'), fam: x.fam, item: x.item, qty: x.qty, status: 'need', loc: '' }); added++; });
+      S.chkDraft = false; S.chkFam = 'All'; save('checklist'); closeSheet(); toast(added ? `Added ${added} new item${added === 1 ? '' : 's'} to the checklist` : 'Those items are already on the checklist'); render();
+    };
+    setTimeout(() => $('chk-text').focus(), 250);
+  });
+}
+
+
+// ------------------------------------------------------------ purchasing area
+const CHK_COL = { need: '#708196', ordered: '#b7791f', purchased: '#1565a5', stored: '#2e9d5b' };
+const CHK_HINT = { need: 'Still to buy', ordered: 'Ordered, waiting for delivery', purchased: 'Bought, needs a drawer', stored: 'In a drawer and in your inventory' };
+function ago(t) { const m = Math.round((Date.now() - t) / 60000); if (m < 1) return 'just now'; if (m < 60) return m + ' min ago'; const h = Math.round(m / 60); if (h < 24) return h + ' h ago'; const d = Math.round(h / 24); return d + (d === 1 ? ' day ago' : ' days ago'); }
+function chkEmpty() {
+  return `<div class="card"><div class="k">${I('clip', 'sm')}Purchase checklist</div><div class="big">Start your checklist</div><div class="foot">Paste in your purchase and storage list, or load the draft starter list from your spec and edit from there.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="b pri" id="chk-import">${I('ul', 'sm')}Paste your list</button><button class="b" id="chk-starter">${I('clip', 'sm')}Load starter list</button></div></div>`;
+}
+function draftNote() {
+  return S.chkDraft ? `<div class="note subtle">${I('alert', 'sm')}<span style="flex:1;min-width:160px">Draft starter list from your spec. Paste your own list to replace it.</span><button class="b phone-only" id="chk-import">${I('ul', 'sm')}Paste your list</button></div>` : '';
+}
+function bhome() {
+  if (S.mode === 'loading') return `<div class="card"><div class="mid">Loading…</div></div>`;
+  const total = CHK.length;
+  if (!total) return chkEmpty();
+  const cnt = (k) => CHK.filter(c => c.status === k).length, stored = cnt('stored');
+  const fams = [...new Set(CHK.map(c => c.fam))];
+  const shopOpen = SHOP.filter(s => !s.d).length;
+  return `<div class="grid">
+    <button class="card btn" data-chkstat="all"><div class="k">${I('clip', 'sm')}Stored</div>${gaugeSVG(stored / total, Math.round(stored / total * 100) + '%', `${stored} of ${total} items`)}<div class="foot" style="display:flex;justify-content:space-between;margin-top:0"><span>Bought</span><span>In drawers</span></div></button>
+    <button class="card btn" data-chkstat="need"><div class="k">${I('cart', 'sm')}To buy</div><div class="big">${cnt('need')}</div><div class="foot">Not ordered yet</div><div class="delta">${I('cr', 'xs')}Send to shopping list</div></button>
+    <button class="card btn" data-chkstat="ordered"><div class="k">${I('clock', 'sm')}Ordered</div><div class="big">${cnt('ordered')}</div><div class="foot">Waiting for delivery</div></button>
+    <button class="card btn" data-chkstat="purchased"><div class="k">${I('box', 'sm')}To put away</div><div class="big">${cnt('purchased')}</div><div class="foot">Bought, needs a drawer</div></button>
+  </div>
+  <div class="h2">By family</div>
+  <div class="hscroll">${fams.map(f => { const all = CHK.filter(c => c.fam === f), s = all.filter(c => c.status === 'stored').length, b = all.filter(c => c.status !== 'need').length; return `<button class="card btn" data-chkfam="${esc(f)}"><div class="k">${I(/electric/i.test(f) ? 'zap' : /anchor/i.test(f) ? 'pin' : 'nut', 'sm')}<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(f)}</span></div><div class="big" style="font-size:30px">${s}<span class="dim" style="font-size:18px">/${all.length}</span></div><div class="mini"><i style="width:${Math.round(b / all.length * 100)}%;opacity:.45"></i><i style="width:${Math.round(s / all.length * 100)}%;margin-top:-4px"></i></div><div class="delta" style="color:var(--ink-3)">${all.length - b} to buy</div></button>`; }).join('')}</div>
+  ${alertsCard()}
+  <div class="card" style="display:flex;align-items:center;gap:16px"><div style="flex:1;min-width:0"><div class="k">${I('cart', 'sm')}Shopping list</div><div class="mid" style="margin-top:6px">${shopOpen} item${shopOpen === 1 ? '' : 's'} to buy</div><div class="foot">Synced to your iPhone. Checking an item off restocks it.</div></div><button class="round solid" data-go="shop" aria-label="Open shopping list">${I('cr', 'sm')}</button></div>
+  ${draftNote()}`;
+}
+function checklist() {
+  if (S.mode === 'loading') return `<div class="card"><div class="mid">Loading your checklist…</div></div>`;
+  if (!CHK.length) return chkEmpty();
+  const fams = ['All', ...new Set(CHK.map(c => c.fam))];
+  const q = S.chkQ.toLowerCase();
+  const cnt = (k) => CHK.filter(c => c.status === k).length;
+  const rows = CHK.filter(c => (S.chkFam === 'All' || c.fam === S.chkFam) && (S.chkStat === 'all' || c.status === S.chkStat) && (c.item + ' ' + c.fam).toLowerCase().includes(q));
+  const groups = [...new Set(rows.map(c => c.fam))];
+  const stats = [['all', 'All', CHK.length], ['need', 'To buy', cnt('need')], ['ordered', 'Ordered', cnt('ordered')], ['purchased', 'Put away', cnt('purchased')], ['stored', 'Stored', cnt('stored')]];
+  return `${draftNote()}
+  <div class="chk-tools"><div class="searchbox">${I('search', 'sm')}<input id="chk-q" placeholder="Search the checklist" value="${esc(S.chkQ)}" autocomplete="off"></div>
+  <div class="seg chk-seg" role="group" aria-label="Status">${stats.map(([k, l, n]) => `<button data-chkstat="${k}" class="${S.chkStat === k ? 'on' : ''}">${k !== 'all' ? `<i class="dot" style="background:${CHK_COL[k]}"></i>` : ''}${l} <span class="dim">${n}</span></button>`).join('')}</div></div>
+  <div class="pills">${fams.map(f => `<button class="pill ${S.chkFam === f ? 'on' : ''}" data-chkfam="${esc(f)}">${esc(f)}</button>`).join('')}</div>
+  <div id="chk-rows">${chkRows(rows, groups)}</div>`;
+}
+function chkRows(rows, groups) {
+  if (!rows.length) return '<div class="card"><div class="foot" style="margin:0">Nothing matches. Try another family or status.</div></div>';
+  return groups.map(g => {
+    const all = CHK.filter(c => c.fam === g), done = all.filter(c => c.status === 'stored').length;
+    return `<div class="fam-head"><span>${esc(g)}</span><span class="mini" style="width:90px;margin:0"><i style="width:${Math.round(done / all.length * 100)}%"></i></span><span class="dim">${done}/${all.length}</span></div>
+    <div class="list">${rows.filter(c => c.fam === g).map(c => {
+      const sub = [c.qty, c.loc ? 'Drawer ' + c.loc : ''].filter(Boolean).join(' · ');
+      return `<button class="row btn chk-row" data-chkopen="${esc(c.id)}"><i class="ring" style="--c:${CHK_COL[c.status]}"></i>${WNParts.thumb({ name: c.item, category: c.fam })}<span class="t"><b>${esc(c.item)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}</span><span class="chk-st" style="--c:${CHK_COL[c.status]}">${CHK_STATUS[c.status][0]}</span></button>`;
+    }).join('')}</div>`;
+  }).join('');
+}
+function chkSheet(id) {
+  const c = CHK.find(x => x.id === id); if (!c) return;
+  openSheet(`<div class="dim" style="font-size:13px">${esc(c.fam)}</div><div class="mid" style="margin:2px 0 14px">${esc(c.item)}</div>
+  <div style="display:flex;flex-direction:column;gap:8px">${CHK_ORDER.map(k => `<button class="opt-row ${c.status === k ? 'on' : ''}" data-setst="${k}" style="--c:${CHK_COL[k]}"><i class="ring" style="--c:${CHK_COL[k]}"></i><span class="t" style="flex:1"><b>${CHK_STATUS[k][0]}</b><span class="dim" style="display:block;font-size:13px">${CHK_HINT[k]}</span></span>${c.status === k ? I('check', 'sm') : ''}</button>`).join('')}</div>
+  <div id="put-wrap" style="margin-top:14px" ${c.status === 'stored' ? '' : 'hidden'}><label class="dim" for="put-loc" style="font-size:13px;display:block;margin-bottom:6px">Drawer</label><select class="f" id="put-loc"><option value="">No drawer yet</option>${LOCS.map(l => `<option ${l === (c.loc || '') ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="b" id="cs-shop" style="flex:1">${I('cart', 'sm')}Add to shopping</button><button class="b pri" id="cs-done" style="flex:1">Done</button></div>`, () => {
+    let pick = c.status;
+    $('sheet').querySelectorAll('[data-setst]').forEach(b => b.onclick = () => {
+      pick = b.dataset.setst;
+      $('sheet').querySelectorAll('[data-setst]').forEach(x => { x.classList.toggle('on', x === b); });
+      $('put-wrap').hidden = pick !== 'stored';
+    });
+    $('cs-shop').onclick = () => { addShop(c.item, 'Checklist', c.loc); toast('Added to your shopping list'); closeSheet(); render(); };
+    $('cs-done').onclick = () => {
+      if (pick === 'stored') {
+        const l = $('put-loc').value;
+        const ex = INV.find(x => !S.sample && x.n.toLowerCase() === c.item.toLowerCase());
+        if (ex) { if (l && !ex.l) { ex.l = l; save('inventory'); } if (!ex.t && ex.s !== 'plenty') setStock(ex, 'plenty'); }
+        else addInv({ n: c.item, c: famCategory(c.fam), l, s: 'plenty', from: 'checklist' });
+        if (c.status !== 'stored') toast(`Stored${l ? ' in ' + l : ''} and added to your inventory`);
+        c.loc = l;
+      }
+      c.status = pick; save('checklist'); closeSheet(); render();
+    };
+  });
+}
+function alertsView() {
+  if (!S.alerts.length) return `<div class="card"><div class="k">${I('bell', 'sm')}Reorder alerts</div><div class="big">All stocked</div><div class="foot">When you mark a drawer Low or Out in the workshop, an alert shows up here and the part goes on your shopping list.</div></div>`;
+  return `<div class="list">${S.alerts.map((a, i) => `<div class="row"><span class="st"><i style="background:${a.level === 'out' ? 'var(--bad)' : 'var(--warn)'}"></i>${a.level === 'out' ? 'Out' : 'Low'}</span><div class="t"><b>${esc(a.n)}</b><span>${a.l ? 'Drawer ' + esc(a.l) + ' · ' : ''}${ago(a.at || Date.now())}</span></div><button class="b" data-restock="${i}" style="height:38px">Restocked</button><button class="ibtn" data-dismiss="${i}" aria-label="Dismiss alert for ${esc(a.n)}">${I('x', 'sm')}</button></div>`).join('')}</div>
+  <div class="dim" style="font-size:13px;padding:0 6px">Each alert also put the part on your shopping list. Tap Restocked once it's back in the drawer.</div>`;
+}
+
+// ------------------------------------------------------------ settings
+function settings() {
+  const d = S.device || {};
+  const name = (k) => k === 'phone' ? 'iPhone' : k === 'tablet' ? 'iPad' : 'Computer';
+  const opts = [['auto', 'Auto'], ['phone', 'iPhone'], ['tablet', 'iPad'], ['desktop', 'Computer']];
+  const saved = S.mode === 'live' ? (WN.user ? 'Saved and synced to your account' : 'Saved on this device · sign in on the Checklist page to sync') : 'Connecting…';
+  return `<div class="grid">
+  <div class="card span2"><div class="k">${I('cpu', 'sm')}Device layout</div><div class="mid" style="margin-top:8px">${name(d.layout)} layout</div>
+    <div class="foot">Detected: ${name(d.auto)}, ${d.portrait ? 'portrait' : 'landscape'}, ${d.w} x ${d.h}. On iPad the sidebar folds into icons in portrait and opens in landscape.</div>
+    <div class="seg" style="margin-top:12px;flex-wrap:wrap" role="group" aria-label="Layout">${opts.map(([k, l]) => `<button data-dev="${k}" class="${S.devOverride === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+  <div class="card span2"><div class="k">${I('cloud', 'sm')}Saving</div><div class="mid" style="margin-top:8px">${saved}</div>
+    <div class="foot">${S.mode === 'live' ? 'Inventory, the purchase checklist, shopping list, and reorder alerts save automatically and stay in sync between your iPhone and iPad.' : 'Open Workshop Navigator from your Claude artifacts to save changes and sync devices.'}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="b" data-act="import-inv">${I('ul', 'sm')}Import inventory spreadsheet</button><button class="b" data-go="chk">${I('clip', 'sm')}Purchase checklist</button></div></div>
+  <div class="card span4"><div class="k">${I('home', 'sm')}Put it on your Home Screen</div><div class="foot">On iPhone or iPad, open this app's link in Safari, tap the Share button, then Add to Home Screen. It gets its own icon next to your other apps.</div></div>
+  </div>`;
+}
+
+// ------------------------------------------------------------ 3D viewer
+const Viewer = (() => {
+  const T = window.THREE;
+  let renderer, scene, camera, controls, root, meshes = [], ready = false, needs = true, data = null, pmrem, envTex;
+  const api = { dirty: true };
+  const M = 0.0254;
+  const PAINT = { 'Barn red': '#7c2f27', 'Slate': '#3d4a56', 'Sage': '#6f7d60', 'Charcoal': '#2c2d31', 'Cedar stain': null };
+  const TRIM = { 'Warm white': '#e8e4dc', 'Black': '#1d1e21', 'Natural': null };
+  const ROOF = { 'Charcoal': ['#34363b', '#1d1f23'], 'Weathered wood': ['#6d655c', '#3e3933'], 'Hunter green': ['#33473a', '#1e2b23'] };
+  const LAYER_COLORS = ['#7d8a6a', '#b08a5a', '#d7b47c', '#c69a62', '#a07b4e', '#4b4e57', '#8c3a30', '#e6e2da', '#1565a5'];
+
+  // ---------- procedural textures ----------
+  function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; }
+  function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+  function speckle(g, w, h, n, colors, r, rand, a = 0.5) { for (let i = 0; i < n; i++) { g.globalAlpha = a * rand(); g.fillStyle = colors[(rand() * colors.length) | 0]; g.fillRect(rand() * w, rand() * h, r, r); } g.globalAlpha = 1; }
+  function woodCanvas(base, dark, seed, knots = true) {
+    const [c, g] = canvas(1024, 256), R = rng(seed);
+    g.fillStyle = base; g.fillRect(0, 0, 1024, 256);
+    for (let i = 0; i < 90; i++) { const y = R() * 256, amp = 2 + R() * 6, per = [1, 2, 3][(R() * 3) | 0], ph = R() * 6.28; g.strokeStyle = dark; g.globalAlpha = 0.06 + R() * 0.16; g.lineWidth = 0.6 + R() * 2.2; g.beginPath(); for (let x = 0; x <= 1024; x += 16) { const yy = y + Math.sin(x / 1024 * 6.283 * per + ph) * amp; x ? g.lineTo(x, yy) : g.moveTo(x, yy); } g.stroke(); }
+    if (knots) for (let k = 0; k < 2; k++) { const x = 120 + R() * 780, y = 40 + R() * 170; for (let r = 14; r > 2; r -= 2.5) { g.globalAlpha = 0.18; g.strokeStyle = dark; g.lineWidth = 1.4; g.beginPath(); g.ellipse(x, y, r * 2.2, r, 0, 0, 6.283); g.stroke(); } g.globalAlpha = 0.5; g.fillStyle = dark; g.beginPath(); g.ellipse(x, y, 5, 3, 0, 0, 6.283); g.fill(); }
+    g.globalAlpha = 1; speckle(g, 1024, 256, 3000, [dark, '#fff'], 1.5, R, 0.12); return c;
+  }
+  function plyCanvas() { const [c, g] = canvas(1024, 512), R = rng(7); g.fillStyle = '#d9b98a'; g.fillRect(0, 0, 1024, 512); for (let i = 0; i < 26; i++) { const cx = R() * 1024, cy = R() * 512; for (let r = 10; r < 320; r += 9 + R() * 10) { g.strokeStyle = '#a77c4d'; g.globalAlpha = 0.08 + R() * 0.08; g.lineWidth = 1.5; g.beginPath(); g.ellipse(cx, cy, r * 2.6, r * 0.5, 0, 0, 6.283); g.stroke(); } } g.globalAlpha = 1; speckle(g, 1024, 512, 4000, ['#8b6038', '#fff'], 1.5, R, 0.1); return c; }
+  function osbCanvas() { const [c, g] = canvas(512, 512), R = rng(11); g.fillStyle = '#b58a52'; g.fillRect(0, 0, 512, 512); const cols = ['#c9a06a', '#9c7140', '#d8b27c', '#a77b46', '#87602f', '#e0c08e']; for (let i = 0; i < 1800; i++) { g.save(); g.translate(R() * 512, R() * 512); g.rotate((R() - 0.5) * 0.9); g.fillStyle = cols[(R() * cols.length) | 0]; g.globalAlpha = 0.75; g.fillRect(-18 - R() * 18, -4 - R() * 4, 36 + R() * 30, 8 + R() * 8); g.restore(); } g.globalAlpha = 1; return c; }
+  function sidingCanvas(paint) {
+    const [c, g] = canvas(1024, 1024), R = rng(5);
+    if (paint) { g.fillStyle = paint; g.fillRect(0, 0, 1024, 1024); const w = woodCanvas(paint, '#000', 9, false); g.globalAlpha = 0.18; g.save(); g.rotate(Math.PI / 2); g.drawImage(w, 0, -1024, 1024, 1024); g.restore(); g.globalAlpha = 1; speckle(g, 1024, 1024, 5000, ['#000', '#fff'], 1.5, R, 0.08); }
+    else { const w = woodCanvas('#9a6640', '#4e2e17', 21, true); g.save(); g.rotate(Math.PI / 2); g.drawImage(w, 0, -1024, 1024, 1024); g.restore(); }
+    for (let k = 0; k < 6; k++) { const x = k * (1024 / 6) + 6; g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(x, 0, 10, 1024); g.fillStyle = 'rgba(255,255,255,.08)'; g.fillRect(x + 10, 0, 3, 1024); }
+    return c;
+  }
+  function shingleCanvas(a, b) {
+    const [c, g] = canvas(1024, 1024), R = rng(13); g.fillStyle = a; g.fillRect(0, 0, 1024, 1024);
+    const rows = 8, rh = 1024 / rows;
+    for (let r = 0; r < rows; r++) { const off = (r % 2) * 64 + (R() * 20); for (let x = -off; x < 1024; x += 128 + R() * 40) { g.fillStyle = R() > 0.5 ? a : b; g.globalAlpha = 0.35 + R() * 0.3; g.fillRect(x, r * rh, 120 + R() * 40, rh - 6); g.globalAlpha = 1; g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(x, r * rh, 3, rh); } g.fillStyle = 'rgba(0,0,0,.65)'; g.fillRect(0, r * rh + rh - 7, 1024, 7); }
+    speckle(g, 1024, 1024, 26000, ['#000', '#777', '#aaa', '#555'], 2, R, 0.35); return c;
+  }
+  function gravelCanvas() { const [c, g] = canvas(512, 512), R = rng(3); g.fillStyle = '#5d5a55'; g.fillRect(0, 0, 512, 512); const cols = ['#8b8780', '#6e6a64', '#a19d96', '#4a4743', '#7a756d']; for (let i = 0; i < 2600; i++) { g.fillStyle = cols[(R() * cols.length) | 0]; g.beginPath(); g.ellipse(R() * 512, R() * 512, 3 + R() * 5, 2 + R() * 4, R() * 3, 0, 6.283); g.fill(); g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(R() * 512, R() * 512, 2, 2); } return c; }
+  function paintCanvas(col) { const [c, g] = canvas(256, 256), R = rng(17); g.fillStyle = col; g.fillRect(0, 0, 256, 256); speckle(g, 256, 256, 2500, ['#000', '#fff'], 1, R, 0.06); return c; }
+  function tex(cv, tile, color = true) { const t = new T.CanvasTexture(cv); t.wrapS = t.wrapT = T.RepeatWrapping; t.anisotropy = renderer ? renderer.capabilities.getMaxAnisotropy() : 4; if (color) t.encoding = T.sRGBEncoding; t.userData = { tile }; return t; }
+  let MATS = {};
+  function std(map, o = {}) { const m = new T.MeshStandardMaterial({ map, bumpMap: map, bumpScale: o.bump ?? 0.0015, roughness: o.r ?? 0.8, metalness: o.m ?? 0, envMapIntensity: o.env ?? 0.6, color: o.color || '#ffffff' }); m.userData.tile = map ? map.userData.tile : [1, 1]; return m; }
+  function buildMaterials() {
+    Object.values(MATS).forEach(m => { m.map && m.map.dispose(); m.dispose(); });
+    const paint = PAINT[S.v.siding], trim = TRIM[S.v.trim], roof = ROOF[S.v.roof];
+    MATS = {
+      lumber: std(tex(woodCanvas('#dcc08e', '#9a7446', 1), [1.2, 0.3]), { r: 0.72 }),
+      lumber_pt: std(tex(woodCanvas('#b9a777', '#6f6a3e', 2), [1.2, 0.3]), { r: 0.78, color: '#e9eedb' }),
+      plywood: std(tex(plyCanvas(), [2.44, 1.22]), { r: 0.7 }),
+      osb: std(tex(osbCanvas(), [1.0, 1.0]), { r: 0.85, bump: 0.004 }),
+      siding: std(tex(sidingCanvas(paint), [1.219, 1.219]), { r: paint ? 0.62 : 0.75, bump: 0.003 }),
+      trim: std(trim ? tex(paintCanvas(trim), [1, 1]) : tex(woodCanvas('#c9a06c', '#7b532c', 4, false), [1.2, 0.3]), { r: 0.5 }),
+      shingle: std(tex(shingleCanvas(roof[0], roof[1]), [1.4, 1.4]), { r: 0.92, bump: 0.008 }),
+      gravel: std(tex(gravelCanvas(), [0.8, 0.8]), { r: 0.95, bump: 0.01, env: 0.3 }),
+      metal: new T.MeshStandardMaterial({ color: '#2a2b2e', metalness: 0.85, roughness: 0.35, envMapIntensity: 1.2 }),
+      glass: new T.MeshStandardMaterial({ color: '#0d1b26', metalness: 0.2, roughness: 0.04, transparent: true, opacity: 0.55, envMapIntensity: 1.6 }),
+    };
+    Object.values(MATS).forEach(m => { if (!m.userData.tile) m.userData.tile = [1, 1]; if (envTex) m.envMap = envTex; });
+  }
+  const NAMES = { lumber: 'SPF framing lumber', lumber_pt: 'Pressure-treated pine', plywood: '3/4 in T&G plywood', osb: '7/16 in OSB', siding: 'T1-11 siding', trim: 'Painted trim', shingle: 'Architectural shingles', gravel: '3/4 in crushed gravel', metal: 'Black steel', glass: 'Glass', pine: '1x10 pine' };
+  let solidMats = {}, ghost, hl, selM, wireMat;
+
+  // ---------- geometry ----------
+  function uvProject(geo, tile) {
+    const pos = geo.attributes.position, nor = geo.attributes.normal, uv = geo.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+      const nx = Math.abs(nor.getX(i)), ny = Math.abs(nor.getY(i)), nz = Math.abs(nor.getZ(i));
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      let u, v; if (nx >= ny && nx >= nz) { u = z; v = y; } else if (ny >= nz) { u = x; v = z; } else { u = x; v = y; }
+      uv.setXY(i, u / tile[0], v / tile[1]);
+    }
+    uv.needsUpdate = true;
+  }
+  function beamMesh(p, mat) {
+    const a = new T.Vector3(...p.a).multiplyScalar(M), b = new T.Vector3(...p.b).multiplyScalar(M);
+    const L = a.distanceTo(b); if (L < 1e-5) return null;
+    const x = b.clone().sub(a).normalize(); let up = new T.Vector3(...p.up);
+    let y = up.clone().sub(x.clone().multiplyScalar(up.dot(x)));
+    if (y.lengthSq() < 1e-6) y = Math.abs(x.y) < 0.9 ? new T.Vector3(0, 1, 0) : new T.Vector3(0, 0, 1), y.sub(x.clone().multiplyScalar(y.dot(x)));
+    y.normalize(); const z = new T.Vector3().crossVectors(x, y);
+    const geo = new T.BoxGeometry(L, p.section[1] * M, p.section[0] * M);
+    uvProject(geo, mat.userData.tile || [1, 1]);
+    const mesh = new T.Mesh(geo, mat); const m4 = new T.Matrix4().makeBasis(x, y, z); mesh.quaternion.setFromRotationMatrix(m4); mesh.position.copy(a.add(b).multiplyScalar(0.5)); return mesh;
+  }
+  function slabMesh(p, mat) {
+    const pts = p.points.map(q => new T.Vector3(...q).multiplyScalar(M));
+    const o = pts[0], u = pts[1].clone().sub(o).normalize(), w = new T.Vector3(...p.normal).normalize(), v = new T.Vector3().crossVectors(w, u).normalize();
+    const shape = new T.Shape(pts.map(q => { const d = q.clone().sub(o); return new T.Vector2(d.dot(u), d.dot(v)); }));
+    const geo = new T.ExtrudeGeometry(shape, { depth: p.thickness * M, bevelEnabled: false });
+    geo.computeVertexNormals(); uvProject(geo, mat.userData.tile || [1, 1]);
+    const mesh = new T.Mesh(geo, mat); mesh.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(u, v, w)); mesh.position.copy(o); return mesh;
+  }
+
+  // ---------- scenes ----------
+  function shelfScene() {
+    const parts = [], W = 36, H = 48, Dp = 9.25, t = 0.75;
+    const slab = (kind, layer, bom, pts, th, n) => parts.push({ type: 'slab', kind, layer, material: 'lumber', bom, points: pts, thickness: th, normal: n });
+    slab('Side', 'carcass', 'board', [[0, 0, 0], [0, 0, Dp], [0, H, Dp], [0, H, 0]], t, [1, 0, 0]);
+    slab('Side', 'carcass', 'board', [[W, 0, 0], [W, 0, Dp], [W, H, Dp], [W, H, 0]], t, [-1, 0, 0]);
+    for (const y of [3, 24, H - t]) slab('Shelf', 'shelves', 'board', [[t, y, 0], [W - t, y, 0], [W - t, y, Dp], [t, y, Dp]], t, [0, 1, 0]);
+    for (const y of [H - 4.25, 6]) parts.push({ type: 'beam', kind: 'Back cleat', layer: 'cleats', material: 'lumber', bom: 'cleat', a: [t, y, Dp + 0.375], b: [W - t, y, Dp + 0.375], section: [0.75, 3.5], up: [0, 1, 0] });
+    for (const x of [t + 1, W - t - 1]) for (const y of [3.4, 24.4, H - 0.3]) parts.push({ type: 'beam', kind: 'Screw', layer: 'cleats', material: 'metal', bom: 'screw', a: [x - (x < W / 2 ? 2 : -2), y, 2], b: [x, y, 2], section: [0.17, 0.17], up: [0, 1, 0] });
+    const mats = [{ key: 'board', group: 'Lumber', item: '1x10 pine board, 8 ft', qty: 3, unit: 'pcs', note: 'sides and shelves' }, { key: 'cleat', group: 'Lumber', item: '1x4 pine cleat, 8 ft', qty: 1, unit: 'pcs', note: 'two 34 1/2 in pieces' }, { key: 'screw', group: 'Fasteners', item: '#8 x 2-1/2 in wood screws', qty: 24, unit: 'pcs', note: 'from A1-15' }, { key: 'glue', group: 'Supplies', item: 'Wood glue', qty: 1, unit: 'bottle', note: 'from S1' }];
+    return { kind: 'shelf', summary: { title: 'Garage storage shelf' }, materials: mats, cut_list: [{ part: 'Side', lumber: '1x10', qty: 2, length: '48 in' }, { part: 'Shelf', lumber: '1x10', qty: 3, length: '34 1/2 in' }, { part: 'Back cleat', lumber: '1x4', qty: 2, length: '34 1/2 in' }], steps: SHELF_STEPS, scene: { layers: [{ id: 'carcass', name: 'Sides' }, { id: 'shelves', name: 'Shelves' }, { id: 'cleats', name: 'Cleats and screws' }], parts } };
+  }
+
+  function init() {
+    if (ready) return true;
+    if (!T || !T.OrbitControls) { $('v-canvas').insertAdjacentHTML('beforeend', '<div class="card" style="position:absolute;inset:auto 20px 50% 20px">The 3D library did not load. Check the connection and reopen this page.</div>'); return false; }
+    renderer = new T.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.outputEncoding = T.sRGBEncoding; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap; renderer.physicallyCorrectLights = true;
+    $('v-canvas').prepend(renderer.domElement);
+    scene = new T.Scene(); scene.background = new T.Color('#16283c'); scene.fog = new T.Fog('#16283c', 18, 60);
+    camera = new T.PerspectiveCamera(38, 1, 0.05, 200);
+    controls = new T.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.08; controls.maxPolarAngle = Math.PI * 0.495; controls.screenSpacePanning = true;
+    controls.addEventListener('change', () => needs = true);
+    // studio environment for reflections
+    pmrem = new T.PMREMGenerator(renderer); const env = new T.Scene();
+    const box = new T.Mesh(new T.BoxGeometry(20, 10, 20), new T.MeshBasicMaterial({ color: '#2a2b30', side: T.BackSide })); env.add(box);
+    const lamp = (c, w, h, x, y, z, i) => { const m = new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ color: new T.Color(c).multiplyScalar(i), side: T.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m); };
+    lamp('#fff3e2', 8, 4, -6, 4.5, 4, 6); lamp('#dfe6ff', 6, 3, 7, 3, -5, 3); lamp('#ffffff', 10, 10, 0, 4.9, 0, 2);
+    envTex = pmrem.fromScene(env, 0.035).texture;
+    scene.add(new T.HemisphereLight('#dfe7ff', '#1a1714', 0.6));
+    const sun = new T.DirectionalLight('#fff1dc', 3.2); sun.position.set(-6, 10, -8); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun); scene.add(sun.target); api.sun = sun;
+    const fill = new T.DirectionalLight('#9fb4ff', 0.7); fill.position.set(8, 4, 6); scene.add(fill);
+    const ground = new T.Mesh(new T.CircleGeometry(40, 64), new T.MeshStandardMaterial({ color: '#141518', roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.105; ground.receiveShadow = true; scene.add(ground);
+    const grid = new T.GridHelper(40, 80, '#2a2b31', '#1c1d21'); grid.position.y = -0.1; grid.material.transparent = true; grid.material.opacity = 0.6; scene.add(grid);
+    root = new T.Group(); scene.add(root);
+    ghost = new T.MeshStandardMaterial({ color: '#3a3c44', transparent: true, opacity: 0.12, depthWrite: false });
+    hl = new T.MeshStandardMaterial({ color: '#8d80ff', emissive: '#4a3cff', emissiveIntensity: 0.6, roughness: 0.4 });
+    selM = new T.MeshStandardMaterial({ color: '#ffffff', emissive: '#6c5cff', emissiveIntensity: 0.9, roughness: 0.3 });
+    wireMat = new T.MeshBasicMaterial({ color: '#8d80ff', wireframe: true, transparent: true, opacity: 0.35 });
+    LAYER_COLORS.forEach((c, i) => solidMats[i] = new T.MeshStandardMaterial({ color: c, roughness: 0.85, metalness: 0, envMapIntensity: 0.3 }));
+    // picking: tap without drag
+    let down = null;
+    renderer.domElement.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
+    renderer.domElement.addEventListener('pointerup', (e) => { if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return; pick(e); });
+    new ResizeObserver(() => api.resize()).observe($('v-canvas'));
+    ready = true;
+    const loop = () => { requestAnimationFrame(loop); if (!$('viewer').hidden) { controls.update(); if (needs) { renderer.render(scene, camera); needs = false; } } };
+    loop();
+    return true;
+  }
+  api.resize = () => { if (!ready) return; const el = $('v-canvas'); const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); renderer.domElement.style.width = w + 'px'; renderer.domElement.style.height = h + 'px'; camera.aspect = w / h; camera.updateProjectionMatrix(); needs = true; };
+
+  function build(keepCam) {
+    if (!init()) return;
+    data = S.v.project === 'shelf' ? shelfScene() : S.v.project === 'import' ? api.imported : SHED;
+    buildMaterials();
+    meshes.forEach(m => { m.geometry.dispose(); if (m.userData.edges) m.userData.edges.geometry.dispose(); }); root.clear(); meshes = [];
+    const layers = data.scene.layers || [...new Set(data.scene.parts.map(p => p.layer))].map(id => ({ id, name: id }));
+    data.scene.layers = layers;
+    const idx = Object.fromEntries(layers.map((l, i) => [l.id, i]));
+    data.scene.parts.forEach((p, i) => {
+      const mat = MATS[p.material] || MATS.lumber;
+      const mesh = p.type === 'beam' ? beamMesh(p, mat) : slabMesh(p, mat);
+      if (!mesh) return;
+      mesh.castShadow = p.material !== 'glass' && p.layer !== 'foundation'; mesh.receiveShadow = true;
+      mesh.userData = { part: p, i, base: mat, li: idx[p.layer] ?? 0, home: mesh.position.clone() };
+      root.add(mesh); meshes.push(mesh);
+    });
+    S.v.sel = null; S.v.bom = null;
+    const bb = new T.Box3().setFromObject(root), size = bb.getSize(new T.Vector3());
+    api.sun.shadow.camera.left = -size.length(); api.sun.shadow.camera.right = size.length(); api.sun.shadow.camera.top = size.length(); api.sun.shadow.camera.bottom = -size.length(); api.sun.shadow.camera.far = 60; api.sun.target.position.copy(bb.getCenter(new T.Vector3())); api.sun.shadow.camera.updateProjectionMatrix();
+    applyState(); if (!keepCam) frame('persp'); api.dirty = false; panels();
+  }
+  function visibleLayers() {
+    const sp = data.steps || []; const set = new Set();
+    if (S.v.build >= sp.length || !sp.length) data.scene.layers.forEach(l => set.add(l.id));
+    else for (let i = 0; i <= S.v.build; i++) (sp[i].layers || []).forEach(l => set.add(l));
+    Object.keys(S.v.off).forEach(k => S.v.off[k] && set.delete(k));
+    return set;
+  }
+  function applyState() {
+    const vis = visibleLayers(), mode = S.v.mode, ex = S.v.explode;
+    meshes.forEach(m => {
+      const p = m.userData.part; m.visible = vis.has(p.layer);
+      m.position.copy(m.userData.home); m.position.y += m.userData.li * ex * 0.35;
+      let mat = m.userData.base;
+      if (mode === 'solid') mat = solidMats[m.userData.li % LAYER_COLORS.length];
+      if (mode === 'wire') mat = wireMat;
+      if (mode === 'xray') mat = ghost;
+      if (S.v.bom) mat = p.bom === S.v.bom ? hl : ghost;
+      if (S.v.sel === m.userData.i) mat = selM;
+      m.material = mat;
+      if (mode === 'xray' || mode === 'wire') { if (!m.userData.edges) { m.userData.edges = new T.LineSegments(new T.EdgesGeometry(m.geometry, 25), new T.LineBasicMaterial({ color: '#a59bff', transparent: true, opacity: 0.55 })); m.add(m.userData.edges); } m.userData.edges.visible = true; }
+      else if (m.userData.edges) m.userData.edges.visible = false;
+    });
+    needs = true;
+  }
+  function frame(view) {
+    const bb = new T.Box3(); meshes.forEach(m => m.visible && bb.expandByObject(m)); if (bb.isEmpty()) bb.setFromObject(root);
+    const c = bb.getCenter(new T.Vector3()), r = bb.getSize(new T.Vector3()).length() * 0.62 / Math.tan(camera.fov * Math.PI / 360);
+    const dir = { persp: [-0.75, 0.48, -0.9], front: [0, 0.08, -1], side: [-1, 0.08, 0], top: [0.0001, 1, -0.0001] }[view];
+    camera.position.copy(c).add(new T.Vector3(...dir).normalize().multiplyScalar(Math.max(r, 1.2))); controls.target.copy(c); controls.update(); needs = true;
+  }
+  function pick(e) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const v = new T.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+    const ray = new T.Raycaster(); ray.setFromCamera(v, camera);
+    const hit = ray.intersectObjects(meshes.filter(m => m.visible && m.userData.part.layer !== 'foundation'), false)[0] || ray.intersectObjects(meshes.filter(m => m.visible), false)[0];
+    S.v.sel = hit ? hit.object.userData.i : null; if (hit) { S.v.tab = 'props'; S.v.bom = null; }
+    applyState(); panels();
+  }
+  const fmtIn = ShedCalc.fmtIn;
+  const NOMINAL = { '0.75,3.5': '1x4', '0.75,5.5': '1x6', '1.5,3.5': '2x4', '1.5,5.5': '2x6', '1.5,7.25': '2x8', '1.5,9.25': '2x10', '3.5,3.5': '4x4' };
+  function partProps(p) {
+    const rows = [['Part', p.kind], ['Layer', (data.scene.layers.find(l => l.id === p.layer) || {}).name || p.layer], ['Material', NAMES[p.material] || p.material]];
+    if (p.type === 'beam') { const L = Math.hypot(p.b[0] - p.a[0], p.b[1] - p.a[1], p.b[2] - p.a[2]); const nom = NOMINAL[p.section.join(',')]; rows.push(['Size', `${nom ? nom + ' · ' : ''}${fmtIn(p.section[0])} x ${fmtIn(p.section[1])}`], ['Length', fmtIn(L)]); }
+    else { rows.push(['Thickness', fmtIn(p.thickness)], ['Corners', String(p.points.length)]); }
+    const b = (data.materials || []).find(m => m.key === p.bom); if (b) rows.push(['Buy as', b.item], ['Quantity', `${b.qty} ${b.unit}`]);
+    return rows;
+  }
+
+  // ---------- panels ----------
+  function panels() {
+    if (!data) return;
+    const v = S.v, sp = data.steps || [];
+    const modes = [['material', 'Material'], ['solid', 'Solid'], ['wire', 'Wire'], ['xray', 'X-ray']];
+    const projects = [['shed', 'Shed'], ['shelf', 'Shelf']].concat(api.imported ? [['import', 'Imported']] : []);
+    $('v-bar').innerHTML = `<div class="seg" role="group" aria-label="Project">${projects.map(([k, l]) => `<button data-vproj="${k}" class="${v.project === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Shading">${modes.map(([k, l]) => `<button data-vmode="${k}" class="${v.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <span style="flex:1"></span>
+      <div class="seg" role="group" aria-label="Camera">${[['persp', 'Persp'], ['front', 'Front'], ['side', 'Side'], ['top', 'Top']].map(([k, l]) => `<button data-vcam="${k}">${l}</button>`).join('')}</div>`;
+    const stepName = !sp.length || v.build >= sp.length ? 'Complete' : `${v.build + 1}. ${sp[v.build].title}`;
+    $('v-bottom').innerHTML = `${sp.length ? `<label class="slider" for="v-build">${I('layers', 'sm')}<span>Build</span><input type="range" id="v-build" min="0" max="${sp.length}" step="1" value="${Math.min(v.build, sp.length)}"><b>${esc(stepName)}</b></label>` : ''}
+      <label class="slider" for="v-explode" style="max-width:260px">${I('focus', 'sm')}<span>Explode</span><input type="range" id="v-explode" min="0" max="1" step="0.05" value="${v.explode}"></label>`;
+    const counts = {}; data.scene.parts.forEach(p => counts[p.layer] = (counts[p.layer] || 0) + 1);
+    const outliner = `<h3>Outliner</h3>${data.scene.layers.map((l, i) => `<button class="lay ${v.off[l.id] ? 'off' : ''}" data-vlayer="${l.id}" aria-pressed="${!v.off[l.id]}"><span class="sw" style="background:${LAYER_COLORS[i % LAYER_COLORS.length]}"></span><span class="n">${esc(l.name)}</span><span class="c">${counts[l.id] || 0}</span>${I(v.off[l.id] ? 'eyeoff' : 'eye', 'sm')}</button>`).join('')}`;
+    $('v-left').innerHTML = outliner + `<div class="divider"></div><h3>Finish</h3>${finishUI()}`;
+    const tabs = [['materials', 'Materials'], ['props', 'Part'], ['cuts', 'Cut list'], ['params', 'Size']];
+    let body = '';
+    if (v.tab === 'materials') {
+      const groups = [...new Set((data.materials || []).map(m => m.group))];
+      body = `<div class="dim" style="font-size:13px;padding:0 4px">Tap a line to highlight those parts.</div>` + groups.map(g => `<div class="group" style="padding-left:4px">${esc(g)}</div>` + data.materials.filter(m => m.group === g).map(m => `<button class="bom ${v.bom === m.key ? 'on' : ''}" data-vbom="${m.key}"><span class="q">${m.qty}</span><span class="t">${esc(m.item)}<span>${esc(m.unit)}${m.note ? ' · ' + esc(m.note) : ''}${m.estimate ? ' · estimate' : ''}</span></span></button>`).join('')).join('');
+    } else if (v.tab === 'props') {
+      const m = meshes.find(x => x.userData.i === v.sel);
+      body = m ? `<dl class="props">${partProps(m.userData.part).map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join('')}</dl><button class="b" data-vbom="${m.userData.part.bom}" style="margin-top:6px">${I('layers', 'sm')}Highlight all like this</button>` : `<div class="foot">Tap any part in the model to see its size, material, and how to buy it.</div><dl class="props" style="margin-top:8px">${Object.entries(data.summary || {}).filter(([k]) => k !== 'title').slice(0, 9).map(([k, val]) => `<dt>${esc(k.replace(/_/g, ' '))}</dt><dd>${esc(val)}</dd>`).join('')}</dl>`;
+    } else if (v.tab === 'cuts') {
+      body = (data.cut_list || []).map(c => `<div class="bom"><span class="q">${c.qty}</span><span class="t">${esc(c.part)} · ${esc(c.length)}<span>${esc(c.lumber)}${c.stock_ft ? ' from ' + c.stock_ft + ' ft stock' : ''}${c.note ? ' · ' + esc(c.note) : ''}</span></span></div>`).join('');
+    } else {
+      body = v.project === 'shed' ? paramUI() : `<div class="foot">${v.project === 'shelf' ? 'The shelf is a fixed 36 x 48 in design.' : 'Imported scenes are view-only.'} Sizes are editable for the shed.</div>`;
+    }
+    $('v-right').innerHTML = `<div class="seg" role="tablist" style="align-self:flex-start;flex-wrap:wrap">${tabs.map(([k, l]) => `<button data-vtab="${k}" class="${v.tab === k ? 'on' : ''}" role="tab" aria-selected="${v.tab === k}">${l}</button>`).join('')}</div>
+      <div class="mid" style="font-size:18px;margin:2px 4px 0">${esc((data.summary || {}).title || '')}</div>${body}
+      <div class="outliner-in-right"><div class="divider"></div>${outliner}<div class="divider"></div><h3>Finish</h3>${finishUI()}</div>`;
+  }
+  function finishUI() {
+    if (S.v.project !== 'shed') return '<div class="dim" style="font-size:13px;padding:0 4px">Finishes apply to the shed.</div>';
+    const sw = (group, obj, key, show) => `<div class="dim" style="font-size:13px;padding:0 4px">${group}</div><div class="swatches">${Object.keys(obj).map(n => `<button class="swatch ${S.v[key] === n ? 'on' : ''}" data-vfin="${key}:${n}" title="${n}" aria-label="${group}: ${n}" style="background:${show(obj[n])}"></button>`).join('')}</div>`;
+    return sw('Siding', PAINT, 'siding', c => c || 'linear-gradient(90deg,#9a6640,#6b4426)') + sw('Trim', TRIM, 'trim', c => c || '#c9a06c') + sw('Roof', ROOF, 'roof', c => c[0]);
+  }
+  function paramUI() {
+    const sp = S.shed; const row = (k, label, min, max, step, fmt) => `<div class="param"><label for="vp-${k}">${label}</label><output id="vo-${k}">${fmt(sp[k])}</output><input type="range" id="vp-${k}" data-vparam="${k}" min="${min}" max="${max}" step="${step}" value="${sp[k]}"></div>`;
+    const ft = (x) => `${x} ft`, inch = (x) => `${x} in`;
+    return [row('width_ft', 'Width', 6, 16, 1, ft), row('depth_ft', 'Depth', 6, 16, 1, ft), row('wall_height_ft', 'Wall height', 6, 10, 0.5, ft), row('roof_pitch', 'Roof pitch', 3, 12, 1, x => `${x}/12`), row('overhang_in', 'Overhang', 0, 18, 1, inch), row('door_width_in', 'Door width', 24, 72, 4, inch), row('windows', 'Windows', 0, 2, 1, x => String(x))].join('') + `<div class="err" id="v-err">${esc(S.v.err)}</div><div class="dim" style="font-size:13px">Every count updates from the calculator as you drag.</div>`;
+  }
+
+  // ---------- events ----------
+  let paramT;
+  $('viewer').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+    if (d.vmode) { S.v.mode = d.vmode; applyState(); panels(); }
+    if (d.vcam) frame(d.vcam);
+    if (d.vproj) { S.v.project = d.vproj; S.v.build = 99; S.v.off = {}; build(); }
+    if (d.vlayer) { S.v.off[d.vlayer] = !S.v.off[d.vlayer]; applyState(); panels(); }
+    if (d.vtab) { S.v.tab = d.vtab; panels(); }
+    if (d.vbom) { S.v.bom = S.v.bom === d.vbom ? null : d.vbom; S.v.sel = null; S.v.tab = 'materials'; applyState(); panels(); }
+    if (d.vfin) { const [k, n] = d.vfin.split(':'); S.v[k] = n; buildMaterials(); meshes.forEach(m => { const nm = MATS[m.userData.part.material] || MATS.lumber; m.userData.base = nm; }); applyState(); panels(); }
+  });
+  $('viewer').addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id === 'v-build') { S.v.build = +t.value; applyState(); const sp = data.steps || []; t.parentElement.querySelector('b').textContent = S.v.build >= sp.length ? 'Complete' : `${S.v.build + 1}. ${sp[S.v.build].title}`; }
+    if (t.id === 'v-explode') { S.v.explode = +t.value; applyState(); }
+    if (t.dataset.vparam) {
+      const k = t.dataset.vparam; S.shed[k] = +t.value; $('vo-' + k).textContent = { width_ft: `${t.value} ft`, depth_ft: `${t.value} ft`, wall_height_ft: `${t.value} ft`, roof_pitch: `${t.value}/12`, overhang_in: `${t.value} in`, door_width_in: `${t.value} in`, windows: t.value }[k];
+      clearTimeout(paramT); paramT = setTimeout(() => {
+        try { const spec = { ...S.shed, door_height_in: Math.min(80, S.shed.wall_height_ft * 12 - 12) }; SHED = ShedCalc.designShed(spec); S.done.shed = SHED.steps.map(() => false); S.steps.shed = 0; S.v.err = ''; build(true); }
+        catch (err) { S.v.err = err.message; const el = $('v-err'); if (el) el.textContent = err.message; }
+      }, 120);
+    }
+  });
+  api.load = (proj, buildStep) => { S.v.project = proj; S.v.build = buildStep; S.v.off = {}; api.dirty = true; };
+  api.show = () => { if (!init()) return; api.resize(); if (api.dirty || !data || data !== (S.v.project === 'shed' ? SHED : data)) build(); else { applyState(); panels(); } };
+  api.importFile = (file) => {
+    if (!file) return; const r = new FileReader();
+    r.onload = () => { try { const j = JSON.parse(r.result); const d = j.design || j; if (!d.scene || !Array.isArray(d.scene.parts)) throw new Error('No scene.parts in that file'); d.summary = d.summary || { title: file.name.replace(/\.json$/i, '') }; d.materials = d.materials || []; api.imported = d; S.v.project = 'import'; S.v.build = 99; go('viewer'); build(); toast(`Loaded ${d.scene.parts.length} parts`); } catch (err) { toast("That file isn't a Workshop scene: " + err.message); } };
+    r.readAsText(file);
+  };
+  return api;
+})();
+
+S.area = areaFor(S.screen);
+detectDevice();
+render();
+initStore();
+})();
+
+</script>
+
+</body>
+</html>
