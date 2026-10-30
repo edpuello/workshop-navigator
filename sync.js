@@ -99,7 +99,12 @@
     out.modified = [local.modified, remote.modified].filter(Boolean).sort().pop();
     return out;
   }
-  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  // Compare by content, not key order. Postgres (jsonb) hands objects back with its own key order, so a plain
+  // JSON.stringify comparison always said "different" — every realtime echo then triggered another save, forever.
+  const canon = (v) => Array.isArray(v) ? '[' + v.map(x => x === undefined ? 'null' : canon(x)).join(',') + ']'
+    : v && typeof v === 'object' ? '{' + Object.keys(v).filter(k => v[k] !== undefined).sort().map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}'
+    : JSON.stringify(v);
+  const same = (a, b) => canon(a) === canon(b);
 
   // ---------- local persistence
   function saveLocal() { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(doc)); } catch (e) { setStatus('error', 'This browser blocked saving. Download a backup now.'); } }
