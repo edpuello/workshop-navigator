@@ -43,6 +43,7 @@ function initial(){return WN_SEED()}
 data=WN.init(initial);
 function save(){WN.commit();renderStats()}
 // Note: deleted IDs are never reused, so an undo or another device can't collide with a new part.
+function itemById(id){return data.items.find(x=>x.id===id)}
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(s){const e=document.getElementById('toast');e.textContent=s;e.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>e.style.display='none',1900)}
 // ---- Status model v2: "To buy" (need) and "In stock" (store) are the two boxes. buy stays = "has been bought" for workshop.html. ----
@@ -72,7 +73,23 @@ function paintRow(tr,x){if(!tr)return;const nb=tr.querySelector('[data-field="ne
 function migrateStatusModel(){if(!data||(data.settings||{}).statusModel===2)return false;
  data.items.forEach(x=>{if(x.need===undefined){x.need=!!(x.buy&&!x.store);if(x.need)x.buy=false} if(x.store&&qtyNum(x)!=null&&!(Number(x.full)>0))x.full=qtyNum(x)});
  data.settings={...(data.settings||{}),statusModel:2};WN.commit();return true}
-function renderItems(){const q=document.getElementById('search').value.trim().toLowerCase(),filter=document.getElementById('filter').value;let filtered=data.items.filter(x=>(!q||[x.id,x.name,x.category,x.location,x.notes].some(y=>String(y||'').toLowerCase().includes(q)))&&matchFilter(x,filter));const cats=[...new Set(filtered.map(x=>x.category))],oidx=orderIndex();document.getElementById('inventory').innerHTML=cats.length?cats.map(cat=>{let entries=sortCat(filtered.filter(x=>x.category===cat),oidx);return `<section class="category"><h2>${escapeHtml(cat)} <span class="muted">(${entries.length})</span>${entries.length>1?`<button type="button" class="sortbtn" data-sortcat="${escapeHtml(cat)}" title="Put these parts in size order (small to large)">Sort by size</button>`:''}</h2><div class="scroll"><table><thead><tr><th aria-label="Drag to reorder"></th><th>TO BUY</th><th>IN STOCK</th><th>PART SIZE / DESCRIPTION</th><th>STOCK</th><th title="Optional exact count">COUNT</th><th title="Count turns red (Low) below this number">LOW AT</th><th>LOCATION / DRAWER</th><th>NOTES</th><th><span class="sr" style="position:absolute;left:-9999px">Actions</span></th></tr></thead><tbody>${entries.map(x=>`<tr data-id="${escapeHtml(x.id)}"${x.archived?' class="archived"':''}><td class="gripc"><span class="grip" title="Drag to move up or down" aria-hidden="true">${GRIP_SVG}</span></td><td class="center"><input aria-label="To buy: ${escapeHtml(x.name)}" title="Still need to buy" type="checkbox" data-field="need" ${x.need?'checked':''}></td><td class="center"><input aria-label="In stock: ${escapeHtml(x.name)}" title="In my inventory" type="checkbox" data-field="store" ${x.store?'checked':''}></td><td><div class="pcell">${photoCell(x)}<div><div class="part">${escapeHtml(x.name)}${itemTags(x)}</div><div class="muted">${escapeHtml(x.id)}</div></div></div></td><td>${stockSelect(x)}</td><td><input aria-label="Count (optional) ${escapeHtml(x.name)}" placeholder="—" class="cnt ${qtyClass(x)}" title="${escapeHtml(qtyTitle(x))}" type="number" min="0" step="1" inputmode="numeric" data-field="qty" value="${escapeHtml(x.qty)}"></td><td><input class="lowat" aria-label="Low at ${escapeHtml(x.name)}" title="Qty turns red below this number. Leave blank for the default (${defaultLowAt(x)})." type="number" min="0" step="1" inputmode="numeric" data-field="lowAt" placeholder="${defaultLowAt(x)}" value="${escapeHtml(x.lowAt??'')}"></td><td><input class="location" aria-label="Location ${escapeHtml(x.name)}" type="text" data-field="location" placeholder="e.g. SHED-BIN-01" value="${escapeHtml(x.location)}"></td><td><input class="notes" aria-label="Notes ${escapeHtml(x.name)}" type="text" data-field="notes" placeholder="Notes" value="${escapeHtml(x.notes)}"></td><td class="acts">${x.archived?`<button type="button" class="ib" data-act="unarchive" title="Restore to the list" aria-label="Restore ${escapeHtml(x.name)}">${ICO.restore}</button>`:`<button type="button" class="ib" data-act="archive" title="Archive (hide, keep history)" aria-label="Archive ${escapeHtml(x.name)}">${ICO.archive}</button>`}<button type="button" class="ib del" data-act="delete" title="Delete permanently" aria-label="Delete ${escapeHtml(x.name)}">${ICO.trash}</button></td></tr>`).join('')}</tbody></table></div></section>`}).join(''):'<div class="panel">No items match your search.</div>';hydratePhotos(document.getElementById('inventory'))}
+function rowHtml(x){return `<tr data-id="${escapeHtml(x.id)}"${x.archived?' class="archived"':''}><td class="gripc"><span class="grip" title="Drag to move up or down" aria-hidden="true">${GRIP_SVG}</span></td><td class="center"><input aria-label="To buy: ${escapeHtml(x.name)}" title="Still need to buy" type="checkbox" data-field="need" ${x.need?'checked':''}></td><td class="center"><input aria-label="In stock: ${escapeHtml(x.name)}" title="In my inventory" type="checkbox" data-field="store" ${x.store?'checked':''}></td><td><div class="pcell">${photoCell(x)}<div><div class="part">${escapeHtml(x.name)}${itemTags(x)}</div><div class="muted">${escapeHtml(x.id)}</div></div></div></td><td>${stockSelect(x)}</td><td><input aria-label="Count (optional) ${escapeHtml(x.name)}" placeholder="—" class="cnt ${qtyClass(x)}" title="${escapeHtml(qtyTitle(x))}" type="number" min="0" step="1" inputmode="numeric" data-field="qty" value="${escapeHtml(x.qty)}"></td><td><input class="lowat" aria-label="Low at ${escapeHtml(x.name)}" title="Qty turns red below this number. Leave blank for the default (${defaultLowAt(x)})." type="number" min="0" step="1" inputmode="numeric" data-field="lowAt" placeholder="${defaultLowAt(x)}" value="${escapeHtml(x.lowAt??'')}"></td><td><input class="location" aria-label="Location ${escapeHtml(x.name)}" type="text" data-field="location" placeholder="e.g. SHED-BIN-01" value="${escapeHtml(x.location)}"></td><td><input class="notes" aria-label="Notes ${escapeHtml(x.name)}" type="text" data-field="notes" placeholder="Notes" value="${escapeHtml(x.notes)}"></td><td class="acts">${x.archived?`<button type="button" class="ib" data-act="unarchive" title="Restore to the list" aria-label="Restore ${escapeHtml(x.name)}">${ICO.restore}</button>`:`<button type="button" class="ib" data-act="archive" title="Archive (hide, keep history)" aria-label="Archive ${escapeHtml(x.name)}">${ICO.archive}</button>`}<button type="button" class="ib del" data-act="delete" title="Delete permanently" aria-label="Delete ${escapeHtml(x.name)}">${ICO.trash}</button></td></tr>`}
+// Fast path for changes arriving from another device: redraw only the rows that changed (a full redraw of ~170 rows
+// costs ~20 ms on a PC and ~80 ms on a phone). Falls back to a full redraw when rows appear, move or change group.
+let rowSigs=new Map(),rowView='',rowOrder='';
+function viewKey(){return document.getElementById('search').value+'|'+document.getElementById('filter').value}
+function rememberRows(){rowSigs=new Map(data.items.map(x=>[x.id,JSON.stringify(x)]));rowView=viewKey();rowOrder=data.items.map(x=>x.id).join('\n')}
+function patchRows(){if(rowView!==viewKey()||rowOrder!==data.items.map(x=>x.id).join('\n'))return false;const seen=new Set(),changed=[];
+ for(const x of data.items){seen.add(x.id);const s=JSON.stringify(x);if(rowSigs.get(x.id)!==s)changed.push(x)}
+ if(seen.size!==rowSigs.size||changed.length>25)return false;
+ const q=document.getElementById('search').value.trim().toLowerCase(),f=document.getElementById('filter').value;
+ for(const x of changed){const old=JSON.parse(rowSigs.get(x.id)||'null');if(!old||old.category!==x.category||old.order!==x.order)return false;
+  const vis=(!q||[x.id,x.name,x.category,x.location,x.notes].some(y=>String(y||'').toLowerCase().includes(q)))&&matchFilter(x,f),tr=document.querySelector(`tr[data-id="${CSS.escape(x.id)}"]`);
+  if(vis!==!!tr)return false}
+ const a=document.activeElement,skipped=[];
+ for(const x of changed){const tr=document.querySelector(`tr[data-id="${CSS.escape(x.id)}"]`);if(!tr)continue;if(tr.contains(a)){skipped.push(x.id);continue}const t=document.createElement('tbody');t.innerHTML=rowHtml(x);const n=t.firstElementChild;tr.replaceWith(n);hydratePhotos(n)}
+ const old=rowSigs;rememberRows();skipped.forEach(id=>rowSigs.set(id,old.get(id)));if(skipped.length)pendingRender=true;return true}
+function renderItems(){const q=document.getElementById('search').value.trim().toLowerCase(),filter=document.getElementById('filter').value;let filtered=data.items.filter(x=>(!q||[x.id,x.name,x.category,x.location,x.notes].some(y=>String(y||'').toLowerCase().includes(q)))&&matchFilter(x,filter));const cats=[...new Set(filtered.map(x=>x.category))],oidx=orderIndex();document.getElementById('inventory').innerHTML=cats.length?cats.map(cat=>{let entries=sortCat(filtered.filter(x=>x.category===cat),oidx);return `<section class="category"><h2>${escapeHtml(cat)} <span class="muted">(${entries.length})</span>${entries.length>1?`<button type="button" class="sortbtn" data-sortcat="${escapeHtml(cat)}" title="Put these parts in size order (small to large)">Sort by size</button>`:''}</h2><div class="scroll"><table><thead><tr><th aria-label="Drag to reorder"></th><th>TO BUY</th><th>IN STOCK</th><th>PART SIZE / DESCRIPTION</th><th>STOCK</th><th title="Optional exact count">COUNT</th><th title="Count turns red (Low) below this number">LOW AT</th><th>LOCATION / DRAWER</th><th>NOTES</th><th><span class="sr" style="position:absolute;left:-9999px">Actions</span></th></tr></thead><tbody>${entries.map(rowHtml).join('')}</tbody></table></div></section>`}).join(''):'<div class="panel">No items match your search.</div>';hydratePhotos(document.getElementById('inventory'));rememberRows()}
 function itemTags(x){let t='';if(x.ordered&&!x.store)t+='<span class="tag ord">Ordered</span>';if(x.store&&x.need)t+='<span class="tag ord">Reorder</span>';if(x.archived)t+='<span class="tag arc">Archived</span>';return t}
 function renderLocations(){document.getElementById('locationList').innerHTML=data.locations.map(l=>`<div class="locrow"><strong>${escapeHtml(l.id)}</strong> — ${escapeHtml(l.name)}<div class="small">${escapeHtml(l.detail||'')}</div></div>`).join('')}
 function render(){renderStats();renderItems();renderLocations()}
@@ -92,7 +109,7 @@ document.getElementById('inventory').addEventListener('click',e=>{const b=e.targ
  if(act==='delete'){if(!confirm('Delete "'+it.name+'" ('+it.id+') permanently?\n\nIt will be removed from every device. To just hide it, use Archive instead.'))return;
   const copy=JSON.parse(JSON.stringify(it));delete copy.u;data.items.splice(idx,1);save();renderItems();
   undoToast('Deleted '+it.id,()=>{if(data.items.some(x=>x.id===copy.id)){toast('That ID is in use again — restore from a backup instead');return}data.items.splice(Math.min(idx,data.items.length),0,copy);save();renderItems();toast('Restored '+copy.id)})}
- else if(act==='archive'){it.archived=true;save();renderItems();undoToast('Archived '+it.id+' (see filter → Archived)',()=>{it.archived=false;save();renderItems()})}
+ else if(act==='archive'){const id=it.id;it.archived=true;save();renderItems();undoToast('Archived '+id+' (see filter → Archived)',()=>{const x=itemById(id);if(!x)return;x.archived=false;save();renderItems()})}
  else if(act==='unarchive'){it.archived=false;save();renderItems();toast('Restored '+it.id)}});
 // ===================== Stock level: Plenty / Low / Out, with an optional count =====================
 const STOCK_LABEL={plenty:'Plenty',low:'Low',out:'Out'};
@@ -103,15 +120,15 @@ function actionToast(msg,label,fn,ms){const e=document.getElementById('toast');e
 // After any stock change: Out ticks To buy automatically; newly Low gives a heads-up with a one-tap "Add to To buy".
 function afterStockChange(it,prev,tr){const now=stockLevel(it);if(now===prev)return;
  if(now==='out'&&!it.need){it.need=true;if(!it.store)it.buy=false;paintRow(tr,it);save();toast(it.name+' is out · added to To buy');return}
- if(now==='low'&&prev!=='low'&&prev!=='out'&&!it.need)actionToast('Heads-up: '+it.name+' is running low','Add to To buy',()=>{it.need=true;save();paintRow(document.querySelector(`tr[data-id="${CSS.escape(it.id)}"]`),it);toast('Added to To buy')})}
+ if(now==='low'&&prev!=='low'&&prev!=='out'&&!it.need){const id=it.id;actionToast('Heads-up: '+it.name+' is running low','Add to To buy',()=>{const x=itemById(id);if(!x)return;x.need=true;save();paintRow(document.querySelector(`tr[data-id="${CSS.escape(id)}"]`),x);toast('Added to To buy')})}}
 
 // ===================== Ordering: drag grip + Sort by size =====================
 const GRIP_SVG='<svg viewBox="0 0 10 16" fill="currentColor"><circle cx="2.5" cy="3" r="1.4"/><circle cx="7.5" cy="3" r="1.4"/><circle cx="2.5" cy="8" r="1.4"/><circle cx="7.5" cy="8" r="1.4"/><circle cx="2.5" cy="13" r="1.4"/><circle cx="7.5" cy="13" r="1.4"/></svg>';
 function orderIndex(){const m=new Map();data.items.forEach((x,i)=>m.set(x.id,i));return m}
 function effOrder(x,idx){return typeof x.order==='number'?x.order:(idx.get(x.id)??0)*10}
 function sortCat(list,idx){return list.slice().sort((a,b)=>effOrder(a,idx)-effOrder(b,idx)||(idx.get(a.id)-idx.get(b.id)))}
-function snapshotOrders(cat){return data.items.filter(x=>x.category===cat).map(x=>[x,x.order])}
-function restoreOrders(snap){snap.forEach(([x,o])=>{if(o===undefined)delete x.order;else x.order=o});save();renderItems()}
+function snapshotOrders(cat){return data.items.filter(x=>x.category===cat).map(x=>[x.id,x.order])}
+function restoreOrders(snap){snap.forEach(([id,o])=>{const x=itemById(id);if(!x)return;if(o===undefined)delete x.order;else x.order=o});save();renderItems()}
 function normalizeCat(cat){const idx=orderIndex();sortCat(data.items.filter(x=>x.category===cat),idx).forEach((x,k)=>x.order=k*10)}
 // Numbers in a part name, in order: 1-1/2 → 1.5, 3/8 → .375, #8 → 8, M5 → 5, 12" → 12. Compared left to right.
 function sizeKey(name){const out=[];String(name||'').replace(/(\d+)-(\d+)\/(\d+)|(\d+)\/(\d+)|(\d+(?:\.\d+)?)/g,(m,w,n,d,n2,d2,num)=>{out.push(w!=null?+w+n/d:n2!=null?n2/d2:+num);return m});return out}
@@ -138,36 +155,53 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drag)dragEnd(false)
 // ===================== Part photos =====================
 // Stored as x.img = "sb:<user id>/<file>.jpg" (private Supabase Storage bucket "part-photos") or a pasted https:// link.
 const PHOTO_BUCKET='part-photos',CAM_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
-const signedCache=new Map();
+// Each upload is saved twice: a small thumbnail for the list (~10 KB) and the full picture (~150 KB) for the photo window.
+// Signed links last 7 days and are remembered on this device, so the browser can reuse its cached copy (saves Supabase egress).
+const URL_STORE='workshop-navigator-photo-links-v1';
+const signedCache=new Map((()=>{try{const o=JSON.parse(localStorage.getItem(URL_STORE)||'{}'),now=Date.now();return Object.entries(o).filter(([,v])=>v&&v.exp>now)}catch(e){return []}})());
+function keepLinks(){try{const o={};signedCache.forEach((v,k)=>{if(v.exp>Date.now())o[k]=v});localStorage.setItem(URL_STORE,JSON.stringify(o))}catch(e){}}
+const thumbPath=p=>p.replace(/\.jpg$/,'-t.jpg');
 function photoCell(x){const label=x.img?'View or change photo':'Add a photo';const inner=x.img?`<span class="pphoto"><img alt="" referrerpolicy="no-referrer" loading="lazy" data-img="${escapeHtml(x.img)}"${/^https:\/\//.test(x.img)?` src="${escapeHtml(x.img)}"`:''}></span>`:WNParts.thumb(x);return `<button type="button" class="pbtn" data-act="photo" title="${label}" aria-label="${label}: ${escapeHtml(x.name)}">${inner}<span class="cam">${CAM_SVG}</span></button>`}
-async function signedUrl(paths){const c=WN.client,now=Date.now(),need=[...new Set(paths)].filter(p=>!(signedCache.get(p)?.exp>now+60e3));
- if(need.length&&c&&WN.user){try{const {data:res,error}=await c.storage.from(PHOTO_BUCKET).createSignedUrls(need,6*3600);if(!error)(res||[]).forEach(r=>{if(r.signedUrl)signedCache.set(r.path,{url:r.signedUrl,exp:now+6*3600e3})})}catch(e){}}
+// Links that failed (e.g. a missing thumbnail) aren't asked for again for 30 min, so redraws never repeat requests.
+const linkMiss=new Map();
+async function signedUrl(paths){const c=WN.client,now=Date.now(),need=[...new Set(paths)].filter(p=>!(signedCache.get(p)?.exp>now+3600e3)&&!(linkMiss.get(p)>now));
+ if(need.length&&c&&WN.user){try{const {data:res,error}=await c.storage.from(PHOTO_BUCKET).createSignedUrls(need,7*86400);if(!error){(res||[]).forEach(r=>{if(r.signedUrl&&!r.error)signedCache.set(r.path,{url:r.signedUrl,exp:now+7*86400e3})});keepLinks()}need.forEach(p=>{if(!signedCache.has(p))linkMiss.set(p,now+30*60e3)})}catch(e){need.forEach(p=>linkMiss.set(p,now+60e3))}}
  return paths.map(p=>signedCache.get(p)?.url||'')}
-async function hydratePhotos(scope){const imgs=[...(scope||document).querySelectorAll('img[data-img^="sb:"]')].filter(i=>!i.getAttribute('src'));if(!imgs.length)return;const urls=await signedUrl(imgs.map(i=>i.dataset.img.slice(3)));imgs.forEach((i,k)=>{if(urls[k])i.src=urls[k]})}
-async function shrinkImage(file,max=1200){const url=URL.createObjectURL(file);try{const img=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>bad(new Error('That file could not be read as a picture.'));i.src=url});
- const sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.round(img.naturalWidth*sc),h=Math.round(img.naturalHeight*sc),cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);
- return await new Promise((ok,bad)=>cv.toBlob(b=>b?ok(b):bad(new Error('Could not shrink the picture.')),'image/jpeg',.82))}finally{URL.revokeObjectURL(url)}}
-function removeStored(img){if(img&&img.startsWith('sb:')&&WN.client&&WN.user){WN.client.storage.from(PHOTO_BUCKET).remove([img.slice(3)]).catch(()=>{})}}
-const dlg=document.getElementById('photoDlg');let dlgItem=null;
+async function hydratePhotos(scope){const imgs=[...(scope||document).querySelectorAll('img[data-img^="sb:"]')].filter(i=>!i.getAttribute('src'));if(!imgs.length)return;
+ const full=imgs.map(i=>i.dataset.img.slice(3)),thumbs=await signedUrl(full.map(thumbPath));
+ const miss=full.filter((p,k)=>!thumbs[k]),fb=miss.length?await signedUrl(miss):[];
+ imgs.forEach((i,k)=>{const u=thumbs[k]||fb[miss.indexOf(full[k])];if(u)i.src=u})}
+async function shrinkImage(file,max=1200,q=.82){const url=URL.createObjectURL(file);try{const img=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>bad(new Error('That file could not be read as a picture.'));i.src=url});
+ const sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*sc)),h=Math.max(1,Math.round(img.naturalHeight*sc)),cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);
+ return await new Promise((ok,bad)=>cv.toBlob(b=>b?ok(b):bad(new Error('Could not shrink the picture.')),'image/jpeg',q))}finally{URL.revokeObjectURL(url)}}
+function removeStored(img){if(img&&img.startsWith('sb:')&&WN.client&&WN.user){const p=img.slice(3);WN.client.storage.from(PHOTO_BUCKET).remove([p,thumbPath(p)]).catch(()=>{});signedCache.delete(p);signedCache.delete(thumbPath(p));keepLinks()}}
+const dlg=document.getElementById('photoDlg');let dlgId=null;
+// Always look the part up by ID: a sync from another device can swap in fresh copies of the list at any time.
+const dlgItem=()=>dlgId==null?null:itemById(dlgId);
 function dlgMsg(t,err){const m=document.getElementById('pdMsg');m.textContent=t||'';m.classList.toggle('err',!!err)}
-async function showPhotoInDlg(){const v=document.getElementById('pdView'),x=dlgItem;document.getElementById('pdRemove').disabled=!x.img;
- if(!x.img){v.innerHTML='<div class="pd-empty">No photo yet.<br>Choose one from your library or camera, or paste a link to a product picture.</div>';return}
- const img=new Image();img.referrerPolicy='no-referrer';img.alt=x.name;img.onerror=()=>{v.innerHTML='<div class="pd-empty">This picture couldn&rsquo;t be shown.'+(x.img.startsWith('sb:')&&!WN.user?' Sign in to see your photos.':' Some stores block their pictures from showing on other sites &mdash; save it to your library and use Choose photo instead.')+'</div>'};
- img.src=x.img.startsWith('sb:')?(await signedUrl([x.img.slice(3)]))[0]||'data:,':x.img;v.innerHTML='';v.appendChild(img)}
-function openPhoto(id){dlgItem=data.items.find(x=>x.id===id);if(!dlgItem)return;document.getElementById('pdTitle').textContent=dlgItem.name;document.getElementById('pdSub').textContent=dlgItem.id+' · '+(dlgItem.category||'');document.getElementById('pdUrl').value=/^https:/.test(dlgItem.img||'')?dlgItem.img:'';dlgMsg(WN.user?'':'Sign in to upload photos. Pasted links work without signing in.');showPhotoInDlg();if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','')}
-function setImg(x,val){const old=x.img;if(val)x.img=val;else delete x.img;save();if(old&&old!==val)removeStored(old);const tr=document.querySelector(`tr[data-id="${CSS.escape(x.id)}"]`);if(tr){const b=tr.querySelector('.pbtn');if(b){b.outerHTML=photoCell(x);hydratePhotos(tr)}}}
-document.getElementById('pdFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!dlgItem)return;
+async function showPhotoInDlg(){const v=document.getElementById('pdView'),x=dlgItem();if(!x){v.innerHTML='<div class="pd-empty">This part was removed.</div>';return}document.getElementById('pdRemove').disabled=!x.img;
+ if(!x.img){const cat=WNParts.lookup(x);v.innerHTML=cat?`<figure style="margin:0;text-align:center;padding:16px"><img src="${escapeHtml(cat.src)}" alt="" style="max-height:34vh;max-width:100%"><figcaption class="pd-empty" style="padding:8px 0 0">Catalog picture (${escapeHtml(cat.label)}). Add your own photo below.</figcaption></figure>`:'<div class="pd-empty">No photo yet.<br>Choose one from your library or camera, or paste a link to a product picture.</div>';return}
+ const id=x.id,src=x.img;const img=new Image();img.referrerPolicy='no-referrer';img.alt=x.name;img.onerror=()=>{if(dlgId!==id)return;v.innerHTML='<div class="pd-empty">This picture couldn&rsquo;t be shown.'+(src.startsWith('sb:')&&!WN.user?' Sign in to see your photos.':' Some stores block their pictures from showing on other sites &mdash; save it to your library and use Choose photo instead.')+'</div>'};
+ const url=src.startsWith('sb:')?(await signedUrl([src.slice(3)]))[0]||'data:,':src;if(dlgId!==id)return;img.src=url;v.innerHTML='';v.appendChild(img)}
+function openPhoto(id){dlgId=id;const x=dlgItem();if(!x)return;document.getElementById('pdTitle').textContent=x.name;document.getElementById('pdSub').textContent=x.id+' · '+(x.category||'');document.getElementById('pdUrl').value=/^https:/.test(x.img||'')?x.img:'';dlgMsg(WN.user?'':'Sign in to upload photos. Pasted links work without signing in.');showPhotoInDlg();if(dlg.showModal){if(!dlg.open)dlg.showModal()}else dlg.setAttribute('open','')}
+function setImg(id,val){const x=itemById(id);if(!x)return false;const old=x.img;if(val)x.img=val;else delete x.img;save();if(old&&old!==val)removeStored(old);const tr=document.querySelector(`tr[data-id="${CSS.escape(id)}"]`);if(tr){const b=tr.querySelector('.pbtn');if(b){b.outerHTML=photoCell(x);hydratePhotos(tr)}}return true}
+let uploading=0;
+document.getElementById('pdFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';const id=dlgId;if(!f||id==null)return;
  if(!WN.client||!WN.user){dlgMsg('Sign in first (Settings → Sign in) to upload photos.',true);return}
- try{dlgMsg('Shrinking photo…');const blob=await shrinkImage(f);dlgMsg('Uploading ('+Math.round(blob.size/1024)+' KB)…');
-  const path=WN.user.id+'/'+String(dlgItem.id).replace(/[^\w-]/g,'_')+'-'+Date.now().toString(36)+'.jpg';
-  const {error}=await WN.client.storage.from(PHOTO_BUCKET).upload(path,blob,{contentType:'image/jpeg',upsert:false,cacheControl:'31536000'});
-  if(error)throw error;signedCache.delete(path);setImg(dlgItem,'sb:'+path);dlgMsg('Saved.');showPhotoInDlg()}
- catch(err){const m=String(err&&err.message||err);dlgMsg(/bucket not found|not found/i.test(m)?'Photo storage isn’t set up yet in Supabase (one-time setup). Pasted links still work.':/row-level security|policy|unauthor/i.test(m)?'Supabase blocked the upload. The photo permissions (setup step 2) are missing.':'Upload failed: '+m,true)}});
-document.getElementById('pdUrlSave').addEventListener('click',()=>{const u=document.getElementById('pdUrl').value.trim();if(!/^https:\/\/\S+$/i.test(u)){dlgMsg('Paste a full link starting with https://',true);return}setImg(dlgItem,u);dlgMsg('Link saved.');showPhotoInDlg()});
-document.getElementById('pdRemove').addEventListener('click',()=>{if(!dlgItem||!dlgItem.img)return;if(!confirm('Remove the photo from '+dlgItem.name+'?'))return;setImg(dlgItem,'');document.getElementById('pdUrl').value='';dlgMsg('Photo removed.');showPhotoInDlg()});
+ const say=(t,err)=>{if(dlgId===id)dlgMsg(t,err)};uploading++;
+ try{say('Shrinking photo…');const [full,thumb]=await Promise.all([shrinkImage(f),shrinkImage(f,220,.75)]);say('Uploading ('+Math.round((full.size+thumb.size)/1024)+' KB)…');
+  const path=WN.user.id+'/'+String(id).replace(/[^\w-]/g,'_')+'-'+Date.now().toString(36)+'.jpg',bucket=WN.client.storage.from(PHOTO_BUCKET),opt={contentType:'image/jpeg',upsert:false,cacheControl:'31536000'};
+  const r1=await bucket.upload(path,full,opt);if(r1.error)throw r1.error;
+  const r2=await bucket.upload(thumbPath(path),thumb,opt);if(r2.error)console.warn('thumbnail upload failed',r2.error);
+  if(!setImg(id,'sb:'+path)){removeStored('sb:'+path);say('That part was removed while uploading.',true);return}
+  say('Saved.');if(dlgId===id)showPhotoInDlg()}
+ catch(err){const m=String(err&&err.message||err);say(/bucket not found|not found/i.test(m)?'Photo storage isn’t set up yet in Supabase (one-time setup). Pasted links still work.':/row-level security|policy|unauthor/i.test(m)?'Supabase blocked the upload. The photo permissions (setup step 2) are missing.':'Upload failed: '+m,true)}
+ finally{uploading--}});
+document.getElementById('pdUrlSave').addEventListener('click',()=>{const u=document.getElementById('pdUrl').value.trim();if(!/^https:\/\/\S+$/i.test(u)){dlgMsg('Paste a full link starting with https://',true);return}if(!setImg(dlgId,u))return;dlgMsg('Link saved.');showPhotoInDlg()});
+document.getElementById('pdRemove').addEventListener('click',()=>{const x=dlgItem();if(!x||!x.img)return;if(!confirm('Remove the photo from '+x.name+'?'))return;setImg(x.id,'');document.getElementById('pdUrl').value='';dlgMsg('Photo removed.');showPhotoInDlg()});
 document.getElementById('pdClose').addEventListener('click',()=>{dlg.close?dlg.close():dlg.removeAttribute('open')});
 dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
-WN.on('auth',()=>{signedCache.clear();setTimeout(()=>hydratePhotos(),300)});
+WN.on('auth',u=>{if(!u){signedCache.clear();try{localStorage.removeItem(URL_STORE)}catch(e){}}setTimeout(()=>hydratePhotos(),300)});
 document.getElementById('search').addEventListener('input',renderItems);document.getElementById('filter').addEventListener('change',()=>{renderItems();renderStats()});
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['inventoryTab','locationsTab','addTab','settingsTab'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById(b.dataset.tab).classList.remove('hidden')});
 function nextId(){const nums=[...data.items.map(x=>x.id),...Object.keys(data.del||{}).filter(k=>k.startsWith('items:')).map(k=>k.slice(6))].map(id=>Number((String(id||'')).match(/(\d+)$/)?.[1]||0));return 'HW-'+String(Math.max(0,...nums)+1).padStart(4,'0')}
@@ -290,11 +324,12 @@ WN.on('change',(d,src)=>{
  data=d;
  if(src==='cloud'||src==='realtime')migrateStatusModel();
  if(src!=='local'&&typingInList()){pendingRender=true;renderStats();return}
+ if(src!=='local'&&patchRows()){renderStats();renderLocations();applySettings(false);if(typeof scheduleBackup==='function')scheduleBackup();return}
  render();
  if(src!=='local'&&typeof scheduleBackup==='function')scheduleBackup();
 });
 document.getElementById('inventory').addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender&&!typingInList()){pendingRender=false;render()}},0));
-WN.on('status',s=>{setCloud(s.msg);updateChip();if(s.state==='live'&&migrateStatusModel())render()});
+WN.on('status',s=>{setCloud(s.msg);updateChip();if(s.state==='paused')actionToast('Sync paused (unusual activity). Changes are saved here.','Resume',()=>WN.syncNow(),60000);if(s.state==='live'&&migrateStatusModel())render()});
 // ^ 'live' = cloud copy has been read and merged. The change event alone isn't enough: it doesn't fire when this device was already up to date.
 WN.on('auth',(u,event)=>{
  cloudUser=u;showCloudUI();updateChip();
@@ -353,7 +388,7 @@ document.getElementById('setAccent').addEventListener('input',e=>updateSetting('
 document.getElementById('setFilter').addEventListener('change',e=>updateSetting('defaultFilter',e.target.value));
 document.getElementById('setCompact').addEventListener('change',e=>updateSetting('compact',e.target.checked));
 document.getElementById('setStats').addEventListener('change',e=>updateSetting('showStats',e.target.checked));
-document.getElementById('resetCustom').addEventListener('click',()=>{data.settings={...DEFAULT_SETTINGS};applySettings(false);save();toast('Settings reset')});
+document.getElementById('resetCustom').addEventListener('click',()=>{data.settings={...DEFAULT_SETTINGS,...((data.settings||{}).statusModel?{statusModel:data.settings.statusModel}:{})};applySettings(false);save();toast('Settings reset')});
 document.getElementById('customForm').addEventListener('submit',e=>e.preventDefault());
 document.getElementById('settingsBack').addEventListener('click',()=>document.querySelector('[data-tab="inventoryTab"]').click());
 document.getElementById('syncChip').addEventListener('click',()=>{document.getElementById('openSettings').click();document.getElementById('cloudPanel').scrollIntoView({behavior:'smooth',block:'start'})});

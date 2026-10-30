@@ -152,11 +152,12 @@
   let opening = false;
   window.addEventListener('pointerdown', (e) => {
     const img = e.target.closest && e.target.closest('.pthumb img');
-    if (!img || (box && box.contains(img)) || e.button > 0) return;
+    if (!img || (box && box.contains(img)) || e.button > 0 || img.closest('.pbtn')) return; // Checklist photo button handles its own taps
     e.preventDefault(); e.stopPropagation(); opening = true; open(img);
   }, true);
   window.addEventListener('click', (e) => {
     const img = e.target.closest && e.target.closest('.pthumb img');
+    if (img && img.closest('.pbtn') && !opening) return;
     if (opening || (img && !(box && box.contains(img)))) { e.preventDefault(); e.stopPropagation(); if (!opening && img) open(img); opening = false; }
   }, true);
   document.addEventListener('keydown', (e) => {

@@ -1376,11 +1376,15 @@ function toDoc(name) {
   if (name === 'checklist') {
     for (const c of CHK) {
       let it = byId.get(String(c.id));
-      if (!it) { it = { id: nextHW(), category: c.fam || 'Other', name: c.item, buy: false, store: false, qty: '', location: '', notes: c.qty ? 'Qty ' + c.qty : '' }; d.items.push(it); byId.set(it.id, it); c.id = it.id; }
+      if (!it) { it = { id: nextHW(), category: c.fam || 'Other', name: c.item, need: c.status === 'need' || c.status === 'ordered', buy: false, store: false, qty: '', location: '', notes: c.qty ? 'Qty ' + c.qty : '' }; d.items.push(it); byId.set(it.id, it); c.id = it.id; }
       const bought = c.status === 'purchased' || c.status === 'stored', stored = c.status === 'stored';
+      const hadIt = !!(it.buy || it.store);
       if (it.buy !== bought) it.buy = bought;
-      if (it.store !== stored) it.store = stored;
+      if (it.store !== stored) { it.store = stored; if (stored && it.need) it.need = false; }
       if (c.status === 'ordered') it.ordered = true; else if (it.ordered) it.ordered = false;
+      // Checklist page's "To buy" box: bought → off; moved back to Need/Ordered from bought → on; Ordered → on.
+      if (bought && !stored && it.need) it.need = false;
+      if (!bought && (hadIt || c.status === 'ordered') && !it.need) it.need = true;
       if (stored && (c.loc || '') !== (it.location || '')) it.location = c.loc || '';
     }
   } else if (name === 'inventory') {
