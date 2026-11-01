@@ -131,13 +131,15 @@ function renderLocations(){document.getElementById('locationList').innerHTML=dat
 function render(){renderStats();renderItems();renderLocations()}
 function onFieldChange(e){let tr=e.target.closest('[data-id]');if(!tr)return;let it=data.items.find(x=>x.id===tr.dataset.id),field=e.target.dataset.field;if(!it||!field)return;let v=e.target.type==='checkbox'?e.target.checked:e.target.value;
  const prevLevel=stockLevel(it);
- if(field==='qty'){v=v===''?'':Math.max(0,Math.floor(Number(v)||0));it.qty=v;if(v!==''&&!(Number(it.full)>=v))it.full=v;if(v!=='')it.stock=countLevel(it)}
- else if(field==='stock'){if(v)it.stock=v;else delete it.stock;if(v==='out'&&qtyNum(it)!=null)it.qty=0}
+ if(field==='qty'){v=v===''?'':Math.max(0,Math.floor(Number(v)||0));it.qty=v;const nf=fullFor(it,v);if(nf===undefined)delete it.full;else it.full=nf;if(v!=='')it.stock=countLevel(it)}
+ else if(field==='stock'){if(v)it.stock=v;else delete it.stock;if(v==='out'&&qtyNum(it)!=null)it.qty=0;if(v==='plenty')plentyFull(it)}
  else if(field==='lowAt'){it.lowAt=v===''?'':Math.max(0,Math.floor(Number(v)||0));if(qtyNum(it)!=null)it.stock=countLevel(it)}
  else if(field==='store'){it.store=v;if(v){it.buy=true;it.need=false;it.ordered=false;if(qtyNum(it)!=null&&!(Number(it.full)>0))it.full=qtyNum(it)}}
  else if(field==='need'){it.need=v;if(v){if(!it.store)it.buy=false}else it.ordered=false}
  else it[field]=v;
  refreshViews(it);save();toast('Saved');afterStockChange(it,prevLevel,tr)}
+function plentyFull(it){const q=qtyNum(it);if(q==null||q<=0)return false;const was=Number(it.full);it.full=q;if(sheetEl.open&&it.id===editId)editFull0=q;return was!==q}
+document.getElementById('esBody').addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('input[data-field="stock"][value="plenty"]');if(!r||!r.checked)return;const it=itemById(e.currentTarget.dataset.id);if(!it||stockLevel(it)!=='plenty')return;if(plentyFull(it)){refreshViews(it);save();toast('Saved')}});
 document.getElementById('inventory').addEventListener('change',onFieldChange);document.getElementById('esBody').addEventListener('change',onFieldChange);
 const ICO={trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>',archive:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8M10 12h4"/></svg>',restore:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>'};
 function undoToast(msg,undo){const e=toastEl();e.textContent=msg;const b=document.createElement('button');b.type='button';b.textContent='Undo';b.onclick=()=>{clearTimeout(window.toastTimer);e.style.display='none';undo()};e.appendChild(b);e.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>e.style.display='none',8000)}
@@ -259,7 +261,10 @@ WN.on('auth',u=>{if(!u){signedCache.clear();try{localStorage.removeItem(URL_STOR
 
 // ===================== Edit sheet: one part at a time, the rest of the list dimmed =====================
 const sheetEl=document.getElementById('editSheet'),esBody=document.getElementById('esBody'),esPos=document.getElementById('esPos');
-let editId=null,editSnap=null;
+let editId=null,editSnap=null,editFull0;
+// Full level (amber = under half of it): only the count you leave counts. While a part is open, counts you pass through
+// (holding + up to 160 and back) don't raise it; it's the full level from when you opened the part, or the final count if higher.
+function fullFor(x,v){const base=(sheetEl.open&&x.id===editId)?editFull0:Number(x.full);if(v==='')return (sheetEl.open&&x.id===editId)?editFull0:x.full;return Number(base)>=v?Number(base):v}
 function rowEl(id){return document.querySelector(`#inventory [data-id="${CSS.escape(id)}"]`)}
 function refreshViews(x){if(!x)return;paintRow(rowEl(x.id),x);paintSheet(x)}
 function snapOf(x){const c=JSON.parse(JSON.stringify(x));delete c.u;return JSON.stringify(c)}
@@ -280,7 +285,7 @@ function paintSheet(x){if(!sheetEl.open||!x||x.id!==editId)return;const a=docume
  for(const f of ['location','notes']){const el=esBody.querySelector(`[data-field="${f}"]`);if(el&&a!==el)el.value=x[f]??''}
  const ab=esBody.querySelector('[data-act="archive"],[data-act="unarchive"]');if(ab&&!!x.archived!==(ab.dataset.act==='unarchive')){ab.dataset.act=x.archived?'unarchive':'archive';ab.textContent=x.archived?'Restore':'Archive'}
  const u=esBody.querySelector('[data-sh="undo"]');if(u)u.disabled=snapOf(x)===editSnap;paintNav()}
-function openEditor(id,dir){const x=itemById(id);if(!x)return;flushStepper();editId=id;editSnap=snapOf(x);esBody.dataset.id=x.id;esBody.innerHTML=sheetHtml(x);hydratePhotos(esBody);paintNav();
+function openEditor(id,dir){const x=itemById(id);if(!x)return;flushStepper();editId=id;editSnap=snapOf(x);editFull0=Number(x.full)>0?Number(x.full):undefined;esBody.dataset.id=x.id;esBody.innerHTML=sheetHtml(x);hydratePhotos(esBody);paintNav();
  esBody.classList.remove('slide-l','slide-r');if(dir){void esBody.offsetWidth;esBody.classList.add(dir>0?'slide-l':'slide-r')}esBody.scrollTop=0;
  if(!sheetEl.open){sheetEl.classList.remove('closing');sheetEl.style.translate='';sheetEl.showModal();document.body.classList.add('sheet-open');setTimeout(()=>{const d=sheetEl.querySelector('.sh-done');if(d&&matchMedia('(hover:hover)').matches)d.focus({preventScroll:true})},30)}
  const r=rowEl(id);if(r)r.scrollIntoView({block:'nearest'})}
@@ -300,7 +305,7 @@ sheetEl.addEventListener('keydown',e=>{const t=e.target;if(/INPUT|TEXTAREA|SELEC
 // The number updates instantly; it is saved once, when you stop.
 let stp=null,stCommitT=null;
 function stQty(){return esBody.querySelector('[data-field="qty"]')}
-function stShow(q){const x=itemById(editId);if(!x)return;const v=q.value===''?'':Number(q.value),tmp={...x,qty:v};if(v!==''&&!(Number(tmp.full)>=v))tmp.full=v;tmp.stock=v===''?x.stock:countLevel(tmp);
+function stShow(q){const x=itemById(editId);if(!x)return;const v=q.value===''?'':Number(q.value),tmp={...x,qty:v};if(v!=='')tmp.full=fullFor(x,v);tmp.stock=v===''?x.stock:countLevel(tmp);
  q.classList.remove('q-ok','q-half','q-low');const k=qtyClass(tmp);if(k)q.classList.add(k);const sm=esBody.querySelector('.sh-sum');if(sm)sm.innerHTML=sheetSumHtml(tmp)}
 function stBump(q,d){const cur=q.value===''?0:Math.max(0,Math.floor(Number(q.value)||0)),v=Math.max(0,cur+d);if(v===cur&&q.value!=='')return;q.value=v;stShow(q);q.classList.remove('bump');void q.offsetWidth;q.classList.add('bump')}
 function stSchedule(ms){clearTimeout(stCommitT);stCommitT=setTimeout(()=>{stCommitT=null;const q=stQty();if(q)q.dispatchEvent(new Event('change',{bubbles:true}))},ms)}
