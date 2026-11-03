@@ -44,13 +44,16 @@
     return { m, dm, dmX: Math.round((225 - dm) / 2), dmY: 12, h, ty: 12 + dm + 12, text: cut(text, 205, h) };
   }
   // ---------- ZPL
+  let MEDIA = 'continuous'; // 'continuous' (no gaps: label + 1″ to tear, then stop) or 'gap' (die-cut labels)
+  const setMedia = (m) => { MEDIA = m === 'gap' ? 'gap' : 'continuous'; };
+  const head = (w, h) => MEDIA === 'gap' ? `^XA^CI28^MNY^MMT^PW${w}^LL${h}^LH0,0` : `^XA^CI28^MNN^MMT^PW${w}^LL${h + DPI}^LH0,0`;
   const fd = (v) => '^FH_^FD' + String(v).replace(/_/g, '_5F').replace(/\^/g, '_5E').replace(/~/g, '_7E') + '^FS';
   function zpl(roll, c, copies) {
     const q = Math.max(1, Math.min(9, copies | 0 || 1));
     if (roll === 'side') { const L = sideLayout(c);
-      return `^XA^CI28^PW225^LL225^LH0,0\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.text ? `^FO0,${L.ty}^A0N,${L.h},${L.h}^FB225,1,0,C${fd(L.text)}\n` : '') + `^PQ${q}^XZ\n`; }
+      return `${head(225, 225)}\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.text ? `^FO0,${L.ty}^A0N,${L.h},${L.h}^FB225,1,0,C${fd(L.text)}\n` : '') + `^PQ${q}^XZ\n`; }
     const L = frontLayout(c);
-    return `^XA^CI28^PW450^LL150^LH0,0\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.l1 ? `^FO${L.tx},${L.y1}^A0N,${L.h1},${L.h1}^FB${L.tw},1,0,L${fd(L.l1)}\n` : '') + (L.l2 ? `^FO${L.tx},${L.y2}^A0N,${L.h2},${L.h2}^FB${L.tw},1,0,L${fd(L.l2)}\n` : '') + `^PQ${q}^XZ\n`;
+    return `${head(450, 150)}\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.l1 ? `^FO${L.tx},${L.y1}^A0N,${L.h1},${L.h1}^FB${L.tw},1,0,L${fd(L.l1)}\n` : '') + (L.l2 ? `^FO${L.tx},${L.y2}^A0N,${L.h2},${L.h2}^FB${L.tw},1,0,L${fd(L.l2)}\n` : '') + `^PQ${q}^XZ\n`;
   }
   // ---------- on-screen preview (same layout, drawn in HTML). px = screen pixels per inch.
   function preview(roll, c, px) {
@@ -68,17 +71,38 @@
   const BP = () => (location.protocol === 'https:' ? 'https://localhost:9101/' : 'http://localhost:9100/');
   function timed(p, ms) { return Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error('timeout')), ms))]); }
   let printer = null, lastLook = 0;
+  const isDev = (d) => !!(d && (d.uid || d.name));
+  async function listed() { try { const r = await timed(fetch(BP() + 'available', { method: 'GET' }), 3000); if (!r.ok) return null; const j = JSON.parse((await r.text()) || '{}'); return (j.printer || []).find(isDev) || null; } catch (e) { return null; } }
   async function findPrinter(force) {
     if (!force && Date.now() - lastLook < 20000) return printer;
     lastLook = Date.now();
-    try { const r = await timed(fetch(BP() + 'default?type=printer', { method: 'GET' }), 2500); const t = r.ok ? (await r.text()).trim() : ''; printer = t ? JSON.parse(t) : null; }
+    try { const r = await timed(fetch(BP() + 'default?type=printer', { method: 'GET' }), 2500); const t = r.ok ? (await r.text()).trim() : ''; let d = null; try { d = t ? JSON.parse(t) : null; } catch (e) { } printer = isDev(d) ? d : await listed(); }
     catch (e) { printer = null; }
     return printer;
+  }
+  // Full check: is Browser Print running, does it have a printer, and what does the printer itself say (~HQES)?
+  const ERR = [[0x1, 'out of labels'], [0x2, 'ribbon out'], [0x4, 'print head open'], [0x8, 'cutter fault'], [0x10, 'print head too hot'], [0x20, 'motor too hot'], [0x40, 'bad print head element'], [0x80, 'print head not detected']];
+  async function status() {
+    let txt;
+    try { const r = await timed(fetch(BP() + 'default?type=printer', { method: 'GET' }), 3000); txt = r.ok ? (await r.text()).trim() : null; if (!r.ok) return { state: 'refused', why: (await r.text().catch(() => '')) || 'Browser Print refused this site' }; }
+    catch (e) { return { state: 'nobp' }; }
+    let d = null; try { d = txt ? JSON.parse(txt) : null; } catch (e) { }
+    printer = isDev(d) ? d : await listed();
+    if (!printer) return { state: 'noprinter' };
+    lastLook = Date.now();
+    try {
+      await timed(fetch(BP() + 'write', { method: 'POST', body: JSON.stringify({ device: printer, data: '~HQES' }) }), 5000);
+      const r = await timed(fetch(BP() + 'read', { method: 'POST', body: JSON.stringify({ device: printer }) }), 5000); const t = r.ok ? await r.text() : '';
+      const m = t.match(/ERRORS:\s*(\d)\s+([0-9A-Fa-f]{8})\s+([0-9A-Fa-f]{8})/);
+      if (!m) return { state: 'ready', printer, note: 'Connected (the printer didn’t report its status).' };
+      const flags = parseInt(m[3], 16), probs = ERR.filter(([b]) => flags & b).map(([, w]) => w);
+      return m[1] === '0' || !flags ? { state: 'ready', printer } : { state: 'problem', printer, probs: probs.length ? probs : ['an error code ' + m[2] + ' ' + m[3]] };
+    } catch (e) { return { state: 'ready', printer, note: 'Connected, but the printer didn’t answer a status check — is it switched on?' }; }
   }
   async function send(data) {
     const dev = printer || await findPrinter(true); if (!dev) throw new Error('No Zebra printer found. Is Zebra Browser Print running on this computer?');
     const r = await timed(fetch(BP() + 'write', { method: 'POST', body: JSON.stringify({ device: dev, data }) }), 15000);
     if (!r.ok) throw new Error((await r.text()) || 'The printer refused the job');
   }
-  window.WNLabels = { ROLLS, content, custom, check, zpl, preview, textW, findPrinter, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
+  window.WNLabels = { setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
 })();
