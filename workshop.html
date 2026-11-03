@@ -106,7 +106,8 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
 .mrow{display:grid;grid-template-columns:1fr 84px 40px;gap:8px;align-items:center;margin-bottom:8px}.mrow input{height:42px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:15px;width:100%}
 .xbtn{width:40px;height:40px;border:0;border-radius:10px;background:var(--pill);font-size:18px;color:var(--ink2)}
 .danger{color:var(--bad)!important}.note{font-size:13px;color:var(--ink2);line-height:1.45;margin:6px 2px 12px}
-.tabsel{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin:0 -2px 6px;scrollbar-width:none}.tabsel button{flex:none;border:0;background:var(--pill);border-radius:999px;padding:8px 12px;font-weight:700;font-size:13px}.tabsel button.on{background:var(--brand);color:#fff}
+.tabsel{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:8px;margin:0 -2px 6px}
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}.ubtn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 10px;text-align:left;min-height:62px}.ubtn b{font:800 15px ui-monospace,Menlo,monospace;color:var(--brand)}.ubtn span{font-size:12.5px;font-weight:650;line-height:1.2;color:var(--ink)}.ubtn small{font-size:11px;color:var(--ink3);margin-top:auto}.ubtn.on{border-color:var(--brand);background:#e7f0fa;box-shadow:0 0 0 2px rgba(23,58,92,.15)}.tabsel button{flex:none;border:0;background:var(--pill);border-radius:999px;padding:8px 12px;font-weight:700;font-size:13px}.tabsel button.on{background:var(--brand);color:#fff}
 #toast,.toast-in{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#14273d;color:#fff;padding:11px 16px;border-radius:14px;font-size:14px;display:none;z-index:80;box-shadow:0 8px 30px rgba(0,0,0,.25);align-items:center;gap:12px;max-width:calc(100vw - 32px)}
 #toast span,.toast-in span{overflow-wrap:anywhere}#toast button,.toast-in button{flex:none;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:9px;padding:6px 11px;font-weight:700}
 .lprev{display:flex;flex-wrap:wrap;gap:10px;padding:12px;background:#e9ecf1;border-radius:14px}.foot{font-size:12.5px;color:var(--ink3);text-align:center;margin:26px 0 0;line-height:1.5}
@@ -253,7 +254,7 @@ function home() {
   <button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div>${us.length ? `<div class="n">${us.length}</div><div class="s">units · ${spots} spots · ${placed} parts placed${noDrawer ? `<br>${noDrawer} in stock without a drawer` : ''}</div>` : `<div class="s" style="margin-top:6px">Map your drawers so search can show exactly where a part is.</div><span class="soon">Set up</span>`}</button>
   <button type="button" class="card" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${tools}</div><div class="s">${tools ? 'with brand, model, serial' : 'Add your tools — brand, model, serial, battery'}${things().length - tools ? ` · ${things().length - tools} other items` : ''}</div></button>
   <a class="card wide" href="index.html">${ic('clip')}<div style="flex:1"><div style="font-weight:800;font-size:16px">Purchase Checklist</div><div class="s">Counts, buying and photos live there</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></a>
-  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.<br><span style="opacity:.7">Version 10 · Nov 3</span></p>`;
+  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.<br><span style="opacity:.7">Version 10.1 · Nov 3</span></p>`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -405,7 +406,11 @@ function pickSheet(t) {
   const x = t.ref || itemById(t.a); if (!x) return null; const us = S.units(doc());
   if (!us.length) return { title: 'Put in a drawer', body: `<p class="note">Set up your storage map first.</p><div class="btns"><a class="pbtn2" href="#/storage" data-act="close">Set up storage</a></div>` };
   const cur = S.find(doc(), x.location), uid = t.unit || (cur ? cur.unit.id : us[0].id), u = us.find(v => v.id === uid) || us[0];
-  return { title: 'Pick a spot for ' + shortName(x), body: `<div class="tabsel">${us.map(v => `<button type="button" class="${v.id === u.id ? 'on' : ''}" data-act="pickunit" data-unit="${esc(v.id)}">${esc(v.id)} · ${esc(v.name.replace(/^(Husky|Akro-Mils)\s/, ''))}</button>`).join('')}</div>${mapHtml(u, cur ? cur.slot.code : '', false)}<p class="note">Tap a spot to put <b>${esc(x.name)}</b> there.${cur ? ` It's in <b>${esc(cur.slot.code)}</b> now.` : ''}</p>`, after: () => { const on = shBody.querySelector('.tabsel .on'); if (on) on.scrollIntoView({ inline: 'center', block: 'nearest' }); } };
+  const nm = x.name ? shortName(x) : (x.kind === 'tool' ? 'this tool' : 'this item');
+  const unitBtn = (v) => { const sl = S.slots(v), used = sl.filter(sp => occupied(sp.code)).length; return `<button type="button" class="ubtn${v.id === u.id ? ' on' : ''}" data-act="pickunit" data-unit="${esc(v.id)}"><b>${esc(v.id)}</b><span>${esc(v.name.replace(/^(Husky|Akro-Mils)\s/, ''))}</span><small>${used}/${sl.length} used</small></button>`; };
+  return { title: 'Pick a spot for ' + nm, body: `<div class="fld" style="margin-bottom:6px"><span>1 · Choose the storage</span></div><div class="ugrid">${us.map(unitBtn).join('')}</div>
+    <div class="fld" style="margin:12px 0 6px"><span>2 · Tap a spot in ${esc(u.id)} · ${esc(u.name)}</span></div>${mapHtml(u, cur ? cur.slot.code : '', false)}<p class="note">${cur ? `It's in <b>${esc(cur.slot.code)}</b> now.` : 'Tap a spot to put it there.'}</p>`,
+    after: () => { if (t.scrollMap) { t.scrollMap = false; const m = shBody.querySelector('.map'); if (m) m.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } };
 }
 function addSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null; const qv = t.q || '';
@@ -582,7 +587,7 @@ document.addEventListener('click', (e) => {
   if (act === 'croll') { const top = stack[stack.length - 1]; top.roll = t.dataset.v; paintSheet(); return; }
   if (act === 'cprint') { doCustomPrint(stack[stack.length - 1]); return; }
   if (act === 'pick') { openSheet('pick', t.dataset.part, true); return; }
-  if (act === 'pickunit') { const top = stack[stack.length - 1]; top.unit = t.dataset.unit; paintSheet(); return; }
+  if (act === 'pickunit') { const top = stack[stack.length - 1]; top.unit = t.dataset.unit; top.scrollMap = true; paintSheet(); return; }
   if (act === 'unplace') { const x = itemById(t.dataset.part); if (x) setLocation(x, ''); return; }
   if (act === 'setloc') { const x = itemById(t.dataset.part); if (x) setLocation(x, t.dataset.to); return; }
   if (act === 'convert') { const from = t.dataset.from.toUpperCase(), to = t.dataset.to, moved = items().filter(x => String(x.location || '').trim().toUpperCase() === from), prev = moved.map(x => [x, x.location]); moved.forEach(x => x.location = to); commit(); render(); toast(`${moved.length} part${moved.length > 1 ? 's' : ''} → ${to}`, 'Undo', () => { prev.forEach(([x, l]) => { const y = itemById(x.id); if (y) y.location = l; }); commit(); render(); }); return; }
