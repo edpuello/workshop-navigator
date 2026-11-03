@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#173a5c"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
 <title>Workshop Navigator — Workshop</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js"></script><script src="js/parts.js"></script><script src="js/sync.js"></script><script src="js/model.js"></script><script src="js/storage.js"></script><script src="js/datamatrix.js"></script><script src="js/labels.js"></script>
+<script src="js/seed.js?v=20261102c"></script><script src="js/parts.js?v=20261102c"></script><script src="js/sync.js?v=20261102c"></script><script src="js/model.js?v=20261102c"></script><script src="js/storage.js?v=20261102c"></script><script src="js/datamatrix.js?v=20261102c"></script><script src="js/labels.js?v=20261102c"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -122,6 +122,7 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
 <div class="menu" id="menu" role="menu">
  <a href="#/storage" role="menuitem">Storage map</a>
  <button type="button" role="menuitem" data-act="printer">Labels &amp; printer <small id="qBadge"></small></button>
+ <button type="button" role="menuitem" data-act="custom">Custom Data Matrix label</button>
  <hr><a href="labs.html#viewer" role="menuitem">3D viewer</a><a href="labs.html#ai" role="menuitem">AI Hub</a>
  <hr><a href="index.html#settings" role="menuitem">Account &amp; sync</a>
 </div>
@@ -224,7 +225,8 @@ function deepLink() {
 function render() {
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
-  $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)();
+  try { $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)(); }
+  catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
   if (q) { const hit = $('view').querySelector('.cell.hit'); if (hit) hit.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
 }
@@ -243,7 +245,7 @@ function home() {
   <button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div>${us.length ? `<div class="n">${us.length}</div><div class="s">units · ${spots} spots · ${placed} parts placed${noDrawer ? `<br>${noDrawer} in stock without a drawer` : ''}</div>` : `<div class="s" style="margin-top:6px">Map your drawers so search can show exactly where a part is.</div><span class="soon">Set up</span>`}</button>
   <button type="button" class="card" data-soon="Tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${tools}</div><div class="s">Brand, model, serial, battery platform</div><span class="soon">Next update</span></button>
   <a class="card wide" href="index.html">${ic('clip')}<div style="flex:1"><div style="font-weight:800;font-size:16px">Purchase Checklist</div><div class="s">Counts, buying and photos live there</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></a>
-  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.</p>`;
+  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.<br><span style="opacity:.7">Version 9 · Nov 2</span></p>`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -269,7 +271,7 @@ function storage() {
   if (!us.length) return head('Storage', '#/') + `<div class="where"><div style="font-weight:800;font-size:17px">Set up your storage map</div><p class="note">Each drawer, bin and shelf gets a short code (like <b>A2-C05</b>) for its label and QR code. Here's your storage from what you told me — you can change any of it afterwards.</p>
    <div class="rows" style="box-shadow:none;border:1px solid var(--line)">${S.MY_UNITS.map(u => `<div class="row" style="min-height:52px"><span class="loc">${u.id}</span><div class="t"><b>${esc(u.name)}</b><span>${S.slots(u).length} spots · ${esc(u.model)}</span></div></div>`).join('')}</div>
    <div class="btns"><button type="button" class="pbtn2" data-act="setup">Add my storage</button><button type="button" class="gbtn" data-act="newunit">Add a different unit</button></div></div>`;
-  const ups = S.pendingUpdates(doc()), upHtml = ups.length ? `<div class="where" style="border:1.5px solid #c9dbef"><div style="font-weight:800">Layout updates ready</div><p class="note" style="margin:4px 0 8px">From what you told me. Nothing changes until you tap Apply.</p>${ups.map(x => `<div class="row" style="padding:8px 0;min-height:0"><span class="loc">${esc(x.id)}</span><div class="t"><b style="font-size:14.5px">${esc(x.text)}</b></div><button type="button" class="pbtn2" data-act="applyupd" data-unit="${esc(x.id)}">Apply</button></div>`).join('')}</div>` : '';
+  const ups = typeof S.pendingUpdates === 'function' ? S.pendingUpdates(doc()) : [], upHtml = ups.length ? `<div class="where" style="border:1.5px solid #c9dbef"><div style="font-weight:800">Layout updates ready</div><p class="note" style="margin:4px 0 8px">From what you told me. Nothing changes until you tap Apply.</p>${ups.map(x => `<div class="row" style="padding:8px 0;min-height:0"><span class="loc">${esc(x.id)}</span><div class="t"><b style="font-size:14.5px">${esc(x.text)}</b></div><button type="button" class="pbtn2" data-act="applyupd" data-unit="${esc(x.id)}">Apply</button></div>`).join('')}</div>` : '';
   const loose = [...ix.loose.values()], noDrawer = items().filter(x => x.store && !String(x.location || '').trim());
   const ucard = (u) => { const sl = S.slots(u), used = sl.filter(s => ix.by.has(s.code)), lowN = used.filter(s => flag(ix.by.get(s.code))).length; return `<button type="button" class="card ucard" data-go="#/storage/${esc(u.id)}"><span class="code">${esc(u.id)}</span><div class="k" style="padding-right:44px">${esc(u.name)}</div><div class="s">${esc(u.model || '')}</div><div class="s" style="margin-top:auto">${used.length} of ${sl.length} used${lowN ? ` · <b style="color:#b07205">${lowN} low</b>` : ''}</div><div class="meter"><i style="width:${sl.length ? Math.round(used.length / sl.length * 100) : 0}%"></i></div></button>`; };
   return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add unit</button>') + upHtml + `<div class="cards">${us.map(ucard).join('')}</div>` +
@@ -322,7 +324,8 @@ function sheetTyping() { const a = document.activeElement; return !!(a && shBody
 function paintSheet(fresh) {
   const top = stack[stack.length - 1]; if (!top) return closeSheet();
   $('shBack').hidden = stack.length < 2;
-  const r = ({ part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet })[top.k](top);
+  let r; try { r = ({ part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet })[top.k](top); }
+  catch (e) { console.error(e); r = { title: 'Something went wrong', body: `<p class="note">Pull down to reload the page — that usually fixes it after an update.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button></div>` }; }
   if (!r) return closeSheet();
   $('shTitle').textContent = r.title; shBody.innerHTML = r.body; hydrate(shBody);
   if (fresh) shBody.scrollTop = 0;
@@ -397,14 +400,42 @@ async function doPrint(t) {
   doc().app.alerts.push({ id: 'pj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'print', roll: t.roll, codes, copies: t.copies, at: Date.now(), from: /iPhone|iPad|Android/.test(navigator.userAgent) ? (navigator.userAgent.match(/iPhone|iPad|Android/) || [''])[0] : 'another device' });
   commit(); paintBadge(); toast(`Sent ${codes.length * t.copies} label${codes.length * t.copies === 1 ? '' : 's'} to your computer`); paintSheet();
 }
+// Custom label: whatever you type goes into the Data Matrix, drawn instantly as you type.
+function customInfo(t) { const ck = L.check(t.data); return ck.ok ? `<b>Data Matrix ECC 200</b> · ${ck.size} × ${ck.size} squares · holds exactly ${ck.chars} character${ck.chars === 1 ? '' : 's'}: <span style="font-family:ui-monospace,Menlo,monospace;color:var(--ink)">${esc(t.data)}</span>` : `<span class="danger">${esc(ck.why)}</span>`; }
+function customPrev(t) { const ck = L.check(t.data); if (!ck.ok) return '<div class="empty">The code appears here as you type.</div>'; return L.preview(t.roll, L.custom(t.data, t.caption, t.line2), t.roll === 'side' ? 260 : 220) + `<div style="background:#fff;border-radius:12px;padding:12px;display:grid;place-items:center">${WNDataMatrix.svg(t.data, 150)}<div class="note" style="margin:6px 0 0">Big copy for test scanning</div></div>`; }
+function customSheet(t) {
+  if (t.data == null) { t.data = ''; t.caption = ''; t.line2 = ''; t.roll = 'side'; t.copies = 1; }
+  const ck = L.check(t.data);
+  return { title: 'Custom Data Matrix label', body: `<label class="fld"><span>What goes in the code</span><textarea id="cData" rows="2" maxlength="120" placeholder="Anything — e.g. A2-C05, a part number, a URL, a note" autocapitalize="off" autocorrect="off" spellcheck="false" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:16px ui-monospace,Menlo,monospace;background:#fafafb;resize:vertical">${esc(t.data)}</textarea></label>
+    <p class="note" id="cInfo" style="margin-top:-4px">${customInfo(t)}</p>
+    <div class="tabsel"><button type="button" class="${t.roll === 'side' ? 'on' : ''}" data-act="croll" data-v="side">Side · 0.75″ × 0.75″</button><button type="button" class="${t.roll === 'front' ? 'on' : ''}" data-act="croll" data-v="front">Front · 1.5″ × 0.5″</button></div>
+    <div class="lprev" id="cPrev" style="align-items:center">${customPrev(t)}</div>
+    <div class="frow" style="margin-top:12px"><label class="fld"><span>Printed text (optional)</span><input id="cCap" value="${esc(t.caption)}" placeholder="Shown under / next to the code"></label>${t.roll === 'front' ? `<label class="fld"><span>Second line (optional)</span><input id="cL2" value="${esc(t.line2)}" placeholder="Small line"></label>` : '<div></div>'}</div>
+    <div class="frow" style="align-items:end"><label class="fld"><span>Copies</span><select id="cCopies">${[1, 2, 3, 5, 10].map(k => `<option${k === t.copies ? ' selected' : ''}>${k}</option>`).join('')}</select></label><div class="fld"><button type="button" class="pbtn2" id="cPrint" data-act="cprint" style="height:46px"${ck.ok ? '' : ' disabled'}>Print</button></div></div>
+    <p class="note">What you type is put into the code exactly, character for character. To check it, scan the big copy above or a printed label (see Labels &amp; printer → How to test a scan).</p>`,
+    after: () => {
+      const upd = () => { t.data = $('cData').value.replace(/\r?\n/g, ' '); t.caption = $('cCap').value; if ($('cL2')) t.line2 = $('cL2').value; $('cInfo').innerHTML = customInfo(t); $('cPrev').innerHTML = customPrev(t); $('cPrint').disabled = !L.check(t.data).ok; };
+      ['cData', 'cCap', 'cL2'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', upd); });
+      $('cCopies').onchange = () => { t.copies = +$('cCopies').value; };
+      if (!dest.checked) checkPrinter();
+    } };
+}
+async function doCustomPrint(t) {
+  const ck = L.check(t.data); if (!ck.ok) return toast(ck.why);
+  const p = await checkPrinter(true);
+  if (p) { try { await L.send(L.zpl(t.roll, L.custom(t.data, t.caption, t.line2), t.copies)); toast(`Printed ${t.copies} label${t.copies > 1 ? 's' : ''}`); } catch (e) { toast(e.message); } return; }
+  doc().app.alerts.push({ id: 'pj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'print', roll: t.roll, custom: { data: t.data, caption: t.caption, line2: t.line2 }, codes: [], copies: t.copies, at: Date.now(), from: (navigator.userAgent.match(/iPhone|iPad|Android/) || ['another device'])[0] });
+  commit(); paintBadge(); toast('Sent to your computer to print');
+}
 function printerSheet() {
   const js = jobs().sort((a, b) => a.at - b.at), host = isHost(), roll = loadedRoll();
   const st = !dest.checked ? 'Looking for a Zebra printer on this device…' : dest.local ? `✅ Found <b>${esc(dest.local.name || 'Zebra printer')}</b> through Zebra Browser Print.` : 'No printer on this device. On the computer the ZD421 is plugged into, install <b>Zebra Browser Print</b> (free, Mac or Windows), set the ZD421 as its default printer, then open Workshop there and allow this site when Browser Print asks.';
   return { title: 'Labels & printer', body: `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div style="font-size:14.5px;line-height:1.45">${st}</div>${dest.local ? `<div class="btns"><button type="button" class="gbtn" data-act="testprint">Print a test label</button></div>` : ''}</div>
     <div class="h3">This device</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)"><button type="button" class="row" data-act="host"><div class="t"><b>This computer prints labels sent from my phone</b><span>${host ? 'On — keep Workshop open here to print them' : 'Off'}</span></div><span class="pill ${host ? 'st-instock' : ''}">${host ? 'On' : 'Off'}</span></button>
     ${host ? `<div class="row" style="flex-wrap:wrap"><div class="t"><b>Roll in the printer</b><span>Jobs for the other roll wait until you switch</span></div><div class="tabsel" style="margin:0;padding:0"><button type="button" class="${roll === 'front' ? 'on' : ''}" data-act="loaded" data-v="front">Front 1.5×0.5</button><button type="button" class="${roll === 'side' ? 'on' : ''}" data-act="loaded" data-v="side">Side 0.75×0.75</button></div></div>` : ''}</div>
-    <div class="h3">Waiting to print <span class="c">${js.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${js.map(j => `<div class="row"><span class="loc">${j.roll === 'side' ? 'SIDE' : 'FRONT'}</span><div class="t"><b>${j.codes.length * (j.copies || 1)} label${j.codes.length * (j.copies || 1) === 1 ? '' : 's'} · ${esc(j.codes.slice(0, 3).join(', '))}${j.codes.length > 3 ? '…' : ''}</b><span>From ${esc(j.from || 'a device')} · ${new Date(j.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span></div><button type="button" class="xbtn" data-act="canceljob" data-id="${esc(j.id)}" aria-label="Cancel">×</button></div>`).join('') || '<div class="empty">Nothing waiting.</div>'}</div>
-    <p class="note">Drawer labels use Data Matrix codes. Scan them with the Scan button (coming next) — the iPhone Camera app reads QR codes only.</p>`,
+    <div class="h3">Waiting to print <span class="c">${js.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${js.map(j => `<div class="row"><span class="loc">${j.roll === 'side' ? 'SIDE' : 'FRONT'}</span><div class="t"><b>${(j.custom ? 1 : j.codes.length) * (j.copies || 1)} label${(j.custom ? 1 : j.codes.length) * (j.copies || 1) === 1 ? '' : 's'} · ${j.custom ? 'Custom: ' + esc(j.custom.data.slice(0, 24)) : esc(j.codes.slice(0, 3).join(', ')) + (j.codes.length > 3 ? '…' : '')}</b><span>From ${esc(j.from || 'a device')} · ${new Date(j.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span></div><button type="button" class="xbtn" data-act="canceljob" data-id="${esc(j.id)}" aria-label="Cancel">×</button></div>`).join('') || '<div class="empty">Nothing waiting.</div>'}</div>
+    <div class="btns"><button type="button" class="pbtn2" data-act="custom">Create a custom Data Matrix label</button></div>
+    <div class="h3">How to test a scan</div><div class="note" style="line-height:1.55;margin-top:0">The iPhone Camera app reads QR codes only, so use one of these:<br><b>1. Photo check (exact):</b> take a clear photo of the label, then on <b>zxing.org/w/decode.jspx</b> choose the photo and tap Submit. It shows the format (<b>DATA_MATRIX</b>) and the exact text inside — compare it with what you typed.<br><b>2. Google Lens:</b> in the Google app, tap the camera icon and point it at the label; it shows the text.<br><b>3. Workshop Scan button:</b> coming in the next update — it will open the drawer it reads.</div>`,
     after: () => { if (!dest.checked) checkPrinter().then(() => { if (stack[stack.length - 1].k === 'printer') paintSheet(); }); } };
 }
 function removeJob(id) { const a = doc().app.alerts, i = a.findIndex(x => x && x.id === id); if (i >= 0) { a.splice(i, 1); commit(); } }
@@ -416,7 +447,7 @@ async function drain() {
   const todo = jobs().filter(j => (j.roll || 'front') === loadedRoll()).sort((a, b) => a.at - b.at); if (!todo.length) return;
   draining = true;
   try { if (!(await checkPrinter(true))) { drainFail = Date.now(); return; }
-    for (const j of todo) { if (!jobs().some(x => x.id === j.id)) continue; await L.send(zplFor(j.roll, j.codes, j.copies)); removeJob(j.id); toast(`Printed ${j.codes.length * (j.copies || 1)} labels from ${j.from || 'your phone'}`); }
+    for (const j of todo) { if (!jobs().some(x => x.id === j.id)) continue; await L.send(j.custom ? L.zpl(j.roll, L.custom(j.custom.data, j.custom.caption, j.custom.line2), j.copies) : zplFor(j.roll, j.codes, j.copies)); removeJob(j.id); toast(`Printed ${(j.custom ? 1 : j.codes.length) * (j.copies || 1)} label(s) from ${j.from || 'your phone'}`); }
   } catch (e) { drainFail = Date.now(); toast('Printing stopped: ' + e.message); }
   finally { draining = false; paintBadge(); if ($('sheet').open && stack.length && stack[stack.length - 1].k === 'printer') paintSheet(); }
 }
@@ -461,6 +492,9 @@ document.addEventListener('click', (e) => {
   if (act === 'host') { LS.set('wn-print-host', isHost() ? '' : '1'); paintSheet(); drain(); return; }
   if (act === 'loaded') { LS.set('wn-roll', t.dataset.v); paintSheet(); drain(); return; }
   if (act === 'canceljob') { removeJob(t.dataset.id); paintBadge(); paintSheet(); return; }
+  if (act === 'custom') { closeMenu(); openSheet('custom', '', sheet.open && !!t.closest('#shBody')); setTimeout(() => { const el = $('cData'); if (el && matchMedia('(hover:hover)').matches) el.focus(); }, 80); return; }
+  if (act === 'croll') { const top = stack[stack.length - 1]; top.roll = t.dataset.v; paintSheet(); return; }
+  if (act === 'cprint') { doCustomPrint(stack[stack.length - 1]); return; }
   if (act === 'pick') { openSheet('pick', t.dataset.part, true); return; }
   if (act === 'pickunit') { const top = stack[stack.length - 1]; top.unit = t.dataset.unit; paintSheet(); return; }
   if (act === 'unplace') { const x = itemById(t.dataset.part); if (x) setLocation(x, ''); return; }

@@ -20,24 +20,37 @@
     const cat = ps.length ? clean(ps[0].category || '') : clean(where || '');
     return { code: clean(code), name, cat };
   }
+  // A custom label: any text goes into the Data Matrix exactly as typed (plain keyboard characters), with optional printed lines.
+  const asciiOK = (s) => /^[\x20-\x7E]*$/.test(String(s));
+  function custom(data, caption, line2) { return { code: String(data || ''), name: clean(caption), cat: clean(line2), custom: true }; }
+  // Can it be drawn on a small label? → {ok, size, chars, why}
+  function check(data) {
+    const d = String(data || '');
+    if (!d) return { ok: false, why: 'Type something to put in the code.' };
+    if (!asciiOK(d)) return { ok: false, why: 'Only plain keyboard characters (A–Z, a–z, 0–9, spaces and symbols like - / : . #). Letters like é or emoji aren’t supported.' };
+    if (d.includes('~')) return { ok: false, why: 'The ~ character can’t go in the code (the printer uses it for special commands).' };
+    try { const n = WNDataMatrix.matrix(d).length; return { ok: true, size: n, chars: d.length }; }
+    catch (e) { return { ok: false, why: `Too long for a small label (${d.length} characters). Keep it to about 40 characters — or 80 digits.` }; }
+  }
   // ---------- layout (shared by ZPL and preview, in printer dots)
   function frontLayout(c) {
     const N = dmSize(c.code), m = Math.max(4, Math.floor(118 / N)), dm = N * m, x0 = 14, tx = x0 + dm + 16, tw = 450 - tx - 12;
-    const line2 = c.name ? `${c.code} · ${c.cat}` : c.cat;
-    const t1 = c.name || c.code, h1 = fit(t1, tw, 46, 22), h2 = fit(line2, tw, 27, 16);
+    const line2 = c.custom ? c.cat : c.name ? `${c.code} · ${c.cat}` : c.cat;
+    const t1 = c.custom ? c.name : (c.name || c.code), h1 = fit(t1, tw, 46, 22), h2 = fit(line2, tw, 27, 16);
     return { m, dm, dmX: x0, dmY: Math.round((150 - dm) / 2), tx, tw, l1: cut(t1, tw, h1), h1, y1: Math.round((150 - (h1 + 14 + h2)) / 2), l2: cut(line2, tw, h2), h2, y2: Math.round((150 - (h1 + 14 + h2)) / 2) + h1 + 14 };
   }
   function sideLayout(c) {
-    const N = dmSize(c.code), m = Math.max(4, Math.floor(146 / N)), dm = N * m, h = fit(c.code, 205, 34, 18);
-    return { m, dm, dmX: Math.round((225 - dm) / 2), dmY: 12, h, ty: 12 + dm + 12 };
+    const N = dmSize(c.code), m = Math.max(4, Math.floor(146 / N)), dm = N * m, text = c.custom ? c.name : c.code, h = fit(text, 205, 34, 18);
+    return { m, dm, dmX: Math.round((225 - dm) / 2), dmY: 12, h, ty: 12 + dm + 12, text: cut(text, 205, h) };
   }
   // ---------- ZPL
+  const fd = (v) => '^FH_^FD' + String(v).replace(/_/g, '_5F').replace(/\^/g, '_5E').replace(/~/g, '_7E') + '^FS';
   function zpl(roll, c, copies) {
     const q = Math.max(1, Math.min(9, copies | 0 || 1));
     if (roll === 'side') { const L = sideLayout(c);
-      return `^XA^CI28^PW225^LL225^LH0,0\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200^FD${c.code}^FS\n^FO0,${L.ty}^A0N,${L.h},${L.h}^FB225,1,0,C^FD${c.code}^FS\n^PQ${q}^XZ\n`; }
+      return `^XA^CI28^PW225^LL225^LH0,0\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.text ? `^FO0,${L.ty}^A0N,${L.h},${L.h}^FB225,1,0,C${fd(L.text)}\n` : '') + `^PQ${q}^XZ\n`; }
     const L = frontLayout(c);
-    return `^XA^CI28^PW450^LL150^LH0,0\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200^FD${c.code}^FS\n^FO${L.tx},${L.y1}^A0N,${L.h1},${L.h1}^FB${L.tw},1,0,L^FD${L.l1}^FS\n^FO${L.tx},${L.y2}^A0N,${L.h2},${L.h2}^FB${L.tw},1,0,L^FD${L.l2}^FS\n^PQ${q}^XZ\n`;
+    return `^XA^CI28^PW450^LL150^LH0,0\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.l1 ? `^FO${L.tx},${L.y1}^A0N,${L.h1},${L.h1}^FB${L.tw},1,0,L${fd(L.l1)}\n` : '') + (L.l2 ? `^FO${L.tx},${L.y2}^A0N,${L.h2},${L.h2}^FB${L.tw},1,0,L${fd(L.l2)}\n` : '') + `^PQ${q}^XZ\n`;
   }
   // ---------- on-screen preview (same layout, drawn in HTML). px = screen pixels per inch.
   function preview(roll, c, px) {
@@ -45,9 +58,9 @@
     const line = (t, x, y, h, bold, center, boxW) => { const w = Math.min(textW(t, h), boxW), left = center ? x + (boxW - w) / 2 : x;
       return `<svg style="position:absolute;left:${P(left)};top:${P(y)};overflow:visible" width="${(w * k).toFixed(1)}" height="${(h * k).toFixed(1)}"><text x="0" y="${(h * 0.8 * k).toFixed(1)}" font-size="${(h * k).toFixed(1)}" font-weight="${bold ? 700 : 400}" font-family="'DejaVu Sans Condensed','Arial Narrow','Helvetica Neue',system-ui,sans-serif" textLength="${(w * k).toFixed(1)}" lengthAdjust="spacingAndGlyphs">${esc(t)}</text></svg>`; };
     const box = (w, h, inner) => `<div class="zlabel" style="position:relative;width:${w * px}px;height:${h * px}px;background:#fff;border-radius:${px * 0.03}px;box-shadow:0 1px 2px rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.08);overflow:hidden;color:#000;flex:none">${inner}</div>`;
-    if (roll === 'side') { const L = sideLayout(c); return box(0.75, 0.75, dm(L) + line(c.code, 0, L.ty, L.h, true, true, 225)); }
+    if (roll === 'side') { const L = sideLayout(c); return box(0.75, 0.75, dm(L) + (L.text ? line(L.text, 0, L.ty, L.h, true, true, 225) : '')); }
     const L = frontLayout(c);
-    return box(1.5, 0.5, dm(L) + line(L.l1, L.tx, L.y1, L.h1, true, false, L.tw) + line(L.l2, L.tx, L.y2, L.h2, false, false, L.tw));
+    return box(1.5, 0.5, dm(L) + (L.l1 ? line(L.l1, L.tx, L.y1, L.h1, true, false, L.tw) : '') + (L.l2 ? line(L.l2, L.tx, L.y2, L.h2, false, false, L.tw) : ''));
   }
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
@@ -67,5 +80,5 @@
     const r = await timed(fetch(BP() + 'write', { method: 'POST', body: JSON.stringify({ device: dev, data }) }), 15000);
     if (!r.ok) throw new Error((await r.text()) || 'The printer refused the job');
   }
-  window.WNLabels = { ROLLS, content, zpl, preview, textW, findPrinter, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
+  window.WNLabels = { ROLLS, content, custom, check, zpl, preview, textW, findPrinter, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
 })();
