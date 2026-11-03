@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#173a5c"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><script>try{sessionStorage.setItem('wn-launched','1')}catch(e){}</script><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
 <title>Workshop Navigator — Workshop</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103a"></script><script src="js/parts.js?v=20261103a"></script><script src="js/sync.js?v=20261103a"></script><script src="js/model.js?v=20261103a"></script><script src="js/storage.js?v=20261103a"></script><script src="js/datamatrix.js?v=20261103a"></script><script src="js/labels.js?v=20261103a"></script>
+<script src="js/seed.js?v=20261103b"></script><script src="js/parts.js?v=20261103b"></script><script src="js/sync.js?v=20261103b"></script><script src="js/model.js?v=20261103b"></script><script src="js/storage.js?v=20261103b"></script><script src="js/organize.js?v=20261103b"></script><script src="js/datamatrix.js?v=20261103b"></script><script src="js/labels.js?v=20261103b"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -37,7 +37,7 @@ main{padding:4px max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-
 .att{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px;margin-top:6px}.att b{font-size:17px;text-align:right}.att .w{color:#b07205}.att .r{color:var(--bad)}
 .soon{align-self:flex-start;display:inline-block;font-size:11.5px;font-weight:700;color:var(--accent);background:#e7f0fa;border-radius:999px;padding:3px 8px;margin-top:4px}
 /* page heading inside views */
-.vhead{display:flex;align-items:center;gap:8px;margin:8px 0 12px}.vhead h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px;flex:1;min-width:0}
+.vhead{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 12px}.vhead h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px;flex:1 1 180px;min-width:0}
 .back{border:0;background:#fff;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05);font-size:24px;line-height:1;padding:0 0 3px;flex:none}
 .pbtn2{border:0;background:var(--brand);color:#fff;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px}
 .gbtn{border:0;background:var(--pill);color:var(--ink);border-radius:999px;padding:9px 14px;font-weight:650;font-size:14px}
@@ -110,6 +110,21 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
 .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}.ubtn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 10px;text-align:left;min-height:62px}.ubtn b{font:800 15px ui-monospace,Menlo,monospace;color:var(--brand)}.ubtn span{font-size:12.5px;font-weight:650;line-height:1.2;color:var(--ink)}.ubtn small{font-size:11px;color:var(--ink3);margin-top:auto}.ubtn.on{border-color:var(--brand);background:#e7f0fa;box-shadow:0 0 0 2px rgba(23,58,92,.15)}.tabsel button{flex:none;border:0;background:var(--pill);border-radius:999px;padding:8px 12px;font-weight:700;font-size:13px}.tabsel button.on{background:var(--brand);color:#fff}
 #toast,.toast-in{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#14273d;color:#fff;padding:11px 16px;border-radius:14px;font-size:14px;display:none;z-index:80;box-shadow:0 8px 30px rgba(0,0,0,.25);align-items:center;gap:12px;max-width:calc(100vw - 32px)}
 #toast span,.toast-in span{overflow-wrap:anywhere}#toast button,.toast-in button{flex:none;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:9px;padding:6px 11px;font-weight:700}
+/* organize by size */
+.rtag{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px 1px;min-height:34px;text-align:center;overflow:hidden;background:var(--pill);color:#2b2f36}
+.rtag b{font:800 11px/1.05 ui-monospace,Menlo,monospace}.rtag small{font:700 8.5px/1.1 system-ui,sans-serif;opacity:.75;white-space:nowrap}
+.og{display:grid;grid-template-columns:40px repeat(8,minmax(0,1fr));gap:3px}
+.oc{position:relative;border:1.5px solid rgba(0,0,0,.05);border-radius:7px;min-height:40px;padding:3px 4px;text-align:left;display:flex;flex-direction:column;gap:1px;overflow:hidden;background:#fafafa;color:var(--ink)}
+.oc b{font:700 9.5px/1.1 ui-monospace,Menlo,monospace;color:#555}.oc span{font-size:10px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.oc.s-spare span,.oc.s-plan span{color:var(--ink3)}.oc.s-spare span{font-style:italic}.oc.s-plan,.oc.s-kept{opacity:.55;border-style:dashed;border-color:#9aa3ad}
+.oc.s-here::after{content:'✓';position:absolute;right:3px;top:1px;font:800 10px system-ui;color:var(--good)}
+.oc.s-new{border-color:var(--accent)}.oc.on{box-shadow:0 0 0 2.5px var(--brand);border-color:var(--brand)}
+.oc i{position:absolute;right:3px;bottom:2px;font:800 10px/1 system-ui;font-style:normal;color:#b07205}
+.orow{display:flex;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);align-items:flex-start;font-size:13px;line-height:1.4}.orow:last-child{border-bottom:0}
+.orow .rtag{width:44px;flex:none;min-height:30px}.orow .t{flex:1;min-width:0}.orow .t b{display:block;font-size:13.5px}.orow .t span{color:var(--ink2)}
+.okey{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--ink2);margin:8px 2px 0}.okey span{display:inline-flex;align-items:center;gap:5px}.okey em{width:14px;height:12px;border-radius:3px;display:inline-block;border:1.5px solid rgba(0,0,0,.08)}
+@media (min-width:601px){.oc{min-height:50px}}
+@media (max-width:600px){.oc span{display:none}.oc{min-height:34px}}
 .lprev{display:flex;flex-wrap:wrap;gap:10px;padding:12px;background:#e9ecf1;border-radius:14px}.foot{font-size:12.5px;color:var(--ink3);text-align:center;margin:26px 0 0;line-height:1.5}
 </style></head>
 <body>
@@ -124,6 +139,7 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
  <a href="#/storage" role="menuitem">Storage map</a>
  <button type="button" role="menuitem" data-act="printer">Labels &amp; printer <small id="qBadge"></small></button>
  <button type="button" role="menuitem" data-act="custom">Custom Data Matrix label</button>
+ <button type="button" role="menuitem" data-act="organize">Organize Akro-Mils by size</button>
  <hr><a href="labs.html#viewer" role="menuitem">3D viewer</a><a href="labs.html#ai" role="menuitem">AI Hub</a>
  <hr><a href="index.html#settings" role="menuitem">Account &amp; sync</a>
 </div>
@@ -134,6 +150,7 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
 (function () {
 'use strict';
 const $ = (id) => document.getElementById(id), esc = escapeHtml, S = WNStore;
+const O = window.WNOrganize || { CABS: [], PLAN: [], checkFit: () => false, rowTags: () => ({}), plan: () => ({ cabs: [], home: new Map(), out: [], noRoom: [] }) };
 const ICO = {
   box: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
   grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
@@ -240,7 +257,7 @@ function render() {
   if (q) { const hit = $('view').querySelector('.cell.hit'); if (hit) hit.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
 }
 const refresh = () => { render(); if ($('sheet').open && !$('sheet').classList.contains('closing') && !sheetTyping()) paintSheet(); };
-const head = (title, back, extra) => `<div class="vhead"><button type="button" class="back" data-go="${back}" aria-label="Back">‹</button><h2>${title}</h2>${extra || ''}</div>`;
+const head = (title, back, extra) => `<div class="vhead"><button type="button" class="back" data-go="${back}" aria-label="Back">‹</button><h2>${title}</h2>${extra ? `<div style="display:flex;gap:8px;flex-wrap:wrap">${extra}</div>` : ''}</div>`;
 
 function home() {
   const it = items(), n = it.length, c = { instock: 0, tobuy: 0, putaway: 0, unmarked: 0 }; it.forEach(x => c[itemStatus(x)]++);
@@ -254,7 +271,7 @@ function home() {
   <button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div>${us.length ? `<div class="n">${us.length}</div><div class="s">units · ${spots} spots · ${placed} parts placed${noDrawer ? `<br>${noDrawer} in stock without a drawer` : ''}</div>` : `<div class="s" style="margin-top:6px">Map your drawers so search can show exactly where a part is.</div><span class="soon">Set up</span>`}</button>
   <button type="button" class="card" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${tools}</div><div class="s">${tools ? 'with brand, model, serial' : 'Add your tools — brand, model, serial, battery'}${things().length - tools ? ` · ${things().length - tools} other items` : ''}</div></button>
   <a class="card wide" href="index.html">${ic('clip')}<div style="flex:1"><div style="font-weight:800;font-size:16px">Purchase Checklist</div><div class="s">Counts, buying and photos live there</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></a>
-  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.<br><span style="opacity:.7">Version 10.1 · Nov 3</span></p>`;
+  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.<br><span style="opacity:.7">Version 10.2 · Nov 3</span></p>`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -283,7 +300,7 @@ function storage() {
   const ups = typeof S.pendingUpdates === 'function' ? S.pendingUpdates(doc()) : [], upHtml = ups.length ? `<div class="where" style="border:1.5px solid #c9dbef"><div style="font-weight:800">Layout updates ready</div><p class="note" style="margin:4px 0 8px">From what you told me. Nothing changes until you tap Apply.</p>${ups.map(x => `<div class="row" style="padding:8px 0;min-height:0"><span class="loc">${esc(x.id)}</span><div class="t"><b style="font-size:14.5px">${esc(x.text)}</b></div><button type="button" class="pbtn2" data-act="applyupd" data-unit="${esc(x.id)}">Apply</button></div>`).join('')}</div>` : '';
   const loose = [...ix.loose.values()], noDrawer = items().filter(x => x.store && !String(x.location || '').trim());
   const ucard = (u) => { const sl = S.slots(u), used = sl.filter(s => occupied(s.code)), lowN = used.filter(s => flag(ix.by.get(s.code) || [])).length; return `<button type="button" class="card ucard" data-go="#/storage/${esc(u.id)}"><span class="code">${esc(u.id)}</span><div class="k" style="padding-right:44px">${esc(u.name)}</div><div class="s">${esc(u.model || '')}</div><div class="s" style="margin-top:auto">${used.length} of ${sl.length} used${lowN ? ` · <b style="color:#b07205">${lowN} low</b>` : ''}</div><div class="meter"><i style="width:${sl.length ? Math.round(used.length / sl.length * 100) : 0}%"></i></div></button>`; };
-  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add unit</button>') + upHtml + `<div class="cards">${us.map(ucard).join('')}</div>` +
+  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add unit</button>') + upHtml + orgBanner() + `<div class="cards">${us.map(ucard).join('')}</div>` +
     (loose.length ? `<div class="h3">Not on the map yet <span class="c">${loose.reduce((a, l) => a + l.parts.length, 0)}</span></div><p class="note">These parts have a location typed in that isn't one of your map codes.</p><div class="rows">${loose.map(l => { const sug = S.suggest(l.text), ok = sug && S.find(doc(), sug); return `<div class="row"><span class="loc old">${esc(l.text)}</span><div class="t"><b>${l.parts.length} part${l.parts.length > 1 ? 's' : ''}</b><span>${esc(l.parts.map(x => x.name).join(', '))}</span></div>${ok ? `<button type="button" class="gbtn" data-act="convert" data-from="${esc(l.text)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : `<button type="button" class="gbtn" data-part="${esc(l.parts[0].id)}">Place</button>`}</div>`; }).join('')}</div>` : '') +
     (noDrawer.length ? `<div class="h3">To put away</div><div class="rows"><button type="button" class="row" data-go="#/unplaced"><div class="t"><b>In stock, no drawer yet</b><span>Tap to see them and give each one a spot</span></div><span class="cnt" style="color:var(--ink2)">${noDrawer.length}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>` : '');
 }
@@ -294,6 +311,9 @@ function mapHtml(u, hit, compact) {
     const names = list ? `<span class="cn">${ps.length ? esc(ps.map(shortName).join(' · ')) : empty}</span>` : (!compact && (ps.length || pur) ? `<span class="cn"${ps.length ? '' : ' style="font-style:italic;color:var(--ink3)"'}>${esc(ps.length ? shortName(ps[0]) : pur)}</span>` : '');
     return `<button type="button" class="cell${ps.length ? ' has' : pur ? ' pur' : ''}${h ? ' hit' : ''}"${tall} data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : pur ? ', for ' + esc(pur) : ', empty'}"><span class="cl">${esc(s.label)}</span>${names}${ps.length > 1 && !list ? `<span class="k2">${ps.length}</span>` : ''}${f ? `<i class="d ${f}"></i>` : ''}</button>`; };
   const sl = S.slots(u), grid = (cells, cols) => `<div class="mgrid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${cells}</div>`;
+  if (u.type === 'grid' && u.rowTags) { // organized by size: each row starts with its size
+    const body = [...new Set(sl.map(s => s.r))].map(r => rtagHtml(u.rowTags[S.ROWS[r]], S.ROWS[r]) + sl.filter(s => s.r === r).map(s => cell(s)).join('')).join('');
+    return `<div class="map"><div class="mgrid" style="grid-template-columns:40px repeat(${u.cols},minmax(0,1fr))">${body}</div><div class="mapcap"><span>Row A = top · each row is one size</span><span>Drawer 1 = left</span></div></div>`; }
   if (u.type === 'grid') return `<div class="map">${grid(sl.map(s => cell(s)).join(''), u.cols)}<div class="mapcap"><span>Row A = top</span><span>Drawer 1 = left</span></div></div>`;
   if (u.type === 'bins') return `<div class="map">${grid(sl.map(s => cell(s)).join(''), Math.min(u.cols || 6, Math.max(1, sl.length)))}</div>`;
   if (u.type === 'stack') return `<div class="map stack">${grid(sl.map(s => cell(s, true)).join(''), 1)}<div class="mapcap"><span>D01 = top drawer</span></div></div>`;
@@ -306,7 +326,7 @@ function mapHtml(u, hit, compact) {
 function unitView(id) {
   const u = S.units(doc()).find(x => x.id === id); if (!u) return head('Storage', '#/storage') + '<div class="rows"><div class="empty">That unit isn’t on your map.</div></div>';
   const sl = S.slots(u), used = sl.filter(s => occupied(s.code)).length;
-  return head(`${esc(u.name)}`, '#/storage', `<button type="button" class="gbtn" data-act="print" data-unit="${esc(u.id)}">Labels</button><button type="button" class="gbtn" data-act="editunit" data-unit="${esc(u.id)}">Edit</button>`) + `<p class="note" style="margin-top:-6px"><span class="loc">${esc(u.id)}</span> ${esc(u.model || '')} · ${used} of ${sl.length} used · tap a spot to see or add parts</p>` + mapHtml(u, '');
+  return head(`${esc(u.name)}`, '#/storage', `${O.CABS.includes(u.id) ? `<button type="button" class="gbtn" data-act="organize" data-unit="${esc(u.id)}">Organize</button>` : ''}<button type="button" class="gbtn" data-act="print" data-unit="${esc(u.id)}">Labels</button><button type="button" class="gbtn" data-act="editunit" data-unit="${esc(u.id)}">Edit</button>`) + `<p class="note" style="margin-top:-6px"><span class="loc">${esc(u.id)}</span> ${esc(u.model || '')} · ${used} of ${sl.length} used · tap a spot to see or add parts</p>` + mapHtml(u, '');
 }
 function searchView(q) {
   const raw = S.norm(q), slotHit = S.find(doc(), raw), unitHits = S.units(doc()).filter(u => normS(u.name + ' ' + u.model).includes(normS(q)) || u.id === raw);
@@ -343,7 +363,7 @@ function sheetTyping() { const a = document.activeElement; return !!(a && shBody
 function paintSheet(fresh) {
   const top = stack[stack.length - 1]; if (!top) return closeSheet();
   $('shBack').hidden = stack.length < 2;
-  let r; try { r = ({ part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet })[top.k](top); }
+  let r; try { r = ({ organize: organizeSheet, part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet })[top.k](top); }
   catch (e) { console.error(e); r = { title: 'Something went wrong', body: `<p class="note">Pull down to reload the page — that usually fixes it after an update.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button></div>` }; }
   if (!r) return closeSheet();
   $('shTitle').textContent = r.title; shBody.innerHTML = r.body; hydrate(shBody);
@@ -427,6 +447,122 @@ function unitSheet(t) {
   return { title: isNew ? 'Add a storage unit' : 'Edit ' + u.id, body: `<label class="fld"><span>Name</span><input data-f="name" value="${esc(u.name || '')}" placeholder="e.g. Akro-Mils 64-drawer #5"></label><div class="frow"><label class="fld"><span>Code</span><input data-f="id" value="${esc(u.id || '')}" maxlength="2" ${isNew ? '' : 'readonly'} style="text-transform:uppercase;font-family:ui-monospace,Menlo,monospace"></label><label class="fld"><span>Type</span><select data-f="type"${u.type === 'sections' ? ' disabled' : ''}>${Object.entries(S.TYPES).filter(([k]) => k !== 'sections' || u.type === 'sections').map(([k, v]) => `<option value="${k}"${u.type === k ? ' selected' : ''}>${v}</option>`).join('')}</select></label></div><label class="fld"><span>Model / note</span><input data-f="model" value="${esc(u.model || '')}" placeholder="optional"></label>${sizes}<p class="note" id="uPrev">${esc(previewCodes(u))}</p><p class="note danger" id="uErr"></p><div class="btns"><button type="button" class="pbtn2" data-act="saveunit">${isNew ? 'Add unit' : 'Save'}</button>${!isNew ? (used ? `<span class="note" style="margin:8px 0 0">${used} spots hold parts, so it can't be removed.</span>` : `<button type="button" class="gbtn danger" data-act="delunit" data-unit="${esc(u.id)}">Remove unit</button>`) : ''}</div>`,
     after: () => { shBody.querySelectorAll('[data-f],[data-mf]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { readUnit(t.draft); if (el.dataset.f === 'type') paintSheet(); else $('uPrev').textContent = previewCodes(t.draft); })); } };
 }
+// ---------------------------------------------------------------- organize the Akro-Mils by size (the rules live in js/organize.js)
+const okColor = (c) => /^#[0-9a-f]{6}$/i.test(String(c || ''));
+const RL = 'ABCDEFGH', pad2 = (n) => String(n).padStart(2, '0');
+function rtagHtml(g, letter) { g = g || {}; return `<div class="rtag"${okColor(g.c) ? ` style="background:${g.c}"` : ''} title="${esc(g.l || 'Row ' + letter)}"><b>${esc(g.t || letter)}</b>${g.s ? `<small>${esc(g.s)}</small>` : ''}</div>`; }
+const orgName = (x) => shortName(x).replace(/\s*nylon pan-head machine screw/i, ' nylon').replace(/\s*Phillips pan-head machine screw/i, ' pan').replace(/\s*socket-head cap screw/i, ' SHCS').replace(/\s*A2 stainless/i, '').replace(/\s*\(standard series\)/i, '');
+const inAkro = (code) => O.CABS.includes(String(code || '').split('-')[0]);
+const fmtDay = (s) => { const d = new Date(String(s) + 'T12:00:00'); return isNaN(d) ? String(s) : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
+function orgInfo(t) {
+  const P = O.plan(items(), 8), us = S.units(doc());
+  const cabs = P.cabs.map(C => { const u = us.find(x => x.id === C.id), ok = !!u && u.type === 'grid' && u.rows === 8 && u.cols === 8; return { ...C, u, ok, done: ok && !!u.organized && !((t && t.fresh) || {})[C.id] }; });
+  return { P, cabs };
+}
+// What one run changes: [{x, to, from}]. Only the chosen cabinets; parts with a spot outside the Akro-Mils stay unless asked.
+// A cabinet that's already organized only takes parts that aren't in the Akro-Mils yet, into a free drawer of their row.
+function orgMoves(info, sel, others) {
+  const moves = [], noRoom = [], taken = new Set(), ix = index(), chosen = info.cabs.filter(C => C.ok && sel.includes(C.id));
+  chosen.filter(C => !C.done).forEach(C => Object.keys(C.cells).forEach(code => taken.add(code)));
+  for (const C of chosen) for (const [code, c] of Object.entries(C.cells)) {
+    const x = c.x, loc = String(x.location || '').trim(), cur = canon(loc);
+    if (cur === code) continue;
+    if (C.done && cur && inAkro(cur)) continue;
+    if (loc && !(cur && inAkro(cur)) && !others) continue;
+    let to = code;
+    if (C.done) {
+      const free = (k) => !taken.has(k) && !(ix.by.get(k) || []).length && !(ix.th.get(k) || []).length && !(C.u.spots || {})[k];
+      to = free(code) ? code : null;
+      if (!to) { const r0 = RL.indexOf(code.split('-')[1][0]), order = [r0]; for (let d = 1; d < 8; d++) { if (r0 + d < 8) order.push(r0 + d); if (r0 - d >= 0) order.push(r0 - d); }
+        find: for (const r of order) for (let k = 8; k >= 1; k--) { const cc = `${C.id}-${RL[r]}${pad2(k)}`; if (free(cc)) { to = cc; break find; } } }
+      if (!to) { noRoom.push(x); continue; }
+      taken.add(to);
+    }
+    moves.push({ x, to, from: loc });
+  }
+  return { moves, noRoom };
+}
+function orgBanner() {
+  const us = S.units(doc()); if (!O.CABS.some(id => us.some(u => u.id === id))) return '';
+  const info = orgInfo(), done = info.cabs.filter(C => C.done), fresh = done.length ? orgMoves(info, done.map(C => C.id), false).moves.length : 0;
+  const txt = done.length ? `Organized: <b>${done.map(C => C.id).join(', ')}</b>${fresh ? ` · ${fresh} new part${fresh > 1 ? 's' : ''} can go in` : ' · new parts go into a spare drawer in their size row'}` : 'Every size gets its own row — all #6 together, all 1/4″ together. See the plan, then put everything in with one tap.';
+  return `<div class="where" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:210px"><div style="font-weight:800">Organize the Akro-Mils by size</div><p class="note" style="margin:3px 0 0">${txt}</p></div><button type="button" class="pbtn2" data-act="organize">${done.length ? 'Open' : 'See the plan'}</button></div>`;
+}
+function orgSnap() { try { const s = JSON.parse(LS.get('wn-org-undo', '') || 'null'); return s && Array.isArray(s.moves) ? s : null; } catch (e) { return null; } }
+function organizeSheet(t) {
+  const info = orgInfo(t), okIds = info.cabs.filter(C => C.ok).map(C => C.id);
+  // first time: the two cabinets on the wall now (A1, A2); after that, any organized cabinet that has new parts waiting
+  if (!t.sel) t.sel = info.cabs.filter(C => C.ok && (C.done ? orgMoves(info, [C.id], false).moves.length > 0 : (C.id === 'A1' || C.id === 'A2') && !info.cabs.some(D => D.done))).map(C => C.id);
+  t.sel = t.sel.filter(id => okIds.includes(id));
+  const R = orgMoves(info, t.sel, !!t.others), extraN = t.others ? 0 : orgMoves(info, t.sel, true).moves.length - R.moves.length;
+  const V = info.cabs.find(C => C.id === t.view) || info.cabs.find(C => t.sel.includes(C.id)) || info.cabs[0]; if (!V) return { title: 'Organize by size', body: '<p class="note">The organizer didn’t load — pull down to reload the page.</p>' };
+  t.view = V.id;
+  const ix = index(), inc = new Map(R.moves.map(m => [m.to, m])), away = new Set(R.moves.map(m => m.x.id)), incl = t.sel.includes(V.id), tags = O.rowTags(V);
+  const cellOf = (code) => {
+    const now = [...(ix.by.get(code) || []).filter(p => !away.has(p.id)), ...(ix.th.get(code) || [])], m = inc.get(code), pl = V.cells[code];
+    if (V.done) { const list = [...now, ...(m ? [m.x] : [])]; return { st: m ? 'new' : now.length ? 'here' : 'spare', list, fit: m ? O.checkFit(O.classify(m.x)) : false }; }
+    if (pl) { const x = pl.x, there = canon(x.location) === code, share = now.filter(p => p.id !== x.id), st = there ? 'here' : m ? 'new' : incl && V.ok ? 'kept' : 'plan'; return { st, x, list: [x, ...share], share: share.length > 0 && st !== 'kept' && st !== 'plan', fit: O.checkFit(pl) }; }
+    return { st: now.length ? 'other' : 'spare', list: now };
+  };
+  const cellHtml = (code) => { const k = cellOf(code), lab = code.split('-')[1], g = tags[lab[0]] || {};
+    return `<button type="button" class="oc s-${k.st}${t.focus === code ? ' on' : ''}" data-act="orgcell" data-v="${esc(code)}"${k.st !== 'spare' && okColor(g.c) ? ` style="background:${g.c}"` : ''} aria-label="${esc(code)}: ${esc(k.list.map(p => p.name).join(', ') || 'spare')}"><b>${lab}</b><span>${esc(k.list.length ? k.list.map(orgName).join(' · ') : 'spare')}</span>${k.share ? '<i>2×</i>' : k.fit ? '<i>⚠</i>' : ''}</button>`; };
+  const grid = `<div class="og">${RL.split('').map(r => rtagHtml(tags[r], r) + [1, 2, 3, 4, 5, 6, 7, 8].map(k => cellHtml(`${V.id}-${r}${pad2(k)}`)).join('')).join('')}</div>`;
+  const focus = (() => { const code = t.focus; if (!code || !code.startsWith(V.id + '-')) return 'Tap a drawer to see what goes in it.'; const k = cellOf(code), m = inc.get(code);
+    if (!k.list.length) return `<b>${esc(code)}</b> · spare — room to grow`;
+    const why = k.st === 'here' ? 'already there ✓' : k.st === 'new' ? (m && m.from ? `moves here from ${esc(canon(m.from) || m.from)}` : 'goes in now') : k.st === 'kept' ? `stays in <b>${esc(k.x.location)}</b> — this drawer is kept free for it` : k.st === 'plan' ? `goes here when ${esc(V.id)} is in the run` : 'in this spare drawer now';
+    return `<b>${esc(code)}</b> · ${esc(k.list.map(p => p.name).join(' + '))} — ${why}${k.fit ? ' · ⚠ check that it fits a drawer' : ''}${k.share ? ' · ⚠ shares the drawer with what’s in it now' : ''}`; })();
+  const rowList = V.rows.map(rw => { const i0 = RL.indexOf(rw.r), letters = RL.slice(i0, i0 + rw.span).split('');
+    const bits = letters.flatMap(r => [1, 2, 3, 4, 5, 6, 7, 8].map(k => { const kk = cellOf(`${V.id}-${r}${pad2(k)}`); return kk.list.length ? `<b style="display:inline;font:700 11px ui-monospace,Menlo,monospace;color:var(--ink3)">${r}${pad2(k)}</b> ${esc(kk.list.map(orgName).join(' + '))}${kk.st === 'kept' ? ' <i>(stays put)</i>' : ''}` : ''; }).filter(Boolean));
+    return `<div class="orow">${rtagHtml(tags[rw.r], rw.r)}<div class="t"><b>Row ${rw.r}${rw.span > 1 ? '–' + letters[letters.length - 1] : ''} · ${esc(rw.label)}</b><span>${bits.join(' · ') || '<i>empty for now</i>'}</span></div></div>`; }).join('');
+  const plannedN = Object.keys(V.cells).length;
+  const status = !V.ok ? `<p class="note"><b class="danger">${esc(V.id)} isn’t on your storage map as an 8 × 8 cabinet.</b> Add it on the Storage page (Add unit → Drawer cabinet, 8 rows × 8 drawers), then come back.</p>`
+    : V.done ? `<p class="note" style="margin-top:0">Organized ${esc(fmtDay(V.u.organized))}. New parts go into a free drawer in their size row — nothing already in the Akro-Mils moves.</p>`
+    : `<p class="note" style="margin-top:0">${plannedN} parts planned · ${64 - plannedN} spare drawers${incl ? '' : ` · <b>not in this run</b> — add it when ${esc(V.id)} is on the wall`}</p>`;
+  const vBtns = !V.ok ? '' : `<div class="btns" style="margin:0 0 10px"><button type="button" class="${incl ? 'pbtn2' : 'gbtn'}" data-act="orgsel" data-v="${esc(V.id)}">${incl ? '✓ ' + esc(V.id) + ' is in this run' : 'Add ' + esc(V.id) + ' to this run'}</button>${V.done ? `<button type="button" class="gbtn" data-act="orgfresh" data-v="${esc(V.id)}">Lay ${esc(V.id)} out again from the plan</button>` : (t.fresh || {})[V.id] ? '<span class="note" style="margin:8px 0 0">Lays it out fresh from the plan — parts you moved by hand go back, and a row that grew may shift over a drawer.</span>' : ''}</div>`;
+  const run = info.cabs.filter(C => C.ok && t.sel.includes(C.id)), full = run.filter(C => !C.done), waiting = info.cabs.filter(C => C.ok && !C.done && !t.sel.includes(C.id) && Object.keys(C.cells).length);
+  const shares = []; full.forEach(C => Object.entries(C.cells).forEach(([code, c]) => { const now = [...(ix.by.get(code) || []).filter(p => !away.has(p.id) && p.id !== c.x.id), ...(ix.th.get(code) || [])], pur = (C.u.spots || {})[code]; if (now.length || pur) shares.push(`<b>${esc(code)}</b> (${esc(shortName(c.x))}) also has ${esc(now.map(p => p.name).join(', ') || 'the note “' + pur + '”')}`); }));
+  const n = R.moves.length, btnTxt = n ? `Put ${n} part${n > 1 ? 's' : ''} in ${run.map(C => C.id).join(' + ')}` : full.length ? `Mark ${full.map(C => C.id).join(' + ')} as organized` : run.length ? 'Nothing new to put in' : 'Pick a cabinet above first';
+  const snap = orgSnap(), did = t.justDid;
+  const body = `${did ? `<div class="where" style="box-shadow:none;border:1.5px solid #bfe3cc;background:#f3fbf6"><div style="font-weight:800;color:#167a42">✅ Done — ${did.n} part${did.n === 1 ? '' : 's'} have their drawer in ${esc(did.ids.join(' + '))}.</div><p class="note" style="margin:4px 0 8px">Next: print the labels, then fill the drawers row by row. Search any part and its drawer lights up on the map.</p><div class="btns" style="margin:0">${did.ids.map(id => `<button type="button" class="pbtn2" data-act="print" data-unit="${esc(id)}">Labels for ${esc(id)}</button>`).join('')}</div></div>` : ''}
+    <p class="note" style="margin-top:0"><b>One row = one size.</b> Left → right: screws &amp; bolts short → long · <b>04</b> hex nut · <b>05</b> nyloc · <b>06</b> flat washer · <b>07</b> lock washer · <b>08</b> spare. Nylon sits in the row under its steel size.</p>
+    <div class="tabsel">${info.cabs.map(C => `<button type="button" class="${C.id === V.id ? 'on' : ''}" data-act="orgview" data-v="${esc(C.id)}">${esc(C.id)}${C.done ? ' ✓' : t.sel.includes(C.id) ? ' •' : ''}</button>`).join('')}</div>
+    <div style="font-weight:800;font-size:16px;margin:2px 2px 2px">${esc(V.id)} · ${esc(V.title)}</div>${status}${vBtns}
+    <div class="map" style="box-shadow:none;border:1px solid var(--line);padding:8px">${grid}</div>
+    <p class="note" id="orgFocus" style="min-height:38px;margin-bottom:4px">${focus}</p>
+    <div class="okey"><span><em style="background:#d9f2d9"></em>goes in</span><span><em style="background:#d9f2d9;opacity:.55;border:1.5px dashed #9aa3ad"></em>${incl ? 'stays where it is' : 'later'}</span><span><b style="color:var(--good)">✓</b> already there</span><span><b style="color:#b07205">⚠</b> check it fits</span><span><em style="background:#fafafa"></em>spare</span></div>
+    <div class="rows" style="box-shadow:none;border:1px solid var(--line);margin-top:10px">${rowList}</div>
+    <div class="h3">This run</div>
+    <p class="note" style="margin-top:0">${run.length ? run.map(C => `<b>${esc(C.id)}</b>${C.done ? ' (new parts only)' : ` (${Object.keys(C.cells).length} parts)`}`).join(' + ') : 'No cabinet picked — open a tab above and tap “Add … to this run”.'}${waiting.length ? `<br>Waiting: ${waiting.map(C => `${esc(C.id)} · ${Object.keys(C.cells).length} parts`).join(', ')} — add ${waiting.length > 1 ? 'each one' : 'it'} when it’s on the wall.` : ''}</p>
+    ${extraN || t.others ? `<div class="rows" style="box-shadow:none;border:1px solid var(--line);margin-bottom:10px"><div class="row" style="flex-wrap:wrap;gap:8px"><div class="t" style="min-width:200px"><b>${t.others ? 'Parts with a spot elsewhere move too' : `${extraN} part${extraN > 1 ? 's' : ''} already ${extraN > 1 ? 'have' : 'has'} a spot outside the Akro-Mils`}</b><span style="white-space:normal">${t.others ? 'They go into their size row with the rest' : 'They stay where they are; their drawer is kept free for them'}</span></div><button type="button" class="gbtn" data-act="orgothers">${t.others ? 'Leave them where they are' : 'Move them too'}</button></div></div>` : ''}
+    ${shares.length ? `<p class="note"><b>⚠ Sharing a drawer after this</b> (move them later if you like): ${shares.slice(0, 8).join(' · ')}${shares.length > 8 ? ` · …${shares.length - 8} more` : ''}</p>` : ''}
+    ${R.noRoom.length ? `<p class="note"><b class="danger">No free drawer left for:</b> ${esc(R.noRoom.map(x => x.name).join(', '))}</p>` : ''}
+    <div class="btns"><button type="button" class="pbtn2" data-act="orgapply"${!n && !full.length ? ' disabled style="opacity:.45"' : ''}>${btnTxt}</button>${snap ? `<button type="button" class="gbtn" data-act="orgundo">Undo the last organize (${snap.moves.length} part${snap.moves.length === 1 ? '' : 's'})</button>` : ''}</div>
+    <p class="note">Nothing is printed or moved until you tap the button. You can undo it.</p>
+    ${info.P.out.length ? `<details class="note" style="margin-top:10px"><summary style="cursor:pointer"><b>${info.P.out.length} part${info.P.out.length > 1 ? 's' : ''} stay out of the drawers</b></summary>${info.P.out.map(o => `${esc(o.c.x.name)} — <span style="color:var(--ink3)">${esc(o.why)}</span>`).join('<br>')}</details>` : ''}
+    <p class="note">Side by side or one above the other, the plan is the same: the codes stay A1–A4 and A1 always holds the smallest sizes, so rearranging the wall never means new labels.</p>`;
+  return { title: 'Organize by size', body };
+}
+function orgApply(t) {
+  const info = orgInfo(t), R = orgMoves(info, t.sel || [], !!t.others), run = info.cabs.filter(C => C.ok && (t.sel || []).includes(C.id)); if (!run.length) return;
+  if (!R.moves.length && !run.some(C => !C.done)) return toast('Nothing new to put in');
+  const list = doc().locations, today = new Date().toISOString().slice(0, 10);
+  const snap = { at: Date.now(), moves: R.moves.map(m => [m.x.id, m.x.location || '', m.to]), units: run.map(C => JSON.parse(JSON.stringify(C.u))) };
+  R.moves.forEach(m => { const y = itemById(m.x.id); if (y) y.location = m.to; });
+  run.forEach(C => { const i = list.findIndex(l => l && l.kind === 'unit' && l.id === C.id); if (i < 0) return; const u = cleanUnit({ ...list[i], organized: C.done ? list[i].organized : today, rowTags: O.rowTags(C) }); u.detail = S.detail(u); u.order = list[i].order ?? i; list[i] = u; });
+  commit(); LS.set('wn-org-undo', JSON.stringify(snap));
+  t.justDid = { ids: run.map(C => C.id), n: R.moves.length }; t.sel = []; t.fresh = {}; t.focus = ''; t.others = false;
+  render(); paintSheet(true);
+  toast(`Put ${R.moves.length} part${R.moves.length === 1 ? '' : 's'} in ${t.justDid.ids.join(' + ')}`, 'Undo', orgUndo);
+}
+function orgUndo() {
+  const s = orgSnap(); if (!s) return; let n = 0;
+  s.moves.forEach(([id, prev, to]) => { const y = itemById(id); if (y && (y.location || '') === to) { y.location = prev; n++; } });
+  const list = doc().locations; (s.units || []).forEach(u => { const i = list.findIndex(l => l && l.kind === 'unit' && l.id === u.id); if (i >= 0) list[i] = u; });
+  commit(); LS.set('wn-org-undo', '');
+  const top = stack[stack.length - 1]; if (top && top.k === 'organize') { top.justDid = null; top.sel = null; }
+  refresh(); toast(`Put back ${n} part${n === 1 ? '' : 's'} where ${n === 1 ? 'it was' : 'they were'}`);
+}
+
 // ---------------------------------------------------------------- labels & printing
 const L = WNLabels, LS = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { } } };
 const isHost = () => LS.get('wn-print-host', '') === '1', loadedRoll = () => LS.get('wn-roll', 'front');
@@ -534,7 +670,7 @@ function readUnit(u) {
 }
 function previewCodes(u) { const s = S.slots(u); return s.length ? `${s.length} spots · codes ${s[0].code} … ${s[s.length - 1].code}` : 'No spots yet'; }
 function nextUnitId() { const have = new Set(S.units(doc()).map(u => u.id)); for (const L of 'ABCDEFGHJKLMNPQRSTUVWXYZ') for (let n = 1; n <= 9; n++) if (!have.has(L + n)) return L + n; return ''; }
-function cleanUnit(u) { const o = { id: u.id, kind: 'unit', type: u.type, name: (u.name || '').trim() || u.id, model: (u.model || '').trim() }; if (u.spots && Object.keys(u.spots).length) o.spots = { ...u.spots }; if (u.type === 'sections') { o.sections = JSON.parse(JSON.stringify(u.sections || [])); o.extras = JSON.parse(JSON.stringify(u.extras || [])); } else if (u.type === 'grid') { o.rows = u.rows; o.cols = u.cols; } else if (u.type === 'modules') o.modules = (u.modules || []).map(m => ({ name: (m.name || '').trim(), bins: m.bins || 0, cols: 6 })); else { o.count = u.count; if (u.type === 'bins') o.cols = 6; } return o; }
+function cleanUnit(u) { const o = { id: u.id, kind: 'unit', type: u.type, name: (u.name || '').trim() || u.id, model: (u.model || '').trim() }; if (u.spots && Object.keys(u.spots).length) o.spots = { ...u.spots }; if (u.organized) o.organized = String(u.organized); if (u.rowTags && typeof u.rowTags === 'object') o.rowTags = JSON.parse(JSON.stringify(u.rowTags)); if (u.type === 'sections') { o.sections = JSON.parse(JSON.stringify(u.sections || [])); o.extras = JSON.parse(JSON.stringify(u.extras || [])); } else if (u.type === 'grid') { o.rows = u.rows; o.cols = u.cols; } else if (u.type === 'modules') o.modules = (u.modules || []).map(m => ({ name: (m.name || '').trim(), bins: m.bins || 0, cols: 6 })); else { o.count = u.count; if (u.type === 'bins') o.cols = 6; } return o; }
 
 // ---------------------------------------------------------------- taps
 document.addEventListener('click', (e) => {
@@ -559,6 +695,17 @@ document.addEventListener('click', (e) => {
   if (act === 'applyupd') { const x = S.pendingUpdates(doc()).find(v => v.id === t.dataset.unit); if (!x) return; const nu = cleanUnit(x.to(JSON.parse(JSON.stringify(x.unit)))), keep = new Set(S.slots(nu).map(s => s.code)), lost = heldCodes().filter(c => c.startsWith(nu.id + '-') && !keep.has(c));
     if (lost.length) { toast(`${lost.join(', ')} still hold${lost.length > 1 ? '' : 's'} parts — move them first`); return; }
     const before = JSON.parse(JSON.stringify(x.unit)); saveUnit(nu); render(); toast('Updated ' + nu.id, 'Undo', () => { saveUnit(before); render(); }); return; }
+  if (act === 'organize') { openSheet('organize', '', sheet.open && !!t.closest('#shBody'), t.dataset.unit ? { view: t.dataset.unit } : null); return; }
+  if (/^org/.test(act || '') && stack.length && stack[stack.length - 1].k === 'organize') { const top = stack[stack.length - 1], v = t.dataset.v;
+    if (act === 'orgview') { top.view = v; top.focus = ''; paintSheet(); }
+    else if (act === 'orgsel') { top.sel = top.sel.includes(v) ? top.sel.filter(x => x !== v) : [...top.sel, v]; if (!top.sel.includes(v) && top.fresh) delete top.fresh[v]; top.justDid = null; paintSheet(); }
+    else if (act === 'orgcell') { top.focus = top.focus === v ? '' : v; paintSheet(); }
+    else if (act === 'orgothers') { top.others = !top.others; paintSheet(); }
+    else if (act === 'orgfresh') { top.fresh = { ...(top.fresh || {}), [v]: true }; if (!top.sel.includes(v)) top.sel = [...top.sel, v]; top.justDid = null; paintSheet(); }
+    else if (act === 'orgapply') { t.disabled = true; orgApply(top); }
+    else if (act === 'orgundo') orgUndo();
+    return; }
+  if (act === 'orgundo') { orgUndo(); return; }
   if (act === 'print') { openSheet('print', t.dataset.unit ? { unit: t.dataset.unit } : { codes: [t.dataset.codes] }, sheet.open && !!t.closest('#shBody')); return; }
   if (act === 'printer') { dest.checked = false; openSheet('printer', ''); return; }
   if (act === 'roll' || act === 'only') { const top = stack[stack.length - 1]; if (act === 'roll') { top.roll = t.dataset.v; top.only = top.a.unit ? t.dataset.v === 'front' : false; } else top.only = t.dataset.v === '1'; paintSheet(); return; }
