@@ -85,5 +85,14 @@
   ];
   function pendingUpdates(doc) { const us = units(doc); return UPDATES.map(x => ({ ...x, unit: us.find(u => u.id === x.id) })).filter(x => x.unit && x.when(x.unit)); }
   const validId = (id) => /^[A-HJ-NP-Z][1-9]$/.test(String(id || ''));
-  window.WNStore = { ROWS, TYPES, MY_UNITS, T1_LAYOUT, units, slots, find, describe, suggest, detail, norm, validId, pendingUpdates };
+  // Photo maps: a real picture of the unit, with each drawer's spot measured on it (left/right and top/bottom
+  // edges in % of the picture). Akro-Mils 10164 (64 drawers, 8 × 8), from the owner's photo (2026-11-04).
+  const LOOKS = {
+    akro10164: { img: 'img/akro-10164.jpg', w: 944, h: 836,
+      xs: [[4.24, 14.62], [15.57, 26.38], [27.22, 37.92], [38.77, 49.58], [50.42, 61.12], [62.08, 72.78], [73.73, 84.43], [85.38, 95.76]],
+      ys: [[4.07, 14.0], [15.31, 25.6], [27.03, 37.08], [38.52, 48.56], [50.12, 60.05], [61.6, 71.41], [73.09, 82.89], [84.57, 94.02]] },
+  };
+  const PHOTO_UNITS = { A1: 'akro10164' };   // which units show their photo map (more Akro-Mils can be added here)
+  function look(u) { const L = u && u.type === 'grid' && LOOKS[PHOTO_UNITS[u.id]]; return L && u.rows === L.ys.length && u.cols === L.xs.length ? L : null; }
+  window.WNStore = { ROWS, TYPES, MY_UNITS, T1_LAYOUT, units, slots, find, describe, suggest, detail, norm, validId, pendingUpdates, look };
 })();

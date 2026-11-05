@@ -2,7 +2,7 @@
 <title>Workshop Navigator — Workshop</title>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261103d"></script><script src="js/model.js?v=20261103d"></script><script src="js/storage.js?v=20261103d"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/labels.js?v=20261104a"></script><script src="js/printers.js?v=20261103d"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261103d"></script><script src="js/model.js?v=20261103d"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104w"></script><script src="js/printers.js?v=20261104w"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -76,6 +76,32 @@ mark{background:#fff0a8;color:inherit;border-radius:3px}
 .stack .cell{min-height:40px;flex-direction:row;align-items:center;gap:10px;padding:8px 10px}.stack .cell .cl{font-size:12px;width:34px;flex:none}.stack .cell .cn{font-size:13px;-webkit-line-clamp:1}
 .scols{display:grid;gap:4px;margin-top:4px}.mod .mgrid+.scols{margin-top:4px}.mod{margin-top:10px}.mod:first-child{margin-top:0}.mod h4{margin:0 0 6px 2px;font-size:13px;color:var(--ink2)}
 .mapcap{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin:8px 4px 0}
+/* Akro-Mils wall: the cabinets side by side as mini maps (PC); one at a time in the iOS app and on phones */
+.wall{background:#fff;border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.whd{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}.whd>b{font-size:16px;color:var(--ink);margin-right:4px}
+.whd .k{display:flex;align-items:center;gap:5px}.whd .k i{width:12px;height:12px;border-radius:3px;background:#e4e7ec}
+.wseg{display:none;gap:4px;background:var(--pill);border-radius:12px;padding:3px;margin-top:12px}.wseg button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px 0;font:800 14px ui-monospace,Menlo,monospace;color:var(--ink2)}.wseg button.on{background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.wseg button small{display:block;font:600 10.5px system-ui,sans-serif;opacity:.75;margin-top:1px}
+.wgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:12px}
+.wcab{display:flex;flex-direction:column;gap:8px;min-width:0}.wcab .wt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border:0;background:transparent;padding:0;text-align:left;color:inherit;width:100%}
+.wcab .wt b{font:800 18px ui-monospace,Menlo,monospace;color:var(--brand)}.wcab .wt span{font-size:12.5px;color:var(--ink2)}
+.wmini{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;background:#2b2f36;padding:6px;border-radius:8px}
+.wmini .wc{aspect-ratio:1.3;border-radius:3px;background:#e4e7ec;border:0;padding:0;min-width:0;display:flex;align-items:center;justify-content:center;font:700 9px ui-monospace,Menlo,monospace;color:transparent;overflow:hidden}
+.wc.has,.whd .k i.has{background:#cfe0f2}.wc.w,.whd .k i.w{background:#f6c76a}.wc.r,.whd .k i.r{background:#e2574c}
+.wsub{font-size:12.5px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wopen{align-self:flex-start;display:none}
+html.native .wgrid{grid-template-columns:minmax(0,1fr)}html.native .wcab:not(.sel){display:none}html.native .wseg{display:flex}html.native .wmini{gap:4px;padding:8px}html.native .wmini .wc{color:#30343b;font-size:clamp(8px,2.4vw,12px)}html.native .wmini .wc.r{color:#fff}html.native .wopen{display:inline-flex}
+@media (max-width:700px){.wgrid{grid-template-columns:minmax(0,1fr)}.wcab:not(.sel){display:none}.wseg{display:flex}.wmini{gap:4px;padding:8px}.wmini .wc{color:#30343b;font-size:clamp(8px,2.4vw,12px)}.wmini .wc.r{color:#fff}.wopen{display:inline-flex}}
+/* photo map: the unit's real picture, each drawer's label sits on its drawer front */
+.pwrap{display:grid;gap:6px;align-items:stretch}.ptags{position:relative}.ptags .rtag{flex:1;min-height:0}
+.pmap{position:relative;container-type:inline-size;border-radius:12px;overflow:hidden;background:#1f2124}.pmap>img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.pmap .pd{position:absolute;display:flex;align-items:center;justify-content:center}
+.pmap .cell{width:84%;height:56%;min-height:0;margin-top:14%;border-radius:4px;padding:1px 4px;gap:0;justify-content:center;align-items:flex-start;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.55);color:#30343b;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.pmap .cell .cl{font-size:clamp(7.5px,1.5cqw,13px)}.pmap .cell .cn{font-size:clamp(8px,1.2cqw,12px);-webkit-line-clamp:2;line-height:1.1}
+.pmap .cell.has{background:#fff;border-color:#fff;color:var(--brand)}.pmap .cell.pur{background:rgba(255,255,255,.72);border:1px dashed #8d96a1}
+.pmap .cell .d{top:2px;right:2px;width:clamp(5px,.8cqw,8px);height:clamp(5px,.8cqw,8px)}.pmap .cell .k2{bottom:1px;right:3px;font-size:clamp(7px,1cqw,10px)}
+.pmap .cell.hit{background:#fff;border-color:var(--hit);box-shadow:0 0 0 2px #1e88ff,0 0 16px 5px rgba(30,136,255,.75);z-index:2}
+@container (max-width:560px){.pmap .cell .cn{display:none}.pmap .cell{align-items:center}}
 .where{background:#fff;border-radius:20px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:12px}
 .where .wc{font:800 22px ui-monospace,Menlo,monospace;color:var(--brand)}.where .wd{font-size:14px;color:var(--ink2);margin:2px 0 10px}
 @media (max-width:600px){.cards{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px;min-height:124px}.card .n{font-size:30px}.cell .cn{display:none}.cell{min-height:34px}.stack .cell .cn{display:-webkit-box}}
@@ -148,19 +174,78 @@ header .pageswitch a.on{background:#fff;color:var(--brand)}
 main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)/2 + 18px));padding-right:max(14px,env(safe-area-inset-right),calc((100vw - 1100px)/2 + 18px))}
 .dock{margin-top:10px;padding-top:12px}
 @media (min-width:701px){main,.dock{padding-left:max(18px,env(safe-area-inset-left),calc((100vw - 1100px)/2 + 18px));padding-right:max(18px,env(safe-area-inset-right),calc((100vw - 1100px)/2 + 18px))}.dock{margin-top:12px}}
+/* home page 10.9 */
+.card .n small{font-size:17px;font-weight:700;color:var(--ink3);letter-spacing:0}
+.card .s.xs{font-size:12.5px;color:var(--ink3)}
+.hbar{display:flex;gap:2px;height:7px;border-radius:4px;overflow:hidden;background:var(--pill);margin-top:4px}.hbar i{display:block;height:100%;background:var(--pill)}
+.att .b{color:var(--brand)}
+.hcta{align-self:flex-start;margin-top:4px;font-size:13px;font-weight:700;color:var(--brand);background:#e8f0f8;border-radius:999px;padding:6px 11px}
+.card.col{flex-direction:column;align-items:stretch}
+.hk{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--ink3);padding-right:6px}.hk i{width:10px;height:10px;border-radius:3px;background:#cfe0f2;margin-left:6px}.hk i.w{background:#f6c76a}.hk i.r{background:#e2574c}
+.hk2{margin-left:auto;font-size:13px;font-weight:600;color:var(--ink3);padding-right:6px}
+.hwall{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:4px}
+.hcab{display:flex;flex-direction:column;gap:6px;min-width:0}.hct{display:flex;justify-content:space-between;align-items:baseline}.hct b{font:800 15px ui-monospace,Menlo,monospace;color:var(--brand)}.hct small{font-size:12px;color:var(--ink3)}
+.hmini{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;background:#2b2f36;padding:4px;border-radius:6px}.hmini i{aspect-ratio:1.3;border-radius:2px;background:#e4e7ec}.hmini i.h{background:#cfe0f2}.hmini i.w{background:#f6c76a}.hmini i.r{background:#e2574c}
+.hwall.big .hmini{gap:3px;padding:6px}
+.hchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.hchip{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--ink2);background:var(--pill);border-radius:999px;padding:5px 10px}.hchip b{font:800 12px ui-monospace,Menlo,monospace;color:var(--brand)}
+.hcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:2px}
+.hblk{display:flex;flex-direction:column;gap:2px;min-width:0}.hbt{display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:var(--ink);padding:2px 0 4px;border-bottom:1px solid var(--line);margin-bottom:2px}.hbt span{color:var(--ink3)}
+.hrow{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:5px 0}.hrow .hn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.hrow b{flex:none;font-size:12px;font-weight:700}.hrow b.r{color:var(--bad)}.hrow b.b{color:var(--brand)}.hrow b.w{color:#b07205}
+.hmore{font-size:12.5px;font-weight:700;color:var(--brand);padding-top:3px}.hok{font-size:13px;color:var(--ink3);padding:5px 0}
+.hgroup{background:var(--card);border-radius:22px;padding:6px 0;margin-top:10px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(20,40,70,.05)}
+.hgh{font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink3);padding:8px 16px 4px}
+.hline{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;text-align:left;padding:10px 14px 10px 16px;color:var(--ink);position:relative}.hline+.hline{border-top:1px solid var(--line)}
+.hline>span:not(.ic){flex:1;min-width:0;display:flex;flex-direction:column}.hline b{font-size:15.5px}.hline small{font-size:12.5px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hline em{font-style:normal;font-size:20px;font-weight:800;min-width:30px;text-align:right}.hline em.r{color:var(--bad)}.hline em.w{color:#b07205}.hline em.b{color:var(--brand)}.hline em.z{color:var(--ink3)}.hline .chev{position:static;color:var(--ink3)}
+.hput{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}.hpc{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:8px 10px;text-align:left;color:var(--ink);min-width:0}.hpc>span{flex:1;min-width:0;display:flex;flex-direction:column}.hpc b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hpc small{font-size:12px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hpc em{font-style:normal;font-size:12px;font-weight:700;color:var(--brand);flex:none}
+@media (max-width:600px){.hcols{grid-template-columns:1fr;gap:10px}.hwall{grid-template-columns:repeat(2,minmax(0,1fr))}.hput{grid-template-columns:1fr}.card .n small{font-size:14px}}
+.hrow b.g{color:var(--ink3);font-weight:600}
+.hpc .pphoto,.hpc .pbtn{width:40px;height:40px;flex:none;display:grid;place-items:center;overflow:hidden;border-radius:10px;background:var(--pill)}.hpc .pphoto img,.hpc .pbtn svg,.hpc .pbtn img{max-width:36px;max-height:36px}
+.hput{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+@media (max-width:600px){.card.tw{grid-column:1/-1;min-height:0}.hput{grid-template-columns:1fr}}
+.pcx{display:none}
+@media (min-width:900px){.pcx{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}}
+.pp{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(20,40,70,.05);min-width:0;display:flex;flex-direction:column;gap:4px}.pp.span2{grid-column:span 2}
+.pph{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--ink2);margin-bottom:6px}.pph>span:last-child{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--ink3)}
+.fth,.ftr{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1.6fr) 44px 58px 64px 52px;gap:10px;align-items:center}
+.fth{font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--ink3);padding:0 0 6px;border-bottom:1px solid var(--line)}.fth span:nth-child(n+3){text-align:right}
+.ftr,.utr{border:0;background:transparent;text-align:left;color:var(--ink);padding:6px 0;font-size:13.5px;width:100%}.ftr+.ftr,.utr+.utr{border-top:1px solid var(--line)}
+.fn,.un{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fc{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}.fc.r{color:var(--bad);font-weight:700}.fb .hbar{margin:0}
+.utr{display:grid;grid-template-columns:30px minmax(0,1fr) minmax(0,.8fr) 52px;gap:10px;align-items:center}.utr b{font:800 13px ui-monospace,Menlo,monospace;color:var(--brand)}
+.pcx{grid-auto-flow:row dense}.pp.tall{grid-row:span 2}
+.patt .hcols{grid-template-columns:1.3fr 1.1fr .8fr}
+.fth,.ftr{grid-template-columns:minmax(0,2.2fr) minmax(0,1fr) 40px 54px 58px 46px}
+.pph .lg{display:flex;align-items:center;gap:4px;font-size:11.5px}.pph .lg i{width:9px;height:9px;border-radius:2px;margin-left:6px}
+.utr{grid-template-columns:30px minmax(0,1.3fr) minmax(0,1fr) 52px}
+@media (min-width:601px){.cards.c3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:900px){.card.pch{display:none}.cards.p3{grid-template-columns:repeat(3,minmax(0,1fr))}.cards.p2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* PC lists with part pictures */
+.pcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.pcols>div{display:flex;flex-direction:column;gap:12px}
+.prow{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;text-align:left;color:var(--ink);padding:6px 0;min-width:0}.prow+.prow{border-top:1px solid var(--line)}
+.prow .pphoto,.prow .pbtn,.fn .pphoto,.fn .pbtn{width:38px;height:38px;flex:none;display:grid;place-items:center;overflow:hidden;border-radius:10px;background:var(--pill)}
+.prow .pphoto img,.prow .pbtn svg,.prow .pbtn img,.fn .pphoto img,.fn .pbtn svg,.fn .pbtn img{max-width:34px;max-height:34px}
+.prow .pt{flex:1;min-width:0;display:flex;flex-direction:column}.prow .pt b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.prow .pt small{font-size:12px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow em{font-style:normal;font-size:12px;font-weight:700;flex:none}.prow em.r{color:var(--bad)}.prow em.w{color:#b07205}.prow em.b{color:var(--brand)}
+.fn{display:flex;align-items:center;gap:9px}.fn .pphoto,.fn .pbtn{width:30px;height:30px;border-radius:8px}.fn .pphoto img,.fn .pbtn svg,.fn .pbtn img{max-width:26px;max-height:26px}.fn>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.un{display:flex;align-items:center;gap:9px}.uimg{width:30px;height:27px;border-radius:6px;object-fit:cover;flex:none;background:var(--pill);display:block}.un>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.utr{grid-template-columns:30px minmax(0,1.5fr) minmax(0,1fr) 52px}
+.pp.patt{grid-column:1/-1}
+.pcols{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:22px}
+.hblk.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;align-content:start}.hblk.two .hbt,.hblk.two .hmore,.hblk.two .hok{grid-column:1/-1}.hblk.two .prow+.prow{border-top:0}.hblk.two .prow{border-bottom:1px solid var(--line)}
+.fth,.ftr{grid-template-columns:minmax(0,2.8fr) minmax(0,.9fr) 38px 50px 54px 44px}
 </style></head>
 <body>
 <header><div class="wrap"><div class="htop"><p class="eyebrow">Workshop Navigator · <span id="today"></span></p>
 <button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button>
-<button type="button" class="chip" id="menuBtn" aria-label="More" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg></button></div>
+<button type="button" class="chip" id="menuBtn" aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
 <h1 class="big">Workshop</h1>
-<nav class="pageswitch" aria-label="Switch page"><a href="index.html">Checklist</a><a class="on" href="workshop.html" aria-current="page">Workshop App</a></nav></div></header>
+<nav class="pageswitch" aria-label="Switch page"><a class="on" href="workshop.html" aria-current="page">Workshop App</a><a href="index.html">Checklist</a></nav></div></header>
 <div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label><button type="button" class="scanbtn app-only" data-act="scancode" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8h3v3H8zM13 13h3v3h-3zM13 8h3M8 13v3"/></svg></button></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
  <a href="#/storage" role="menuitem">Storage map</a>
  <button type="button" role="menuitem" data-act="printer">Labels &amp; printer <small id="qBadge"></small></button>
- <button type="button" role="menuitem" data-act="custom">Custom Data Matrix label</button>
+ <button type="button" role="menuitem" data-act="custom">Custom label</button>
  <button type="button" role="menuitem" data-act="organize">Organize Akro-Mils by size</button>
  <hr class="web-only"><a class="web-only" href="labs.html#viewer" role="menuitem">3D viewer</a><a class="web-only" href="labs.html#ai" role="menuitem">AI Hub</a>
  <hr><a href="index.html#settings" role="menuitem">Account &amp; sync</a>
@@ -281,19 +366,53 @@ function render() {
 const refresh = () => { render(); if ($('sheet').open && !$('sheet').classList.contains('closing') && !sheetTyping()) paintSheet(); };
 const head = (title, back, extra) => `<div class="vhead"><button type="button" class="back" data-go="${back}" aria-label="Back">‹</button><h2>${title}</h2>${extra ? `<div style="display:flex;gap:8px;flex-wrap:wrap">${extra}</div>` : ''}</div>`;
 
-function home() {
+// ---------------------------------------------------------------- home page (10.9): the four cards + the Akro-Mils wall; PC adds a details section
+function HD() {
   const it = items(), n = it.length, c = { instock: 0, tobuy: 0, putaway: 0, unmarked: 0 }; it.forEach(x => c[itemStatus(x)]++);
-  const tobuy = it.filter(x => x.need).length, low = it.filter(isLow).length, cats = new Set(it.map(x => x.category)).size;
+  const tobuy = it.filter(x => x.need), low = it.filter(isLow), cats = new Set(it.map(x => x.category)).size;
   const us = S.units(doc()), spots = us.reduce((a, u) => a + S.slots(u).length, 0), ix = index(), placed = [...ix.by.values()].reduce((a, v) => a + v.length, 0);
-  const noDrawer = it.filter(x => x.store && !canon(x.location)).length;
+  const noDrawer = it.filter(x => x.store && !canon(x.location));
   const tools = (doc().app.inventory || []).filter(t => t && t.kind === 'tool').length;
-  return `<div class="cards">
-  <button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${n}</div><div class="s">${c.instock} in stock · ${cats} families</div></button>
-  <button type="button" class="card" data-go="#/attention">${chev}<div class="k">${ic('alert')}Needs attention</div><div class="att"><span>To buy</span><b class="${tobuy ? 'r' : ''}">${tobuy}</b><span>Running low</span><b class="${low ? 'w' : ''}">${low}</b><span>Not put away</span><b>${c.putaway}</b></div></button>
-  <button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div>${us.length ? `<div class="n">${us.length}</div><div class="s">units · ${spots} spots · ${placed} parts placed${noDrawer ? `<br>${noDrawer} in stock without a drawer` : ''}</div>` : `<div class="s" style="margin-top:6px">Map your drawers so search can show exactly where a part is.</div><span class="soon">Set up</span>`}</button>
-  <button type="button" class="card" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${tools}</div><div class="s">${tools ? 'with brand, model, serial' : 'Add your tools — brand, model, serial, battery'}${things().length - tools ? ` · ${things().length - tools} other items` : ''}</div></button>
-  <a class="card wide" href="index.html">${ic('clip')}<div style="flex:1"><div style="font-weight:800;font-size:16px">Purchase Checklist</div><div class="s">Counts, buying and photos live there</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></a>
-  </div><p class="foot">Search finds any part and shows its drawer on the map.<br>Same parts and numbers as the Checklist — change counts there.<br><span style="opacity:.7">Version 10.6 · Nov 4</span></p>`;
+  const akro = us.filter(u => O.CABS.includes(u.id) && u.type === 'grid').map(u => { const sl = S.slots(u); let used = 0, lo = 0, out = 0; const cells = sl.map(s => { const ps = ix.by.get(s.code) || [], f = flag(ps); if (ps.length) used++; if (f === 'w') lo++; if (f === 'r') out++; return `<i class="${f ? f : ps.length ? 'h' : ''}"></i>`; }).join(''); return { u, used, n: sl.length, lo, out, cells }; });
+  const marked = c.instock + c.tobuy + c.putaway;
+  return { it, n, c, tobuy, low, cats, us, spots, placed, noDrawer, tools, akro, marked };
+}
+const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).map(p => `<i style="flex:${p[0]};background:${p[1]}"></i>`).join('')}${total - parts.reduce((a, p) => a + p[0], 0) > 0 ? `<i style="flex:${total - parts.reduce((a, p) => a + p[0], 0)}"></i>` : ''}</div>`;
+const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
+const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
+const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.13 · Nov 4</span></p>`;
+const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a drawer</span><b class="${D.noDrawer.length ? 'b' : ''}">${D.noDrawer.length}</b>${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
+const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.c.instock} in stock · ${D.cats} families</div>${hBar([[D.c.instock, 'var(--brand)'], [D.c.tobuy, 'var(--bad)']], D.n)}<div class="s xs">${D.n - D.marked} not marked yet</div></button>`;
+const storageCard = (D) => `<button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div><div class="n">${D.placed}<small> / ${D.spots}</small></div><div class="s">spots used · ${D.us.length} units</div>${hBar([[D.placed, 'var(--brand)']], D.spots)}<div class="s xs">${D.noDrawer.length ? `${D.noDrawer.length} in stock without a drawer` : 'Every in-stock part has a drawer'}</div></button>`;
+const toolsCard = (D, tw) => `<button type="button" class="card${tw ? ' tw' : ''}" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${D.tools}</div><div class="s">${D.tools ? 'with brand, model, serial' : 'Add your tools — brand, model, serial, battery'}</div>${D.tools ? '' : '<span class="hcta">+ Add a tool</span>'}</button>`;
+const attCard = (D, pch) => `<button type="button" class="card${pch ? ' pch' : ''}" data-go="#/attention">${chev}<div class="k">${ic('alert')}Needs attention</div><div class="att">${attRows(D)}</div></button>`;
+const picRow = (x, meta, cls) => `<button type="button" class="prow" data-part="${esc(x.id)}">${photo(x)}<span class="pt"><b>${esc(x.name)}</b><small>${esc(x.category || '')}</small></span>${meta ? `<em class="${cls || ''}">${meta}</em>` : ''}</button>`;
+const picBlock = (title, list, meta, cls, more, empty) => `<div class="hblk"><div class="hbt">${title}<span>${list.length}</span></div>${list.length ? list.slice(0, more).map(x => picRow(x, meta(x), cls)).join('') + (list.length > more ? `<span class="hmore">+${list.length - more} more</span>` : '') : `<span class="hok">${empty}</span>`}</div>`;
+const listBlock = (title, list, meta, cls, more, empty) => `<div class="hblk"><div class="hbt">${title}<span>${list.length}</span></div>${list.length ? list.slice(0, more).map(x => hRow(x.name, meta(x), cls, x.id)).join('') + (list.length > more ? `<span class="hmore">+${list.length - more} more</span>` : '') : `<span class="hok">${empty}</span>`}</div>`;
+const sugg = (x) => esc(x.category.replace(/^(SAE |Metric )/, '').split(' ').slice(0, 2).join(' '));
+
+// PC only: more detail under the cards (hidden on phones)
+function pcMore(D, skip) {
+  skip = skip || '';
+  const fam = new Map(); D.it.forEach(x => { const k = x.category || 'Other'; const f = fam.get(k) || { k, n: 0, ins: 0, need: 0, dr: 0 }; f.n++; if (x.store) f.ins++; if (x.need) f.need++; if (canon(x.location)) f.dr++; fam.set(k, f); });
+  const famPic = new Map(); D.it.forEach(x => { const k = x.category || 'Other'; if (!famPic.has(k) || (!famPic.get(k).img && x.img)) famPic.set(k, x); });
+  const fams = [...fam.values()].sort((a, b) => b.n - a.n);
+  const famRows = fams.map(f => `<button type="button" class="ftr" data-go="#/parts"><span class="fn">${famPic.get(f.k) ? photo(famPic.get(f.k)) : ''}<span>${esc(f.k)}</span></span><span class="fb">${hBar([[f.ins, 'var(--brand)'], [f.need, 'var(--bad)'], [f.dr - f.ins > 0 ? f.dr - f.ins : 0, '#cfe0f2']], f.n)}</span><span class="fc">${f.n}</span><span class="fc">${f.ins || '–'}</span><span class="fc">${f.dr || '–'}</span><span class="fc ${f.need ? 'r' : ''}">${f.need || '–'}</span></button>`).join('');
+  const unitRows = D.us.map(u => { const sl = S.slots(u), used = sl.filter(s => occupied(s.code)).length; const lk = /10164/.test(u.model || '') ? 'img/akro-10164.jpg' : ''; return `<button type="button" class="utr" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b><span class="un">${lk ? `<img class="uimg" src="${lk}" alt="">` : '<i class="uimg"></i>'}<span>${esc(u.name)}</span></span><span class="fb">${hBar([[used, 'var(--brand)']], sl.length || 1)}</span><span class="fc">${used}/${sl.length}</span></button>`; }).join('');
+  const prints = ((doc().app.alerts) || []).filter(a => a && a.kind === 'print').slice(-5).reverse();
+  const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; };
+  const att = skip.includes('att') ? '' : `<div class="pp span2 patt"><div class="pph">${ic('alert')}Needs attention<span>${D.tobuy.length + D.low.length + D.noDrawer.length} things</span></div><div class="pcols">${picBlock('To buy', D.tobuy, () => 'Buy', 'r', 4, 'Nothing to buy')}${picBlock('Need a drawer', D.noDrawer, () => '', 'b', 8, 'All put away').replace('class="hblk"', 'class="hblk two"')}${picBlock('Running low', D.low, x => (qtyNum(x) ?? '') + ' left', 'w', 4, 'Nothing low ✓')}</div></div>`;
+  const wall = skip.includes('wall') ? '' : `<div class="pp span2"><div class="pph">${ic('grid')}Akro-Mils wall<span>${D.akro.reduce((a, c) => a + c.used, 0)} of ${D.akro.reduce((a, c) => a + c.n, 0)} drawers used</span></div>${miniWall(D)}</div>`;
+  return `<div class="pcx">${att}${wall}
+   <div class="pp span2 tall"><div class="pph">${ic('box')}Part families<span class="lg"><i style="background:var(--brand)"></i>in stock <i style="background:var(--bad)"></i>to buy <i style="background:#cfe0f2"></i>has drawer</span></div><div class="fth"><span>Family · ${fams.length}</span><span></span><span>Parts</span><span>In stock</span><span>In drawer</span><span>To buy</span></div>${famRows}</div>
+   <div class="pp span2"><div class="pph">${ic('grid')}Storage units<span>${D.placed} / ${D.spots} spots</span></div>${unitRows}</div>
+   <div class="pp span2"><div class="pph">${ic('clip')}Label prints<span>Zebra ZD421</span></div>${prints.length ? prints.map(p => `<div class="hrow"><span class="hn">${p.custom ? 'Custom label' : esc((p.codes || []).slice(0, 3).join(', ')) + ((p.codes || []).length > 3 ? ' +' + ((p.codes || []).length - 3) : '')}</span><b class="g">${ago(p.at)}</b></div>`).join('') : `<span class="hok">No labels printed yet. Open a drawer and tap Labels.</span>`}</div>
+  </div>`;
+}
+function home() {
+  const D = HD();
+  return `<div class="cards p3">${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="h"></i>parts <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -322,9 +441,28 @@ function storage() {
   const ups = typeof S.pendingUpdates === 'function' ? S.pendingUpdates(doc()) : [], upHtml = ups.length ? `<div class="where" style="border:1.5px solid #c9dbef"><div style="font-weight:800">Layout updates ready</div><p class="note" style="margin:4px 0 8px">From what you told me. Nothing changes until you tap Apply.</p>${ups.map(x => `<div class="row" style="padding:8px 0;min-height:0"><span class="loc">${esc(x.id)}</span><div class="t"><b style="font-size:14.5px">${esc(x.text)}</b></div><button type="button" class="pbtn2" data-act="applyupd" data-unit="${esc(x.id)}">Apply</button></div>`).join('')}</div>` : '';
   const loose = [...ix.loose.values()], noDrawer = items().filter(x => x.store && !String(x.location || '').trim());
   const ucard = (u) => { const sl = S.slots(u), used = sl.filter(s => occupied(s.code)), lowN = used.filter(s => flag(ix.by.get(s.code) || [])).length; return `<button type="button" class="card ucard" data-go="#/storage/${esc(u.id)}"><span class="code">${esc(u.id)}</span><div class="k" style="padding-right:44px">${esc(u.name)}</div><div class="s">${esc(u.model || '')}</div><div class="s" style="margin-top:auto">${used.length} of ${sl.length} used${lowN ? ` · <b style="color:#b07205">${lowN} low</b>` : ''}</div><div class="meter"><i style="width:${sl.length ? Math.round(used.length / sl.length * 100) : 0}%"></i></div></button>`; };
-  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add unit</button>') + upHtml + orgBanner() + `<div class="cards">${us.map(ucard).join('')}</div>` +
+  const wallUs = us.filter(u => O.CABS.includes(u.id) && u.type === 'grid'), restUs = wallUs.length > 1 ? us.filter(u => !wallUs.includes(u)) : us;
+  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add unit</button>') + upHtml + orgBanner() + (wallUs.length > 1 ? wallHtml(wallUs) : '') + `<div class="cards">${restUs.map(ucard).join('')}</div>` +
     (loose.length ? `<div class="h3">Not on the map yet <span class="c">${loose.reduce((a, l) => a + l.parts.length, 0)}</span></div><p class="note">These parts have a location typed in that isn't one of your map codes.</p><div class="rows">${loose.map(l => { const sug = S.suggest(l.text), ok = sug && S.find(doc(), sug); return `<div class="row"><span class="loc old">${esc(l.text)}</span><div class="t"><b>${l.parts.length} part${l.parts.length > 1 ? 's' : ''}</b><span>${esc(l.parts.map(x => x.name).join(', '))}</span></div>${ok ? `<button type="button" class="gbtn" data-act="convert" data-from="${esc(l.text)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : `<button type="button" class="gbtn" data-part="${esc(l.parts[0].id)}">Place</button>`}</div>`; }).join('')}</div>` : '') +
     (noDrawer.length ? `<div class="h3">To put away</div><div class="rows"><button type="button" class="row" data-go="#/unplaced"><div class="t"><b>In stock, no drawer yet</b><span>Tap to see them and give each one a spot</span></div><span class="cnt" style="color:var(--ink2)">${noDrawer.length}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>` : '');
+}
+// The Akro-Mils wall: every cabinet as a mini map (has parts / low / out / empty). Tap a drawer to open it,
+// tap the cabinet's name to open its full map. PC shows them side by side; the iOS app and phones show one at a time.
+let wallSel = (() => { try { return localStorage.getItem('wn.wallSel') || ''; } catch (e) { return ''; } })();
+function wallHtml(cabs) {
+  const ix = index(), sel = cabs.some(u => u.id === wallSel) ? wallSel : cabs[0].id;
+  const info = cabs.map(u => { const sl = S.slots(u); let used = 0, low = 0, out = 0;
+    const cells = sl.map(s => { const ps = [...(ix.by.get(s.code) || []), ...(ix.th.get(s.code) || [])], f = flag(ix.by.get(s.code) || []);
+      if (ps.length) used++; if (f === 'w') low++; if (f === 'r') out++;
+      return `<button type="button" class="wc${f ? ' ' + f : ps.length ? ' has' : ''}" data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : ', empty'}" title="${esc(s.code)}${ps.length ? ' · ' + esc(ps.map(x => x.name).join(', ')) : ''}">${esc(s.label)}</button>`; }).join('');
+    const tags = u.rowTags ? [...S.ROWS.slice(0, u.rows)].map(r => u.rowTags[r] && u.rowTags[r].t).filter(Boolean) : [];
+    const sub = tags.length ? 'Rows: ' + tags.join(' · ') : (u.model || '');
+    return { u, sl, used, low, out, cells, sub }; });
+  const tot = (k) => info.reduce((a, c) => a + c[k], 0);
+  return `<div class="wall"><div class="whd"><b>Akro-Mils wall</b><span class="k"><i class="has"></i>Has parts</span><span class="k"><i class="w"></i>Low${tot('low') ? ' ' + tot('low') : ''}</span><span class="k"><i class="r"></i>Out${tot('out') ? ' ' + tot('out') : ''}</span><span class="k"><i></i>Empty</span></div>
+    <div class="wseg" role="tablist">${info.map(c => `<button type="button" role="tab" aria-selected="${c.u.id === sel}" class="${c.u.id === sel ? 'on' : ''}" data-act="wallpick" data-unit="${esc(c.u.id)}">${esc(c.u.id)}<small>${c.used}/${c.sl.length}</small></button>`).join('')}</div>
+    <div class="wgrid">${info.map(c => `<div class="wcab${c.u.id === sel ? ' sel' : ''}"><button type="button" class="wt" data-go="#/storage/${esc(c.u.id)}"><b>${esc(c.u.id)}</b><span>${c.used} / ${c.sl.length} used${c.low ? ` · <b style="font:inherit;color:#8a5a00">${c.low} low</b>` : ''}${c.out ? ` · <b style="font:inherit;color:var(--bad)">${c.out} out</b>` : ''}</span></button>
+      <div class="wmini">${c.cells}</div><div class="wsub">${esc(c.sub)}</div><button type="button" class="gbtn wopen" data-go="#/storage/${esc(c.u.id)}">Open ${esc(c.u.id)} map</button></div>`).join('')}</div></div>`;
 }
 // Draw a unit. hit = code to highlight. compact = no names (used inside sheets).
 function mapHtml(u, hit, compact) {
@@ -333,6 +471,12 @@ function mapHtml(u, hit, compact) {
     const names = list ? `<span class="cn">${ps.length ? esc(ps.map(shortName).join(' · ')) : empty}</span>` : (!compact && (ps.length || pur) ? `<span class="cn"${ps.length ? '' : ' style="font-style:italic;color:var(--ink3)"'}>${esc(ps.length ? shortName(ps[0]) : pur)}</span>` : '');
     return `<button type="button" class="cell${ps.length ? ' has' : pur ? ' pur' : ''}${h ? ' hit' : ''}"${tall} data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : pur ? ', for ' + esc(pur) : ', empty'}"><span class="cl">${esc(s.label)}</span>${names}${ps.length > 1 && !list ? `<span class="k2">${ps.length}</span>` : ''}${f ? `<i class="d ${f}"></i>` : ''}</button>`; };
   const sl = S.slots(u), grid = (cells, cols) => `<div class="mgrid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${cells}</div>`;
+  const LK = S.look && S.look(u);
+  if (LK) { // photo map: the drawers are placed on the unit's real picture
+    const box = (x, y) => `left:${x[0]}%;top:${y[0]}%;width:${(x[1] - x[0]).toFixed(2)}%;height:${(y[1] - y[0]).toFixed(2)}%`;
+    const photo = `<div class="pmap"><img src="${esc(LK.img)}" width="${LK.w}" height="${LK.h}" alt="${esc(u.name)}">${sl.map(s => `<div class="pd" style="${box(LK.xs[s.c], LK.ys[s.r])}">${cell(s)}</div>`).join('')}</div>`;
+    const tags = u.rowTags ? `<div class="ptags">${LK.ys.map((y, r) => `<div style="position:absolute;left:0;right:0;top:${y[0]}%;height:${(y[1] - y[0]).toFixed(2)}%;display:flex">${rtagHtml(u.rowTags[S.ROWS[r]], S.ROWS[r])}</div>`).join('')}</div>` : '';
+    return `<div class="map"><div class="pwrap" style="grid-template-columns:${tags ? '44px ' : ''}minmax(0,1fr)">${tags}${photo}</div><div class="mapcap"><span>Row A = top${u.rowTags ? ' · each row is one size' : ''}</span><span>Drawer 1 = left</span></div></div>`; }
   if (u.type === 'grid' && u.rowTags) { // organized by size: each row starts with its size
     const body = [...new Set(sl.map(s => s.r))].map(r => rtagHtml(u.rowTags[S.ROWS[r]], S.ROWS[r]) + sl.filter(s => s.r === r).map(s => cell(s)).join('')).join('');
     return `<div class="map"><div class="mgrid" style="grid-template-columns:40px repeat(${u.cols},minmax(0,1fr))">${body}</div><div class="mapcap"><span>Row A = top · each row is one size</span><span>Drawer 1 = left</span></div></div>`; }
@@ -589,6 +733,11 @@ function orgUndo() {
 const L = WNLabels, LS = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { } } };
 const isHost = () => LS.get('wn-print-host', '') === '1', loadedRoll = () => LS.get('wn-roll', 'front');
 L.setMedia(LS.get('wn-media', 'continuous'));
+L.setStyle('front', LS.get('wn-style-front', 'text')); L.setStyle('side', LS.get('wn-style-side', 'dm'));
+const STYLE_NAMES = { text: 'Text', dm: 'Data Matrix', qr: 'QR code' };
+// Which paper is in the printer (remembered on this device) and what to print on it.
+const paperTabs = (roll, act) => `<div class="h3" style="margin:2px 0 6px">Paper in the printer</div><div class="tabsel"><button type="button" class="${roll === 'front' ? 'on' : ''}" data-act="${act}" data-v="front">1.5″ × 0.5″</button><button type="button" class="${roll === 'side' ? 'on' : ''}" data-act="${act}" data-v="side">1″ × 1″</button></div>`;
+const styleTabs = (roll) => { const st = L.style(roll); return `<div class="h3" style="margin:2px 0 6px">Print as</div><div class="tabsel">${L.STYLES.map(x => `<button type="button" class="${st === x ? 'on' : ''}" data-act="lstyle" data-v="${x}">${STYLE_NAMES[x]}</button>`).join('')}</div>`; };
 const jobs = () => (doc().app.alerts || []).filter(a => a && a.kind === 'print');
 function labelData(code) { const f = S.find(doc(), code), c = f ? f.slot.code : code, ix = index(), pur = purposeOf(c);
   const stuff = [...(ix.by.get(c) || []), ...(ix.th.get(c) || []).map(t => ({ name: t.name, category: t.kind === 'tool' ? (t.brand ? t.brand + ' · tool' : 'Tool') : 'Supplies' }))];
@@ -597,7 +746,7 @@ function zplFor(roll, codes, copies) { return codes.map(c => L.zpl(roll, labelDa
 const P = window.WNPrinters;
 let dest = { local: null, checked: false }; // local = the printer jobs go to from this device (null → send to the computer)
 async function checkPrinter(force) { await P.scan(force); const p = P.current(); dest = { local: p && p.brand !== 'computer' ? p : null, checked: true }; return dest.local; }
-const rollSize = (roll) => roll === 'side' ? '0.75″ × 0.75″' : '1.5″ × 0.5″';
+const rollSize = (roll) => roll === 'side' ? '1″ × 1″' : '1.5″ × 0.5″';
 const brandPill = (p) => { const b = P.label(p), col = { Zebra: '#e7f0fa;color:#173a5c', DYMO: '#fdecec;color:#a3262b', Other: '#eef0f3;color:#4a5260', Computer: '#e3f5ea;color:#167a42' }[b] || ''; return `<span class="pill" style="background:${col};font-weight:800">${b}</span>`; };
 const pName = (p) => p.model && p.model !== p.name ? `${p.model} (${p.name})` : p.name;
 function destHtml(roll, sheetOk) {
@@ -620,13 +769,13 @@ function printSheet(t) {
   const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null;
   const all = u ? S.slots(u).map(s => s.code) : (t.a.codes || []);
   const filled = all.filter(c => occupied(c) || purposeOf(c));
-  if (t.roll == null) t.roll = filled.length ? 'front' : 'side';
+  if (t.roll == null) t.roll = loadedRoll();
   if (t.only == null) t.only = !!u && t.roll === 'front';
   t.copies = t.copies || 1;
   const codes = t.only ? filled : all, n = codes.length * t.copies, show = codes.slice(0, 8);
   const waiting = jobs().length;
   const destLine = destHtml(t.roll, true), dlg = dest.local && dest.local.brand === 'other';
-  return { title: u ? 'Labels · ' + u.id : 'Labels · ' + (all[0] || ''), body: `<div class="tabsel"><button type="button" class="${t.roll === 'front' ? 'on' : ''}" data-act="roll" data-v="front">Front · 1.5″ × 0.5″</button><button type="button" class="${t.roll === 'side' ? 'on' : ''}" data-act="roll" data-v="side">Side · 0.75″ × 0.75″</button></div>
+  return { title: u ? 'Labels · ' + u.id : 'Labels · ' + (all[0] || ''), body: `${paperTabs(t.roll, 'roll')}${styleTabs(t.roll)}
     ${u ? `<div class="tabsel"><button type="button" class="${t.only ? 'on' : ''}" data-act="only" data-v="1">Spots with parts (${filled.length})</button><button type="button" class="${!t.only ? 'on' : ''}" data-act="only" data-v="0">All spots (${all.length})</button></div>` : ''}
     <div class="lprev">${show.map(c => L.preview(t.roll, labelData(c), 150)).join('') || '<div class="empty">No spots with parts yet.</div>'}</div>${codes.length > show.length ? `<p class="note">…and ${codes.length - show.length} more.</p>` : ''}
     <div class="frow" style="align-items:end;margin-top:12px"><label class="fld"><span>Copies of each</span><select data-act-sel="copies">${[1, 2, 3].map(k => `<option${k === t.copies ? ' selected' : ''}>${k}</option>`).join('')}</select></label><div class="fld"><button type="button" class="pbtn2" data-act="doprint" style="height:46px"${codes.length ? '' : ' disabled'}>Print ${n} label${n === 1 ? '' : 's'}</button></div></div>
@@ -638,25 +787,24 @@ async function doPrint(t) {
   const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null, all = u ? S.slots(u).map(s => s.code) : (t.a.codes || []);
   const codes = t.only ? all.filter(c => occupied(c) || purposeOf(c)) : all; if (!codes.length) return;
   if (await printHere(t.roll, codes.map(labelData), t.copies, { sheet: t.sheet })) return;
-  doc().app.alerts.push({ id: 'pj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'print', roll: t.roll, codes, copies: t.copies, at: Date.now(), from: /iPhone|iPad|Android/.test(navigator.userAgent) ? (navigator.userAgent.match(/iPhone|iPad|Android/) || [''])[0] : 'another device' });
+  doc().app.alerts.push({ id: 'pj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'print', roll: t.roll, style: L.style(t.roll), codes, copies: t.copies, at: Date.now(), from: /iPhone|iPad|Android/.test(navigator.userAgent) ? (navigator.userAgent.match(/iPhone|iPad|Android/) || [''])[0] : 'another device' });
   commit(); paintBadge(); toast(`Sent ${codes.length * t.copies} label${codes.length * t.copies === 1 ? '' : 's'} to your computer`); paintSheet();
 }
-// Custom label: whatever you type goes into the Data Matrix, drawn instantly as you type.
-function customInfo(t) { const ck = L.check(t.data); return ck.ok ? `<b>Data Matrix ECC 200</b> · ${ck.size} × ${ck.size} squares · holds exactly ${ck.chars} character${ck.chars === 1 ? '' : 's'}: <span style="font-family:ui-monospace,Menlo,monospace;color:var(--ink)">${esc(t.data)}</span>` : `<span class="danger">${esc(ck.why)}</span>`; }
-function customPrev(t) { const ck = L.check(t.data); if (!ck.ok) return '<div class="empty">The code appears here as you type.</div>'; return L.preview(t.roll, L.custom(t.data, t.caption, t.line2), t.roll === 'side' ? 260 : 220) + `<div style="background:#fff;border-radius:12px;padding:12px;display:grid;place-items:center">${WNDataMatrix.svg(t.data, 150)}<div class="note" style="margin:6px 0 0">Big copy for test scanning</div></div>`; }
+// Custom label: your own text, printed as big as it fits (no code on the label).
+function customInfo(t) { const ck = L.check(t.data), st = L.style(t.roll); return ck.ok ? `${st === 'text' ? 'Prints as text, as big as it fits' : 'Prints a ' + STYLE_NAMES[st] + ' that holds this text'} · ${ck.chars} character${ck.chars === 1 ? '' : 's'}` : `<span class="danger">${esc(ck.why)}</span>`; }
+function customPrev(t) { const ck = L.check(t.data); if (!ck.ok) return '<div class="empty">Your label appears here as you type.</div>'; return L.preview(t.roll, L.custom(t.data, '', t.line2), t.roll === 'side' ? 260 : 220); }
 function customSheet(t) {
-  if (t.data == null) { t.data = ''; t.caption = ''; t.line2 = ''; t.roll = 'side'; t.copies = 1; }
+  if (t.data == null) { t.data = ''; t.caption = ''; t.line2 = ''; t.roll = loadedRoll(); t.copies = 1; }
   const ck = L.check(t.data);
-  return { title: 'Custom Data Matrix label', body: `<label class="fld"><span>What goes in the code</span><textarea id="cData" rows="2" maxlength="120" placeholder="Anything — e.g. A2-C05, a part number, a URL, a note" autocapitalize="off" autocorrect="off" spellcheck="false" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:16px ui-monospace,Menlo,monospace;background:#fafafb;resize:vertical">${esc(t.data)}</textarea></label>
+  return { title: 'Custom label', body: `<label class="fld"><span>Label text</span><textarea id="cData" rows="2" maxlength="60" placeholder="e.g. Drill bits, Spare fuses, A2-C05" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:16px system-ui,sans-serif;background:#fafafb;resize:vertical">${esc(t.data)}</textarea></label>
     <p class="note" id="cInfo" style="margin-top:-4px">${customInfo(t)}</p>
-    <div class="tabsel"><button type="button" class="${t.roll === 'side' ? 'on' : ''}" data-act="croll" data-v="side">Side · 0.75″ × 0.75″</button><button type="button" class="${t.roll === 'front' ? 'on' : ''}" data-act="croll" data-v="front">Front · 1.5″ × 0.5″</button></div>
+    ${paperTabs(t.roll, 'croll')}${styleTabs(t.roll)}
     <div class="lprev" id="cPrev" style="align-items:center">${customPrev(t)}</div>
-    <div class="frow" style="margin-top:12px"><label class="fld"><span>Printed text (optional)</span><input id="cCap" value="${esc(t.caption)}" placeholder="Shown under / next to the code"></label>${t.roll === 'front' ? `<label class="fld"><span>Second line (optional)</span><input id="cL2" value="${esc(t.line2)}" placeholder="Small line"></label>` : '<div></div>'}</div>
+    <div class="frow" style="margin-top:12px"><label class="fld"><span>Second line (optional)</span><input id="cL2" value="${esc(t.line2)}" placeholder="Smaller line under it"></label><div></div></div>
     <div class="frow" style="align-items:end"><label class="fld"><span>Copies</span><select id="cCopies">${[1, 2, 3, 5, 10].map(k => `<option${k === t.copies ? ' selected' : ''}>${k}</option>`).join('')}</select></label><div class="fld"><button type="button" class="pbtn2" id="cPrint" data-act="cprint" style="height:46px"${ck.ok ? '' : ' disabled'}>Print</button></div></div>
-    <p class="note" id="cDest">${destHtml(t.roll, false)}</p>
-    <p class="note">What you type is put into the code exactly, character for character. To check it, scan the big copy above or a printed label (see Labels &amp; printer → How to test a scan).</p>`,
+    <p class="note" id="cDest">${destHtml(t.roll, false)}</p>`,
     after: () => {
-      const upd = () => { t.data = $('cData').value.replace(/\r?\n/g, ' '); t.caption = $('cCap').value; if ($('cL2')) t.line2 = $('cL2').value; $('cInfo').innerHTML = customInfo(t); $('cPrev').innerHTML = customPrev(t); $('cPrint').disabled = !L.check(t.data).ok; };
+      const upd = () => { t.data = $('cData').value.replace(/\r?\n/g, ' '); t.caption = ''; if ($('cL2')) t.line2 = $('cL2').value; $('cInfo').innerHTML = customInfo(t); $('cPrev').innerHTML = customPrev(t); $('cPrint').disabled = !L.check(t.data).ok; };
       ['cData', 'cCap', 'cL2'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', upd); });
       $('cCopies').onchange = () => { t.copies = +$('cCopies').value; };
       if (!dest.checked) checkPrinter().then(() => { const d = $('cDest'); if (d && stack[stack.length - 1] === t) d.innerHTML = destHtml(t.roll, false); });
@@ -664,8 +812,8 @@ function customSheet(t) {
 }
 async function doCustomPrint(t) {
   const ck = L.check(t.data); if (!ck.ok) return toast(ck.why);
-  if (await printHere(t.roll, [L.custom(t.data, t.caption, t.line2)], t.copies, { sheet: t.sheet })) return;
-  doc().app.alerts.push({ id: 'pj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'print', roll: t.roll, custom: { data: t.data, caption: t.caption, line2: t.line2 }, codes: [], copies: t.copies, at: Date.now(), from: (navigator.userAgent.match(/iPhone|iPad|Android/) || ['another device'])[0] });
+  if (await printHere(t.roll, [L.custom(t.data, '', t.line2)], t.copies, { sheet: t.sheet })) return;
+  doc().app.alerts.push({ id: 'pj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'print', roll: t.roll, style: L.style(t.roll), custom: { data: t.data, caption: t.caption, line2: t.line2 }, codes: [], copies: t.copies, at: Date.now(), from: (navigator.userAgent.match(/iPhone|iPad|Android/) || ['another device'])[0] });
   commit(); paintBadge(); toast('Sent to your computer to print');
 }
 let conn = null; // last "Check connection" result
@@ -700,15 +848,15 @@ function printerSheet() {
   return { title: 'Labels & printer', body: `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div style="font-size:14.5px;line-height:1.45">${st}</div>${connHtml()}<div class="btns"><button type="button" class="pbtn2" data-act="connchk">Check connection</button>${dest.local ? `<button type="button" class="gbtn" data-act="ptest" data-id="${esc(dest.local.id)}">Print a test label</button>` : ''}</div></div>
     ${plist}
     <div class="h3 web-only">This device</div><div class="rows web-only" style="box-shadow:none;border:1px solid var(--line)"><button type="button" class="row" data-act="host"><div class="t"><b>This computer prints labels sent from my phone</b><span>${host ? 'On — keep Workshop open here to print them' : 'Off'}</span></div><span class="pill ${host ? 'st-instock' : ''}">${host ? 'On' : 'Off'}</span></button>
-    ${host ? `<div class="row" style="flex-wrap:wrap"><div class="t"><b>Roll in the printer</b><span>Jobs for the other roll wait until you switch</span></div><div class="tabsel" style="margin:0;padding:0"><button type="button" class="${roll === 'front' ? 'on' : ''}" data-act="loaded" data-v="front">Front 1.5×0.5</button><button type="button" class="${roll === 'side' ? 'on' : ''}" data-act="loaded" data-v="side">Side 0.75×0.75</button></div></div>` : ''}</div>
+    ${host ? `<div class="row" style="flex-wrap:wrap"><div class="t"><b>Paper in the printer</b><span>Jobs for the other paper wait until you switch</span></div><div class="tabsel" style="margin:0;padding:0"><button type="button" class="${roll === 'front' ? 'on' : ''}" data-act="loaded" data-v="front">1.5″ × 0.5″</button><button type="button" class="${roll === 'side' ? 'on' : ''}" data-act="loaded" data-v="side">1″ × 1″</button></div></div>` : ''}</div>
     <div class="h3">Roll type</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)"><div class="row" style="flex-wrap:wrap"><div class="t"><b>${L.media === 'gap' ? 'Die-cut labels (gaps between labels)' : 'Continuous roll (no gaps)'}</b><span>${L.media === 'gap' ? 'The printer stops at each gap' : 'Prints the label plus 1″ to tear off, then stops'}</span></div><div class="tabsel" style="margin:0;padding:0"><button type="button" class="${L.media !== 'gap' ? 'on' : ''}" data-act="media" data-v="continuous">Continuous</button><button type="button" class="${L.media === 'gap' ? 'on' : ''}" data-act="media" data-v="gap">Die-cut</button></div></div></div>
     <div class="h3">Waiting to print <span class="c">${js.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${js.map(j => `<div class="row"><span class="loc">${j.roll === 'side' ? 'SIDE' : 'FRONT'}</span><div class="t"><b>${(j.custom ? 1 : j.codes.length) * (j.copies || 1)} label${(j.custom ? 1 : j.codes.length) * (j.copies || 1) === 1 ? '' : 's'} · ${j.custom ? 'Custom: ' + esc(j.custom.data.slice(0, 24)) : esc(j.codes.slice(0, 3).join(', ')) + (j.codes.length > 3 ? '…' : '')}</b><span>From ${esc(j.from || 'a device')} · ${new Date(j.at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span></div>${cur && cur.brand === 'other' ? `<button type="button" class="gbtn" data-act="printjob" data-id="${esc(j.id)}" style="margin-right:6px">Print</button>` : ''}<button type="button" class="xbtn" data-act="canceljob" data-id="${esc(j.id)}" aria-label="Cancel">×</button></div>`).join('') || '<div class="empty">Nothing waiting.</div>'}</div>
     <div class="btns"><button type="button" class="pbtn2" data-act="custom">Create a custom Data Matrix label</button></div>
-    <div class="h3 app-only">How to test a scan</div><div class="note app-only" style="line-height:1.55;margin-top:0">Tap the <b>scan button</b> next to the search bar and point the camera at a label: a drawer label opens that drawer; anything else shows the exact text inside the code.</div>
-    <div class="h3 web-only">How to test a scan</div><div class="note web-only" style="line-height:1.55;margin-top:0">The iPhone Camera app reads QR codes only, so use one of these:<br><b>1. Photo check (exact):</b> take a clear photo of the label, then on <b>zxing.org/w/decode.jspx</b> choose the photo and tap Submit. It shows the format (<b>DATA_MATRIX</b>) and the exact text inside — compare it with what you typed.<br><b>2. Google Lens:</b> in the Google app, tap the camera icon and point it at the label; it shows the text.<br><b>3. Workshop Scan button:</b> coming in the next update — it will open the drawer it reads.</div>`,
+    
+    `,
     after: () => { if (!dest.checked) checkPrinter().then(() => { if (stack[stack.length - 1].k === 'printer') paintSheet(); }); } };
 }
-const jobLabels = (j) => j.custom ? [L.custom(j.custom.data, j.custom.caption, j.custom.line2)] : (j.codes || []).map(labelData);
+const jobLabels = (j) => (j.custom ? [L.custom(j.custom.data, j.custom.caption, j.custom.line2)] : (j.codes || []).map(labelData)).map(c => j.style ? { ...c, style: j.style } : c);   // printed the way the phone chose
 function removeJob(id) { const a = doc().app.alerts, i = a.findIndex(x => x && x.id === id); if (i >= 0) { a.splice(i, 1); commit(); } }
 function paintBadge() { const n = jobs().length, b = $('qBadge'); if (b) b.textContent = n ? n + ' waiting' : ''; }
 // The computer with the printer prints what the phone sent (only when this device is set as the printer computer).
@@ -740,6 +888,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.soon) { toast(t.dataset.soon + ' arrive' + (t.dataset.soon.endsWith('s') ? '' : 's') + ' in the next update'); return; }
   if (act === 'close') { closeSheet(); return; }
   if (act === 'setup') { if (S.units(doc()).length) return; S.MY_UNITS.forEach((u, i) => { const o = cleanUnit(u); o.order = i; o.detail = S.detail(o); doc().locations.push(o); }); commit(); render(); toast('Storage map added — ' + S.MY_UNITS.length + ' units'); return; }
+  if (act === 'wallpick') { wallSel = t.dataset.unit; try { localStorage.setItem('wn.wallSel', wallSel); } catch (e) {} render(); return; }
   if (act === 'newunit') { openSheet('unit', ''); return; }
   if (act === 'editunit') { openSheet('unit', t.dataset.unit); return; }
   if (act === 'addmod') { const d = stack[stack.length - 1].draft; readUnit(d); d.modules.push({ name: '', bins: 0, cols: 6 }); paintSheet(); return; }
@@ -768,14 +917,15 @@ document.addEventListener('click', (e) => {
   if (act === 'orgundo') { orgUndo(); return; }
   if (act === 'print') { openSheet('print', t.dataset.unit ? { unit: t.dataset.unit } : { codes: [t.dataset.codes] }, sheet.open && !!t.closest('#shBody')); return; }
   if (act === 'printer') { dest.checked = false; openSheet('printer', '', sheet.open && !!t.closest('#shBody')); return; }
-  if (act === 'roll' || act === 'only') { const top = stack[stack.length - 1]; if (act === 'roll') { top.roll = t.dataset.v; top.only = top.a.unit ? t.dataset.v === 'front' : false; } else top.only = t.dataset.v === '1'; paintSheet(); return; }
+  if (act === 'lstyle') { const top = stack[stack.length - 1]; LS.set('wn-style-' + top.roll, t.dataset.v); L.setStyle(top.roll, t.dataset.v); paintSheet(); return; }
+  if (act === 'roll' || act === 'only') { const top = stack[stack.length - 1]; if (act === 'roll') { top.roll = t.dataset.v; LS.set('wn-roll', top.roll); top.only = top.a.unit ? t.dataset.v === 'front' : false; } else top.only = t.dataset.v === '1'; paintSheet(); return; }
   if (act === 'doprint') { t.disabled = true; doPrint(stack[stack.length - 1]); return; }
-  if (act === 'ptest' || act === 'testprint') { const p = act === 'ptest' ? P.found.find(x => x.id === t.dataset.id) : dest.local; if (!p) return; const roll = isHost() ? loadedRoll() : 'front';
+  if (act === 'ptest' || act === 'testprint') { const p = act === 'ptest' ? P.found.find(x => x.id === t.dataset.id) : dest.local; if (!p) return; const roll = loadedRoll();
     P.print(p, roll, [L.content('A1-A01', [{ name: 'Test label', category: 'Workshop Navigator' }])], 1).then(r => toast(p.brand === 'other' ? (P.native() ? (r.cancelled ? 'Print cancelled' : 'Test label sent to AirPrint') : 'Opened the print dialog with a test label') : 'Test label sent to ' + pName(p)), e => toast(e.message)); return; }
   if (act === 'addnet') { const ip = ($('netIp') || {}).value || '', err = $('netErr'); if (!ip.trim()) { if (err) err.textContent = 'Type the printer’s IP address, like 192.168.1.40'; return; } t.disabled = true; if (err) err.textContent = 'Checking the printer…';
     P.addNetwork(ip.trim()).then(d => { conn = null; checkPrinter(false).then(() => { paintSheet(); toast('Added ' + pName(d) + ' — labels now print there'); }); }, e => { t.disabled = false; const er = $('netErr'); if (er) er.textContent = e.message; }); return; }
   if (act === 'forgetp') { P.forget(t.dataset.id).then(() => checkPrinter(false)).then(() => { conn = null; paintSheet(); toast('Printer removed'); }); return; }
-  if (act === 'scancode') { P.scanCode().then(code => { code = String(code || '').trim(); if (!code) return; if (sheet.open) closeSheet();
+  if (act === 'scancode') { P.scanCode().then(code => { code = String(code || '').trim(); if (!code) return; const lk = code.match(/[#&?]loc=([^&#]+)/); if (lk) code = decodeURIComponent(lk[1]);   // a QR label holds a link to its drawer if (sheet.open) closeSheet();
       const f = S.find(doc(), code); if (f) { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + f.unit.id); setTimeout(() => openSheet('slot', f.slot.code), 80); return; }
       if (itemById(code)) { openSheet('part', code); return; } if (thingById(code)) { openSheet('thing', code); return; }
       qEl.value = code; $('qClear').hidden = false; render(); toast('Scanned: ' + code); }, e => toast(e.message)); return; }
@@ -808,7 +958,7 @@ document.addEventListener('click', (e) => {
     if (cur && cur.brand === 'dymo') { checkPrinter(true).then(p => { const d = P.found.find(x => x.id === cur.id); conn = { state: 'dymo', ok: P.apps.dymo === 'on', name: pName(cur), ready: !!(d && d.ready) }; back(); }); return; }
     L.status().then(async r => { conn = r; await checkPrinter(true); back(); }); return; }
   if (act === 'custom') { closeMenu(); openSheet('custom', '', sheet.open && !!t.closest('#shBody')); setTimeout(() => { const el = $('cData'); if (el && matchMedia('(hover:hover)').matches) el.focus(); }, 80); return; }
-  if (act === 'croll') { const top = stack[stack.length - 1]; top.roll = t.dataset.v; paintSheet(); return; }
+  if (act === 'croll') { const top = stack[stack.length - 1]; top.roll = t.dataset.v; LS.set('wn-roll', top.roll); paintSheet(); return; }
   if (act === 'cprint') { doCustomPrint(stack[stack.length - 1]); return; }
   if (act === 'pick') { openSheet('pick', t.dataset.part, true); return; }
   if (act === 'pickunit') { const top = stack[stack.length - 1]; top.unit = t.dataset.unit; top.scrollMap = true; paintSheet(); return; }

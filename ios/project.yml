@@ -1,0 +1,26 @@
+# Backup only: if Xcode won't open WorkshopNavigator.xcodeproj, install XcodeGen (brew install xcodegen)
+# and run "xcodegen" in this folder to make a fresh project from this file.
+name: WorkshopNavigator
+options:
+  deploymentTarget: { iOS: "16.0" }
+targets:
+  WorkshopNavigator:
+    type: application
+    platform: iOS
+    sources:
+      - path: WorkshopNavigator
+      - path: www
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.edpuello.workshopnavigator
+        INFOPLIST_FILE: Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "2"
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 53HN6NLUDU

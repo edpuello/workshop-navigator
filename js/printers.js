@@ -107,7 +107,7 @@
   const OTHER = { id: 'other:dialog', brand: 'other', name: 'Any printer — print dialog', conn: '', via: 'This device', always: true };
   const COMPUTER = { id: 'computer', brand: 'computer', name: 'My computer’s printer', conn: '', via: 'Sends the labels to Workshop on your computer', always: true };
   function dialogPrint(roll, labels, copies, sheet) {
-    const side = roll === 'side', w = side ? 0.75 : 1.5, h = side ? 0.75 : 0.5, svgs = [];
+    const side = roll === 'side', w = side ? 1 : 1.5, h = side ? 1 : 0.5, svgs = [];
     labels.forEach(c => { const s = L().svgLabel(roll, c); for (let i = 0; i < Math.max(1, copies | 0); i++) svgs.push(s); });
     let area = document.getElementById('printArea'); if (!area) { area = document.createElement('div'); area.id = 'printArea'; document.body.appendChild(area); }
     let st = document.getElementById('printPage'); if (!st) { st = document.createElement('style'); st.id = 'printPage'; document.head.appendChild(st); }
@@ -125,7 +125,7 @@
   async function nativeAirPrint(roll, labels, copies, sheet) {
     const side = roll === 'side', pages = [];
     for (const c of labels) { const png = await L().png(roll, c); for (let i = 0; i < copies; i++) pages.push(png); }
-    const done = await nat('airprint', { pages, w: side ? 0.75 : 1.5, h: side ? 0.75 : 0.5, sheet: !!sheet });
+    const done = await nat('airprint', { pages, w: side ? 1 : 1.5, h: side ? 1 : 0.5, sheet: !!sheet });
     return { n: pages.length, where: 'AirPrint', cancelled: done === false };
   }
   // Add a network printer by IP address (iPhone app). → the printer entry, now in the list and picked.

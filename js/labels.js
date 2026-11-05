@@ -1,11 +1,11 @@
 // Drawer labels for the Zebra ZD421 (300 dpi, direct thermal).
-//   front: 1.5″ × 0.5″ (450 × 150 dots) — layout C: 0.4″ Data Matrix · part name · code + category
-//   side:  0.75″ × 0.75″ (225 × 225 dots) — Data Matrix + code
-// The printer draws the Data Matrix itself (ZPL ^BX); js/datamatrix.js draws the same symbol for the on-screen preview.
+//   front: 1.5″ × 0.5″ (450 × 150 dots) · side: 1″ × 1″ (300 × 300 dots)
+//   Each roll prints Text, Data Matrix or QR code (setStyle). Defaults: front = text, side = Data Matrix only.
+// The printer draws the codes itself (ZPL ^BX / ^BQ); js/datamatrix.js and js/qrcode.js draw the same symbols for the on-screen preview.
 // Printing from a computer goes through Zebra Browser Print (free app for Mac/Windows, printer on USB).
 (function () {
   const DPI = 300;
-  const ROLLS = { front: { w: 1.5, h: 0.5, name: 'Front labels · 1.5″ × 0.5″' }, side: { w: 0.75, h: 0.75, name: 'Side labels · 0.75″ × 0.75″' } };
+  const ROLLS = { front: { w: 1.5, h: 0.5, name: 'Front labels · 1.5″ × 0.5″' }, side: { w: 1, h: 1, name: 'Side labels · 1″ × 1″' } };
   const clean = (t) => String(t || '').replace(/[″”“]/g, '"').replace(/[’‘]/g, "'").replace(/[–—]/g, '-').replace(/[\^~]/g, '').replace(/\s+/g, ' ').trim();
   // Width of text in the printer's font (ZPL ^A0, bold condensed), in printer dots.
   // Character widths measured from real ZD421 prints (the printer draws - " × · wider than you'd expect), plus 4% to stay on the safe side.
@@ -21,8 +21,9 @@
   // The app splits the lines itself, so the printer never wraps (its own wrapping printed lines on top of each other).
   function nameLines(t, tw, maxOne, maxTwo, minH) {
     const h1 = fit(t, tw, maxOne, minH), oneFits = textW(t, h1) <= tw;
-    if (oneFits && h1 >= 30) return { lines: [t], h: h1 };
-    let best = null; for (const [a, b] of breaks(t)) { const w = Math.max(textW(a, 1), textW(b, 1)); if (!best || w < best.w) best = { a, b, w }; }
+    if (oneFits && h1 >= maxTwo) return { lines: [t], h: h1 }; // one line is already as big as two could be
+    let best = null; for (const [a, b] of breaks(t)) { const awk = /^(in|mm|ft|x|×|-|#)\b|^(in|mm|ft)$/i.test(b.trim()) || /(×|x|-)$/i.test(a.trim()); const w = Math.max(textW(a, 1), textW(b, 1)) * (awk ? 1.18 : 1); if (!best || w < best.w) best = { a, b, w }; } // keep a size with its unit ("1-1/2 in"), never end a line on "×"
+    if (best) best.w = Math.max(textW(best.a, 1), textW(best.b, 1));
     if (!best) return { lines: [cut(t, tw, h1)], h: h1 };
     const h2 = Math.min(maxTwo, Math.floor(tw / best.w));
     if (oneFits && h1 >= h2) return { lines: [t], h: h1 };
@@ -31,7 +32,6 @@
     const words = t.split(' '); let a = words.shift(); while (words.length && textW(a + ' ' + words[0], minH) <= tw) a += ' ' + words.shift();
     return { lines: [cut(a, tw, minH), cut(words.join(' '), tw, minH)].filter(Boolean), h: minH };
   }
-  const dmSize = (code) => WNDataMatrix.matrix(code).length;
   // What a label says. parts = the parts in that spot (may be empty).
   function content(code, parts, where) {
     const ps = parts || [];
@@ -39,71 +39,135 @@
     const cat = ps.length ? clean(ps[0].category || '') : clean(where || '');
     return { code: clean(code), name, cat };
   }
-  // A custom label: any text goes into the Data Matrix exactly as typed (plain keyboard characters), with optional printed lines.
+  // A custom label: your text printed as big as it fits, with an optional smaller second line.
   const asciiOK = (s) => /^[\x20-\x7E]*$/.test(String(s));
   function custom(data, caption, line2) { return { code: String(data || ''), name: clean(caption), cat: clean(line2), custom: true }; }
   // Can it be drawn on a small label? → {ok, size, chars, why}
   function check(data) {
-    const d = String(data || '');
-    if (!d) return { ok: false, why: 'Type something to put in the code.' };
-    if (!asciiOK(d)) return { ok: false, why: 'Only plain keyboard characters (A–Z, a–z, 0–9, spaces and symbols like - / : . #). Letters like é or emoji aren’t supported.' };
-    if (d.includes('~')) return { ok: false, why: 'The ~ character can’t go in the code (the printer uses it for special commands).' };
-    try { const n = WNDataMatrix.matrix(d).length; return { ok: true, size: n, chars: d.length }; }
-    catch (e) { return { ok: false, why: `Too long for a small label (${d.length} characters). Keep it to about 40 characters — or 80 digits.` }; }
+    const d = String(data || '').trim();
+    if (!d) return { ok: false, why: 'Type the text for the label.' };
+    if (d.length > 60) return { ok: false, why: `That's ${d.length} characters — keep it to 60 so it stays readable.` };
+    return { ok: true, chars: d.length };
   }
+
   // ---------- layout (shared by ZPL and preview, in printer dots)
-  function frontLayout(c) {
-    const N = dmSize(c.code), m = Math.max(4, Math.floor(118 / N)), dm = N * m, x0 = 14, tx = x0 + dm + 12, tw = 450 - tx - 12;
-    const line2 = c.custom ? c.cat : c.name ? `${c.code} · ${c.cat}` : c.cat;
-    const t1 = c.custom ? c.name : (c.name || c.code);
-    const N1 = t1 ? nameLines(t1, tw, 46, 44, 20) : { lines: [], h: 0 }, two = N1.lines.length > 1, h1 = N1.h;
-    const h2 = line2 ? fit(line2, tw, two ? 24 : 27, 14) : 0, l2 = line2 ? cut(line2, tw, h2) : '';
-    const gap = N1.lines.length && l2 ? (two ? 8 : 14) : 0, pitch = h1 + 2;
-    const block = N1.lines.length * pitch - (N1.lines.length ? 2 : 0) + gap + h2, top = Math.round((150 - block) / 2);
-    const lines = N1.lines.map((t, i) => ({ t, y: top + i * pitch, h: h1 }));
-    const y2 = top + N1.lines.length * pitch - (N1.lines.length ? 2 : 0) + gap;
-    return { m, dm, dmX: x0, dmY: Math.round((150 - dm) / 2), tx, tw, lines, l1: lines.map(l => l.t).join(' '), h1, y1: top, l2, h2, y2 };
+  // Text only, centered, all bold (10.12). The size is the biggest that lets
+  // every line fit the label's width and height; the part name may use 1–2 lines (front) or 1–3 (side),
+  // whichever gives the biggest text. Sizes stay with their units ("1-1/2 in"), lines never end on "×".
+  const MX = 12, MY = 10;
+  // A bad place to break: the next line would start with a unit or "×" ("in", "× 1 in"), or this line ends on "-". Breaking right after "×" is fine ("1/4-20 ×" / "1-1/2 in").
+  const awk = (a, b) => /^(in|mm|ft|x|×|-)(\s|$)/i.test(b.trim()) || /-$/.test(a.trim());
+  function splits(t, k) {
+    if (k === 1) return [{ ls: [t], bad: false }];
+    const out = [];
+    for (const [a, b] of breaks(t)) {
+      const soft = (x) => /(×|x)$/i.test(x.trim()) ? 1 : 0;   // breaking after "×" is allowed but only wins when it makes the text bigger
+      if (k === 2) out.push({ ls: [a, b], bad: awk(a, b), soft: soft(a) });
+      else for (const [b1, b2] of breaks(b)) out.push({ ls: [a, b1, b2], bad: awk(a, b) || awk(b1, b2), soft: soft(a) + soft(b1) });
+    }
+    return out;
   }
-  function sideLayout(c) {
-    const N = dmSize(c.code), m = Math.max(4, Math.floor(146 / N)), dm = N * m, text0 = c.custom ? c.name : c.code, h = fit(text0, 205, 34, 18), text = cut(text0, 205, h);
-    return { m, dm, dmX: Math.round((225 - dm) / 2), dmY: 12, h, ty: 12 + dm + 12, text, tx: Math.max(0, Math.round((225 - textW(text, h)) / 2)) };
+  // ---------- what goes on a label: 'text' (words only), 'dm' (Data Matrix) or 'qr' (QR code), chosen per roll.
+  // A drawer's QR code is a link to that drawer (any phone camera opens it); its Data Matrix holds just the code (the app's scanner reads both).
+  // A custom label's code holds exactly the text you typed.
+  const STYLES = ['text', 'dm', 'qr'], STYLE = { front: 'text', side: 'dm' };
+  const SITE = 'https://edpuello.github.io/workshop-navigator/';
+  const rk = (roll) => roll === 'side' ? 'side' : 'front';
+  const setStyle = (roll, st) => { if (STYLES.includes(st)) STYLE[rk(roll)] = st; };
+  const styleOf = (roll, c) => STYLES.includes(c && c.style) ? c.style : STYLE[rk(roll)];
+  const symData = (kind, c) => c.custom ? String(c.code) : kind === 'qr' ? SITE + '#loc=' + c.code : c.code;
+  function symbolFor(kind, c) {
+    const data = symData(kind, c); let M = null;
+    try { M = kind === 'qr' ? window.WNQR.matrix(data) : window.WNDataMatrix.matrix(data); } catch (e) { M = null; }
+    return M ? { kind, data, M, n: M.length } : null;   // too long for a small symbol → the label falls back to text
   }
+
+  // ---------- text layout. box = the area to fill {x, y, w, h}, margins already taken off.
+  // o.maxK = most lines for the main text; o.cap = its biggest size (so labels match each other);
+  // o.sub = the code line's size (default: about half the main text). Fewer lines win unless more lines make the text clearly bigger.
+  const PREFER = 1.45, LEAD = 6, SUB = 0.55;
+  function layoutText(main, sub, box, o) {
+    const tw = box.w, th = box.h, maxK = o.maxK || 1, prefer = o.prefer || PREFER, cap = o.cap || 999; let best = null;
+    const want = (h) => o.sub ? Math.min(o.sub, h) : Math.max(Math.min(26, Math.floor(h * 0.8)), Math.min(38, Math.round(h * SUB)));
+    for (let k = 1; k <= maxK; k++) {
+      for (const sp of splits(main, k)) {
+        if (sp.bad) continue;   // never split a size from its unit or start a line with "×"
+        const ls = sp.ls; let h = Math.min(cap, Math.floor(th / ls.length)), hs = 0;
+        for (; h >= 14; h--) {
+          hs = sub ? fit(sub, tw, want(h), 14) : 0;
+          const tot = ls.length * h + (ls.length - 1) * LEAD + (sub ? LEAD + 2 + hs : 0);
+          if (tot <= th && ls.every(l => textW(l, h) <= tw)) break;
+        }
+        if (h < 14) continue;
+        const score = h / Math.pow(prefer, k - 1) - (sp.soft || 0) * 0.3;
+        if (!best || score > best.score) best = { ls, h, hs, score };
+      }
+    }
+    if (!best) { best = { ls: [cut(main, tw, 14)], h: 14, hs: 0 }; sub = ''; }
+    const rows = best.ls.map(t => ({ t, h: best.h }));
+    if (sub) rows.push({ t: cut(sub, tw, best.hs), h: best.hs, gap: 2 });
+    const block = rows.reduce((a, r, i) => a + r.h + (i ? LEAD + (r.gap || 0) : 0), 0);
+    let y = box.y + Math.round((th - block) / 2);
+    return { tw, rows: rows.map((r, i) => { if (i) y += LEAD + (r.gap || 0); const o2 = { t: r.t, h: r.h, y, x: box.x + Math.max(0, Math.round((tw - Math.min(textW(r.t, r.h), tw)) / 2)), bold: true }; y += r.h; return o2; }) };
+  }
+  // Text sizes that stay the same on every drawer label (smaller only when a long name needs it).
+  const SIZE = { front: { cap: 42, sub: 28, maxK: 2, prefer: 1.15 }, side: { cap: 56, sub: 34, maxK: 3, prefer: 1.1 }, frontSym: { cap: 36, sub: 26, maxK: 3, prefer: 1.15 } };
+  // The whole label in printer dots: {W, H, style, sym?, rows}.
+  //   1.5″ × 0.5″ (450 × 150): text centered · or the code on the left with the text beside it.
+  //   1″ × 1″ (300 × 300): text centered · or just the code, as big as it fits.
+  function layout(roll, c) {
+    const side = rk(roll) === 'side', W = side ? 300 : 450, H = side ? 300 : 150, st = styleOf(roll, c);
+    const part = !c.custom && !!c.name, main = c.custom ? (c.name || c.code) : (c.name || c.code), sub = c.custom ? (c.cat || '') : (c.name ? c.code : '');
+    const sym = st === 'text' ? null : symbolFor(st, c);
+    if (!sym) {
+      const box = { x: MX, y: MY, w: W - 2 * MX, h: H - 2 * MY };
+      const o = part ? SIZE[side ? 'side' : 'front'] : c.custom ? { maxK: side ? 3 : 2, prefer: side ? 1.15 : PREFER } : { maxK: 1 };   // an empty drawer's label is just its code, big
+      return { W, H, style: 'text', ...layoutText(main, sub, box, o) };
+    }
+    const qz = sym.kind === 'qr' ? 2 : 1, mmax = sym.kind === 'qr' ? 10 : 24;   // QR: the printer allows up to 10 dots per square
+    if (side) {
+      const m = Math.max(2, Math.min(mmax, Math.floor((W - 2 * MX) / (sym.n + 2 * qz)))), s = sym.n * m;
+      return { W, H, style: sym.kind, sym: { ...sym, m, s, x: Math.round((W - s) / 2), y: Math.round((H - s) / 2) }, rows: [], tw: 0 };
+    }
+    const m = Math.max(2, Math.min(mmax, Math.floor((H - 2 * MY) / sym.n))), s = sym.n * m, sx = MX, tx = sx + s + 16;
+    const box = { x: tx, y: MY, w: W - MX - tx, h: H - 2 * MY };
+    const T = part ? layoutText(main, sub, box, SIZE.frontSym) : layoutText(main, sub, box, { maxK: c.custom ? 3 : 1, prefer: 1.25 });
+    return { W, H, style: sym.kind, sym: { ...sym, m, s, x: sx, y: Math.round((H - s) / 2) }, ...T };
+  }
+  const frontLayout = (c) => layout('front', c), sideLayout = (c) => layout('side', c);
   // ---------- ZPL
   let MEDIA = 'continuous'; // 'continuous' (no gaps: label + 1″ to tear, then stop) or 'gap' (die-cut labels)
   const setMedia = (m) => { MEDIA = m === 'gap' ? 'gap' : 'continuous'; };
   const head = (w, h) => MEDIA === 'gap' ? `^XA^CI28^MNY^MMT^PW${w}^LL${h}^LH0,0` : `^XA^CI28^MNN^MMT^PW${w}^LL${h + DPI}^LH0,0`;
-  const fd = (v) => '^FH_^FD' + String(v).replace(/_/g, '_5F').replace(/\^/g, '_5E').replace(/~/g, '_7E') + '^FS';
+  const fdv = (v) => String(v).replace(/_/g, '_5F').replace(/\^/g, '_5E').replace(/~/g, '_7E');
+  const fd = (v) => '^FH_^FD' + fdv(v) + '^FS';
   function zpl(roll, c, copies) {
-    const q = Math.max(1, Math.min(9, copies | 0 || 1));
-    if (roll === 'side') { const L = sideLayout(c);
-      return `${head(225, 225)}\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + (L.text ? `^FO${L.tx},${L.ty}^A0N,${L.h},${L.h}${fd(L.text)}\n` : '') + `^PQ${q}^XZ\n`; }
-    // No ^FB text blocks: each line is placed on its own, so the printer can't wrap text on top of itself.
-    const L = frontLayout(c);
-    return `${head(450, 150)}\n^FO${L.dmX},${L.dmY}^BXN,${L.m},200${fd(c.code)}\n` + L.lines.map(l => `^FO${L.tx},${l.y}^A0N,${l.h},${l.h}${fd(l.t)}\n`).join('') + (L.l2 ? `^FO${L.tx},${L.y2}^A0N,${L.h2},${L.h2}${fd(L.l2)}\n` : '') + `^PQ${q}^XZ\n`;
+    const q = Math.max(1, Math.min(9, copies | 0 || 1)), L = layout(roll, c), S = L.sym;
+    // The printer draws the code itself: ^BX = Data Matrix, ^BQ = QR (model 2, error correction M). No ^FB text blocks: each line is placed on its own.
+    const sym = !S ? '' : S.kind === 'qr' ? `^FO${S.x},${S.y}^BQN,2,${S.m}^FH_^FDMA,${fdv(S.data)}^FS\n` : `^FO${S.x},${S.y}^BXN,${S.m},200${fd(S.data)}\n`;
+    return `${head(L.W, L.H)}\n` + sym + L.rows.map(r => `^FO${r.x},${r.y}^A0N,${r.h},${r.h}${fd(r.t)}\n`).join('') + `^PQ${q}^XZ\n`;
   }
+  const symPath = (S, ox, oy, m) => { let d = ''; S.M.forEach((row, r) => row.forEach((v, k) => { if (v) d += `M${ox + k * m} ${oy + r * m}h${m}v${m}h-${m}z`; })); return d; };
   // ---------- on-screen preview (same layout, drawn in HTML). px = screen pixels per inch.
   function preview(roll, c, px) {
-    const k = px / DPI, P = (v) => (v * k).toFixed(1) + 'px', dm = (L) => `<div style="position:absolute;left:${P(L.dmX)};top:${P(L.dmY)}">${WNDataMatrix.svg(c.code, L.dm * k)}</div>`;
-    const line = (t, x, y, h, bold, center, boxW) => { const w = Math.min(textW(t, h), boxW), left = center ? x + (boxW - w) / 2 : x;
-      return `<svg style="position:absolute;left:${P(left)};top:${P(y)};overflow:visible" width="${(w * k).toFixed(1)}" height="${(h * k).toFixed(1)}"><text x="0" y="${(h * 0.8 * k).toFixed(1)}" font-size="${(h * k).toFixed(1)}" font-weight="${bold ? 700 : 400}" font-family="'DejaVu Sans Condensed','Arial Narrow','Helvetica Neue',system-ui,sans-serif" textLength="${(w * k).toFixed(1)}" lengthAdjust="spacingAndGlyphs">${esc(t)}</text></svg>`; };
-    const box = (w, h, inner) => `<div class="zlabel" style="position:relative;width:${w * px}px;height:${h * px}px;background:#fff;border-radius:${px * 0.03}px;box-shadow:0 1px 2px rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.08);overflow:hidden;color:#000;flex:none">${inner}</div>`;
-    if (roll === 'side') { const L = sideLayout(c); return box(0.75, 0.75, dm(L) + (L.text ? line(L.text, 0, L.ty, L.h, true, true, 225) : '')); }
-    const L = frontLayout(c);
-    return box(1.5, 0.5, dm(L) + L.lines.map(l => line(l.t, L.tx, l.y, l.h, true, false, L.tw)).join('') + (L.l2 ? line(L.l2, L.tx, L.y2, L.h2, false, false, L.tw) : ''));
+    const k = px / DPI, P = (v) => (v * k).toFixed(1) + 'px', L = layout(roll, c), S = L.sym;
+    const line = (t, x, y, h) => { const w = Math.min(textW(t, h), L.tw);
+      return `<svg style="position:absolute;left:${P(x)};top:${P(y)};overflow:visible" width="${(w * k).toFixed(1)}" height="${(h * k).toFixed(1)}"><text x="0" y="${(h * 0.8 * k).toFixed(1)}" font-size="${(h * k).toFixed(1)}" font-weight="700" font-family="'DejaVu Sans Condensed','Arial Narrow','Helvetica Neue',system-ui,sans-serif" textLength="${(w * k).toFixed(1)}" lengthAdjust="spacingAndGlyphs">${esc(t)}</text></svg>`; };
+    const sym = S ? `<svg class="zsym" style="position:absolute;left:${P(S.x)};top:${P(S.y)}" width="${(S.s * k).toFixed(1)}" height="${(S.s * k).toFixed(1)}" viewBox="0 0 ${S.n} ${S.n}" shape-rendering="crispEdges"><path d="${symPath(S, 0, 0, 1)}" fill="#000"/></svg>` : '';
+    return `<div class="zlabel" style="position:relative;width:${L.W / DPI * px}px;height:${L.H / DPI * px}px;background:#fff;border-radius:${px * 0.03}px;box-shadow:0 1px 2px rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.08);overflow:hidden;color:#000;flex:none">${sym}${L.rows.map(r => line(r.t, r.x, r.y, r.h)).join('')}</div>`;
   }
   // ---------- the label as one SVG at real size (1 unit = 1 printer dot at 300 dpi). Used for DYMO and AirPrint / print dialog.
   const FONT = "'DejaVu Sans Condensed','Arial Narrow','Helvetica Neue',Arial,sans-serif";
   const xe = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   function svgLabel(roll, c) {
-    const side = roll === 'side', W = side ? 225 : 450, H = side ? 225 : 150, L = side ? sideLayout(c) : frontLayout(c), M = WNDataMatrix.matrix(c.code);
-    let d = ''; M.forEach((row, r) => row.forEach((v, k) => { if (v) d += `M${L.dmX + k * L.m} ${L.dmY + r * L.m}h${L.m}v${L.m}h-${L.m}z`; }));
-    const tx = (t, x, y, h, bold, boxW, center) => { const w = Math.min(textW(t, h), boxW), left = center ? x + (boxW - w) / 2 : x; return `<text x="${left.toFixed(1)}" y="${(y + h * 0.8).toFixed(1)}" font-size="${h}" font-weight="${bold ? 700 : 400}" font-family="${FONT}" textLength="${w.toFixed(1)}" lengthAdjust="spacingAndGlyphs" fill="#000">${xe(t)}</text>`; };
-    const texts = side ? (L.text ? tx(L.text, 0, L.ty, L.h, true, 225, true) : '') : L.lines.map(l => tx(l.t, L.tx, l.y, l.h, true, L.tw)).join('') + (L.l2 ? tx(L.l2, L.tx, L.y2, L.h2, false, L.tw) : '');
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W / DPI}in" height="${H / DPI}in" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#fff"/><path d="${d}" fill="#000" shape-rendering="crispEdges"/>${texts}</svg>`;
+    const L = layout(roll, c), S = L.sym;
+    const tx = (t, x, y, h) => { const w = Math.min(textW(t, h), L.tw); return `<text x="${x.toFixed(1)}" y="${(y + h * 0.8).toFixed(1)}" font-size="${h}" font-weight="700" font-family="${FONT}" textLength="${w.toFixed(1)}" lengthAdjust="spacingAndGlyphs" fill="#000">${xe(t)}</text>`; };
+    const sym = S ? `<path d="${symPath(S, S.x, S.y, S.m)}" fill="#000" shape-rendering="crispEdges"/>` : '';
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${L.W / DPI}in" height="${L.H / DPI}in" viewBox="0 0 ${L.W} ${L.H}"><rect width="${L.W}" height="${L.H}" fill="#fff"/>${sym}${L.rows.map(r => tx(r.t, r.x, r.y, r.h)).join('')}</svg>`;
   }
   // Same picture as a PNG (base64, no prefix) at 300 dpi, for printers that take an image (DYMO).
   function png(roll, c) {
-    const side = roll === 'side', W = side ? 225 : 450, H = side ? 225 : 150, svg = svgLabel(roll, c).replace(/width="[^"]+in" height="[^"]+in"/, `width="${W}" height="${H}"`);
+    const L = layout(roll, c), W = L.W, H = L.H, svg = svgLabel(roll, c).replace(/width="[^"]+in" height="[^"]+in"/, `width="${W}" height="${H}"`);
     return new Promise((ok, no) => { const img = new Image(); img.onload = () => { try { const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.imageSmoothingEnabled = false; g.drawImage(img, 0, 0, W, H); ok(cv.toDataURL('image/png').split(',')[1]); } catch (e) { no(e); } }; img.onerror = () => no(new Error('Could not draw the label')); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
   }
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -157,5 +221,5 @@
     const r = await timed(fetch(BP() + 'write', { method: 'POST', body: JSON.stringify({ device: dev, data }) }), 15000);
     if (!r.ok) throw new Error((await r.text()) || 'The printer refused the job');
   }
-  window.WNLabels = { svgLabel, png, BP, timed, setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
+  window.WNLabels = { svgLabel, setStyle, style: (roll) => STYLE[rk(roll)], STYLES, layout, png, BP, timed, setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
 })();
