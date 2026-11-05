@@ -1,0 +1,13 @@
+{
+  "name": "Workshop Navigator",
+  "short_name": "Workshop",
+  "start_url": "./workshop.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f2f5",
+  "theme_color": "#173a5c",
+  "icons": [
+    { "src": "img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

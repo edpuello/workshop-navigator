@@ -19,6 +19,7 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     private var nextToken = 0
     private var connected: CBPeripheral?
     private var target: UUID?            // the printer being connected right now
+    private var connecting: UUID?        // set for the whole connect sequence (several Bluetooth steps)
     private var writeChar: CBCharacteristic?
     private var idleTimer: Timer?
 
@@ -108,8 +109,16 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         try await ready()
         guard let uuid = UUID(uuidString: String(id.dropFirst("ble:".count))) else { throw BridgeError("Unknown Bluetooth printer") }
         if let p = connected, p.identifier == uuid, p.state == .connected, let c = writeChar { return (p, c) }
+        // already connecting to this printer (the Labels screen warms it up): wait for that instead of failing as busy
+        var waited = 0.0
+        while connecting == uuid && waited < 25 {
+            try? await Task.sleep(nanoseconds: 100_000_000); waited += 0.1
+        }
+        if let p = connected, p.identifier == uuid, p.state == .connected, let c = writeChar { return (p, c) }
         // another job is still connecting or writing: refuse before touching its connection
-        guard pending == nil else { throw BridgeError("The printer is busy with another job — try again in a moment.") }
+        guard pending == nil, connecting == nil else { throw BridgeError("The printer is busy with another job — try again in a moment.") }
+        connecting = uuid
+        defer { connecting = nil }
         if let old = connected, old.identifier != uuid { central.cancelPeripheralConnection(old) }
         guard let p = seen[uuid]?.peripheral ?? central.retrievePeripherals(withIdentifiers: [uuid]).first else {
             throw BridgeError("That printer isn’t nearby. Tap Look again with the printer on.")
@@ -204,6 +213,19 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         // one radio packet per chunk (iOS reports 512 for "with response" because it would split them itself)
         let size = max(20, min(512, p.maximumWriteValueLength(for: .withoutResponse)))
         var offset = 0
+        if write.properties.contains(.writeWithoutResponse) {
+            // Fast: stream the packets back to back, pausing only when iOS says its send queue is full.
+            while offset < data.count {
+                if !p.canSendWriteWithoutResponse {
+                    try await waitFor(15, "The printer stopped taking the label over Bluetooth.") { }   // resumed by peripheralIsReady
+                }
+                let chunk = data.subdata(in: offset..<min(offset + size, data.count))
+                p.writeValue(chunk, for: write, type: .withoutResponse)
+                offset += chunk.count
+            }
+            return
+        }
+        // Printers that only take confirmed writes: one packet, wait for the OK, next packet.
         while offset < data.count {
             let chunk = data.subdata(in: offset..<min(offset + size, data.count))
             try await waitFor(15, "The printer stopped answering over Bluetooth.") { p.writeValue(chunk, for: write, type: .withResponse) }
@@ -211,10 +233,15 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         }
     }
 
-    // Stay connected for a minute so the next labels go out right away, then let the printer go.
+    func peripheralIsReady(toSendWriteWithoutResponse peripheral: CBPeripheral) {
+        guard peripheral.identifier == target else { return }
+        finishStep(nil)
+    }
+
+    // Stay connected for 3 minutes so the next labels go out right away, then let the printer go.
     private func scheduleIdleDisconnect() {
         idleTimer?.invalidate()
-        idleTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { [weak self] _ in
+        idleTimer = Timer.scheduledTimer(withTimeInterval: 180, repeats: false) { [weak self] _ in
             guard let self, let p = self.connected else { return }
             self.central.cancelPeripheralConnection(p)
         }

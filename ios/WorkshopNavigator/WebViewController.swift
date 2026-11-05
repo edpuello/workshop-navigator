@@ -36,9 +36,24 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         view = web
     }
 
+    private var pageReady = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.load(URLRequest(url: AppSchemeHandler.startURL))
+        NotificationCenter.default.addObserver(forName: .wnScan, object: nil, queue: .main) { [weak self] _ in self?.runPendingScan() }
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        pageReady = true
+        runPendingScan()
+    }
+
+    // The home-screen shortcut: open the scanner on the Workshop page (from the Checklist it switches pages first).
+    private func runPendingScan() {
+        guard Shortcuts.pendingScan, pageReady else { return }
+        Shortcuts.pendingScan = false
+        webView.evaluateJavaScript("window.WNScan ? window.WNScan() : (location.href = 'workshop.html#scan')", completionHandler: nil)
     }
 
     // App pages stay in the app; other websites open in Safari.

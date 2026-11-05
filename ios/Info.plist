@@ -63,6 +63,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).scan</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Scan a drawer</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Take out or put back</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>qrcode.viewfinder</string>
+		</dict>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
