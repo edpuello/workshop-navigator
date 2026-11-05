@@ -154,6 +154,14 @@
   const chosenId = () => LS.get('wn-printer', '');
   // The picked printer is remembered with its details, so a printer that's asleep during a look-around stays picked.
   function choose(id) { LS.set('wn-printer', id || null); const p = found.find(x => x.id === id); LS.set('wn-printer-info', p && !p.always ? JSON.stringify(p) : null); }
+  // The printer picked last time, without looking around first (so printing starts right away). null = none picked yet.
+  function quick() {
+    const id = chosenId(); if (!id) return null; if (id === OTHER.id) return OTHER; if (id === COMPUTER.id) return COMPUTER;
+    const f = found.find(p => p.id === id); if (f) return f;
+    try { const p = JSON.parse(LS.get('wn-printer-info', '') || 'null'); return p && p.id === id ? p : null; } catch (e) { return null; }
+  }
+  // iPhone app + Bluetooth printer: connect now (while you look at the labels), so the Print tap sends right away.
+  function warm() { const p = quick(); if (p && p.native && p.kind === 'ble') nat('status', { id: p.id }).catch(() => { }); }
   const remembered = (id) => { try { const p = JSON.parse(LS.get('wn-printer-info', '') || 'null'); return p && p.id === id ? Object.assign(p, { missing: true }) : null; } catch (e) { return null; } };
   // The printer jobs go to: the one picked on this device if it's still here; else the first Zebra, then a connected DYMO; else the computer.
   function current() {
@@ -174,5 +182,5 @@
     if (p.brand === 'dymo') { await dymoPrint(p, roll, labels, copies); return { n, where: p.name }; }
     throw new Error('That printer can’t print from here');
   }
-  window.WNPrinters = { native, addNetwork, forget, nativeStatus, scanCode, parseHQES, scan, current, choose, chosenId, print, dialogPrint, dymoXml, label, get found() { return found; }, get apps() { return apps; }, get scanned() { return scanned; }, OTHER, COMPUTER, apple, phone, DY_PAPER };
+  window.WNPrinters = { quick, warm, native, addNetwork, forget, nativeStatus, scanCode, parseHQES, scan, current, choose, chosenId, print, dialogPrint, dymoXml, label, get found() { return found; }, get apps() { return apps; }, get scanned() { return scanned; }, OTHER, COMPUTER, apple, phone, DY_PAPER };
 })();

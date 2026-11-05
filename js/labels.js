@@ -75,11 +75,14 @@
   const rk = (roll) => roll === 'side' ? 'side' : 'front';
   const setStyle = (roll, st) => { if (STYLES.includes(st)) STYLE[rk(roll)] = st; };
   const styleOf = (roll, c) => STYLES.includes(c && c.style) ? c.style : STYLE[rk(roll)];
-  const symData = (kind, c) => c.custom ? String(c.code) : kind === 'qr' ? SITE + '#loc=' + c.code : c.code;
+  // Data Matrix: plain keyboard characters only (curly quotes → straight, × → x), so the printed code and the preview hold the same thing.
+  const symData = (kind, c) => kind === 'qr' ? (c.custom ? String(c.code).trim() : SITE + '#loc=' + c.code) : clean(c.code).replace(/×/g, 'x');
+  const SYMS = new Map();   // the same code is drawn once, then reused (QR codes take a few ms each)
   function symbolFor(kind, c) {
-    const data = symData(kind, c); let M = null;
-    try { M = kind === 'qr' ? window.WNQR.matrix(data) : window.WNDataMatrix.matrix(data); } catch (e) { M = null; }
-    return M ? { kind, data, M, n: M.length } : null;   // too long for a small symbol → the label falls back to text
+    const data = symData(kind, c), key = kind + '|' + data; if (SYMS.has(key)) return SYMS.get(key); let M = null;
+    try { M = !data ? null : kind === 'qr' ? window.WNQR.matrix(data) : /^[\x20-\x7E]+$/.test(data) ? window.WNDataMatrix.matrix(data) : null; } catch (e) { M = null; }
+    const out = M ? { kind, data, M, n: M.length } : null;   // too long for a small symbol → the label falls back to text
+    if (SYMS.size > 600) SYMS.clear(); SYMS.set(key, out); return out;
   }
 
   // ---------- text layout. box = the area to fill {x, y, w, h}, margins already taken off.
@@ -115,7 +118,14 @@
   // The whole label in printer dots: {W, H, style, sym?, rows}.
   //   1.5″ × 0.5″ (450 × 150): text centered · or the code on the left with the text beside it.
   //   1″ × 1″ (300 × 300): text centered · or just the code, as big as it fits.
+  const LAYOUTS = new Map();
   function layout(roll, c) {
+    const key = [rk(roll), styleOf(roll, c), c.code, c.name, c.cat, c.custom ? 1 : 0].join('\u0001');
+    if (LAYOUTS.has(key)) return LAYOUTS.get(key);
+    if (LAYOUTS.size > 600) LAYOUTS.clear();
+    const L = layout0(roll, c); LAYOUTS.set(key, L); return L;
+  }
+  function layout0(roll, c) {
     const side = rk(roll) === 'side', W = side ? 300 : 450, H = side ? 300 : 150, st = styleOf(roll, c);
     const part = !c.custom && !!c.name, main = c.custom ? (c.name || c.code) : (c.name || c.code), sub = c.custom ? (c.cat || '') : (c.name ? c.code : '');
     const sym = st === 'text' ? null : symbolFor(st, c);

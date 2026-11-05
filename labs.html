@@ -420,7 +420,7 @@ html.m-phone .wn-header{padding-left:18px;padding-right:18px}
 <body>
 
 
-<header class="wn-header"><div class="wn-topbar"><a class="wn-chip" href="workshop.html">&#8249; Workshop</a><nav class="wn-switch" aria-label="Switch page"><a href="index.html">Checklist</a><a href="workshop.html">Workshop App</a></nav></div><h1>Labs</h1><p>3D viewer · AI Hub — experiments, on this device only</p></header>
+<header class="wn-header"><div class="wn-topbar"><a class="wn-chip" href="workshop.html">&#8249; Workshop</a><nav class="wn-switch" aria-label="Switch page"><a href="index.html?checklist">Checklist</a><a href="workshop.html">Workshop App</a></nav></div><h1>Labs</h1><p>3D viewer · AI Hub — experiments, on this device only</p></header>
 <div class="app" id="app">
   <aside class="side" id="side" aria-label="Main menu">
     <button class="collapse desk-only" id="collapse" aria-label="Collapse sidebar" aria-expanded="true"></button>
@@ -1001,7 +1001,7 @@ function renderChrome() {
     h += `<button class="nav ${on ? 'on glow' : ''}" data-go="${id}" title="${label}">${I(ic)}<span class="lbl">${label}</span>${badge[id] || ''}${badge[id] ? '<i class="rail-dot"></i>' : ''}</button>`;
   }
   h += '<div class="divider"></div><div class="group">Other</div>';
-  h += `<a class="nav navlink" href="index.html" title="Purchase Checklist">${I('clip')}<span class="lbl">Purchase Checklist</span>${I('cr', 'sm')}</a>`;
+  h += `<a class="nav navlink" href="index.html?checklist" title="Purchase Checklist">${I('clip')}<span class="lbl">Purchase Checklist</span>${I('cr', 'sm')}</a>`;
   for (const [id, label, ic] of A.other) h += `<button class="nav ${S.screen === id ? 'on glow' : ''}" data-go="${id}" title="${label}">${I(ic)}<span class="lbl">${label}</span></button>`;
   $('nav').innerHTML = h;
   $('ai-card').innerHTML = S.area === 'buy'
@@ -1016,7 +1016,7 @@ function renderChrome() {
   const brand = (WN.doc && WN.doc.settings && WN.doc.settings.brand) || '#173a5c'; document.documentElement.style.setProperty('--wn-brand', brand);
   // phone header, pills, tab bar
   const preview = S.mode === 'offline' ? '<span class="state-pill">Preview</span>' : '';
-  $('ptop').innerHTML = `<button class="ibtn" id="open-drawer" aria-label="Open menu">${I('menu')}</button><button class="ws" id="area-menu" aria-label="Switch area"><span class="logo">${I(A.logo)}</span>${A.name} ${I('cd', 'xs')}</button>${preview}<i class="livedot ${WN.user && navigator.onLine !== false ? 'ok' : 'off'}" title="${WN.user ? (navigator.onLine !== false ? 'Live' : 'Offline') : 'Sign in on the Checklist page'}"></i><a class="ibtn" href="index.html" aria-label="Purchase Checklist">${I('clip')}</a><button class="ibtn" aria-label="Reorder alerts" data-go="alerts">${I('bell')}</button>`;
+  $('ptop').innerHTML = `<button class="ibtn" id="open-drawer" aria-label="Open menu">${I('menu')}</button><button class="ws" id="area-menu" aria-label="Switch area"><span class="logo">${I(A.logo)}</span>${A.name} ${I('cd', 'xs')}</button>${preview}<i class="livedot ${WN.user && navigator.onLine !== false ? 'ok' : 'off'}" title="${WN.user ? (navigator.onLine !== false ? 'Live' : 'Offline') : 'Sign in on the Checklist page'}"></i><a class="ibtn" href="index.html?checklist" aria-label="Purchase Checklist">${I('clip')}</a><button class="ibtn" aria-label="Reorder alerts" data-go="alerts">${I('bell')}</button>`;
   $('ptabs').innerHTML = A.pills.map(([id, l]) => `<button class="pill ${S.screen === id ? 'on' : ''}" role="tab" aria-selected="${S.screen === id}" data-go="${id}">${l}</button>`).join('');
   const third = S.area === 'buy' ? ['shop', 'Shopping', 'cart'] : ['ai', 'AI Hub', 'spark'];
   $('tabbar').innerHTML = `<button class="tab" id="tab-create"><span class="ic"><span class="plus">${I('plus', 'sm')}</span></span>${S.area === 'buy' ? 'Add' : 'Create'}</button><button class="tab ${S.screen === A.home ? 'on' : ''}" data-go="${A.home}"><span class="ic">${I('cube')}</span>3D viewer</button><button class="tab ${S.screen === third[0] ? 'on' : ''}" data-go="${third[0]}"><span class="ic">${I(third[2])}</span>${third[1]}</button>`;

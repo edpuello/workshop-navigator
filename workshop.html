@@ -1,8 +1,8 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#173a5c"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><script>try{sessionStorage.setItem('wn-launched','1')}catch(e){}</script><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#173a5c"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
 <title>Workshop Navigator — Workshop</title>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261103d"></script><script src="js/model.js?v=20261103d"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104w"></script><script src="js/printers.js?v=20261104w"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261103d"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261104x"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -233,13 +233,44 @@ main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)
 .pcols{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:22px}
 .hblk.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;align-content:start}.hblk.two .hbt,.hblk.two .hmore,.hblk.two .hok{grid-column:1/-1}.hblk.two .prow+.prow{border-top:0}.hblk.two .prow{border-bottom:1px solid var(--line)}
 .fth,.ftr{grid-template-columns:minmax(0,2.8fr) minmax(0,.9fr) 38px 50px 54px 44px}
+
+/* ---- 10.15: scan → take / put back, drawer contents, goes with */
+.tk-h{display:flex;align-items:center;gap:10px;margin:0 0 12px}.tk-code{font:800 15px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.3px;padding:7px 10px;border-radius:9px;background:#e7f0fa;color:var(--brand)}.tk-w{flex:1;min-width:0;font-size:13.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk-p{display:flex;align-items:center;gap:14px;margin-bottom:14px}.tk-nm{font-size:22px;font-weight:800;letter-spacing:-.4px;line-height:1.15}.tk-sub{font-size:14px;color:var(--ink2);margin-top:3px}
+.tk-stats{display:flex;gap:10px;margin-bottom:14px}.tk-stats div{flex:1;border-radius:14px;background:var(--pill);padding:11px 14px}.tk-stats small{display:block;font-size:12.5px;color:var(--ink2);font-weight:650}.tk-stats b{display:block;font-size:26px;font-weight:800;margin-top:2px}.tk-stats b.q-low{color:#8a5f00}.tk-stats b.out{color:var(--bad)}
+.tk-seg{display:flex;height:50px;padding:4px;box-sizing:border-box;border-radius:14px;background:var(--pill);margin-bottom:14px}.tk-seg button{flex:1;border:0;border-radius:11px;background:transparent;font:inherit;font-size:16px;font-weight:700;color:#3d4652}.tk-seg button.on{background:var(--brand);color:#fff}
+.tk-step{display:flex;align-items:center;justify-content:center;gap:20px}.tk-pm{width:64px;height:64px;border-radius:999px;border:0;background:#e7f0fa;color:var(--brand);font-size:34px;font-weight:600;line-height:1;display:grid;place-items:center;padding:0}
+.tk-num{display:flex;flex-direction:column;align-items:center;width:132px}.tk-num input{width:132px;border:0;text-align:center;font:inherit;font-size:64px;font-weight:800;letter-spacing:-2px;background:transparent;padding:0;line-height:1.05;color:var(--ink)}.tk-num span{font-size:14px;color:var(--ink2);font-weight:650}
+.tk-chips{display:flex;gap:8px;justify-content:center;margin:12px 0}.tk-chips button{min-width:54px;height:44px;border-radius:999px;border:1px solid #d3d9e0;background:#fff;font:inherit;font-size:16px;font-weight:700;color:var(--ink)}.tk-chips button.on{border:2px solid var(--brand);background:#e7f0fa;color:var(--brand);font-weight:800}
+.tk-after{text-align:center;font-size:16px;color:#3d4652;margin:2px 0 12px}.tk-after b{font-size:18px;color:var(--good)}.tk-after .warn{color:#8a5f00;font-weight:700}
+.tk-gw{border-radius:16px;border:1px solid var(--line);overflow:hidden;margin:4px 0 12px}.tk-gwh{display:flex;justify-content:space-between;align-items:baseline;margin:8px 2px 8px}.tk-gwh b{font-size:17px}.tk-gwh span{font-size:13px;color:var(--ink2)}
+.tk-gr{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}.tk-gr:last-child{border-bottom:0}.tk-gr input{width:24px;height:24px;accent-color:var(--brand);margin:0;flex:none}.tk-gr .t{flex:1;min-width:0}.tk-gr .t b{display:block;font-size:15px}.tk-gr .t span{display:block;font-size:12.5px;color:var(--ink2)}.tk-gr .t span.r{color:var(--bad);font-weight:700}.tk-gr .x{font-size:17px;font-weight:800;color:var(--brand)}.tk-gr.alt{background:#fafbfc}
+.tk-go{display:block;width:100%;height:58px;border-radius:16px;border:0;background:var(--brand);color:#fff;font:inherit;font-size:18px;font-weight:800;margin-top:6px}.tk-go:disabled{opacity:.45}
+.tk-link{display:block;width:100%;height:44px;border:0;background:transparent;color:var(--accent);font:inherit;font-size:15px;font-weight:700}
+.tk-sw{display:flex;align-items:center;gap:12px;padding:10px 4px 0;font-size:15px;font-weight:650}.tk-sw input{width:22px;height:22px;accent-color:var(--brand);margin:0}
+.tk-ask{border-radius:16px;background:#e7f0fa;padding:14px 16px;margin-bottom:14px}.tk-ask b{display:block;font-size:17px;color:var(--brand)}.tk-ask span{display:block;font-size:14.5px;color:#2f4a66;margin-top:4px;line-height:1.35}
+.tk-lbl{display:block;font-size:12.5px;font-weight:800;color:var(--ink2);letter-spacing:.4px;text-transform:uppercase;margin:0 2px 6px}.tk-in{display:block;width:100%;box-sizing:border-box;height:70px;border-radius:16px;border:2px solid var(--brand);padding:0 18px;font:inherit;font-size:38px;font-weight:800;margin-bottom:14px;background:#fff;color:var(--ink)}
+.tk-rough{display:flex;gap:8px;margin-bottom:12px}.tk-rough button{flex:1;height:48px;border-radius:13px;font:inherit;font-size:16px;font-weight:800}.tk-rough .r1{border:1px solid #b9dcc6;background:#e3f5ea;color:#167a42}.tk-rough .r2{border:1px solid #ecd59a;background:#fff3d6;color:#8a5f00}.tk-rough .r3{border:1px solid #f0c3c4;background:#fdecec;color:#c23b3f}
+.tk-done{display:flex;align-items:center;gap:14px;margin:4px 0 14px}.tk-done i{width:52px;height:52px;border-radius:999px;background:#e3f5ea;display:grid;place-items:center;flex:none;color:#167a42;font-style:normal;font-size:26px;font-weight:800}.tk-done b{display:block;font-size:21px;letter-spacing:-.3px}.tk-done span{display:block;font-size:14px;color:var(--ink2);margin-top:2px}
+.tk-low{border-radius:16px;background:#fff3d6;padding:14px 16px;margin-bottom:12px;color:#5c3f00}.tk-low b{display:block;font-size:16px}.tk-low p{margin:3px 0 10px;font-size:14.5px;line-height:1.35}.tk-low .bb{display:flex;gap:10px}.tk-low .bb button{flex:1;height:46px;border-radius:13px;font:inherit;font-size:15.5px;font-weight:800;border:0;background:#8a5f00;color:#fff}.tk-low .bb button.n{flex:0 0 108px;background:transparent;border:1px solid #d9c08a;color:#5c3f00;font-weight:700}
+.tk-ok{border-radius:14px;background:#e3f5ea;color:#167a42;padding:10px 14px;font-size:14px;font-weight:650;margin-bottom:12px}
+.dr-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line)}.dr-row:last-child{border-bottom:0}.dr-row .t{flex:1;min-width:0}.dr-row .t button{display:block;border:0;background:none;padding:0;font:inherit;font-size:15px;font-weight:700;text-align:left;color:var(--ink)}.dr-row .t span{display:block;font-size:12.5px;color:var(--ink2)}.dr-row .t span.w{color:#8a5f00;font-weight:700}.dr-row .t span.r{color:var(--bad);font-weight:700}
+.dr-pm{width:40px;height:40px;border-radius:999px;border:0;background:#e7f0fa;color:var(--brand);font-size:22px;font-weight:700;line-height:1;padding:0;flex:none}.dr-n{width:30px;text-align:center;font-size:16px;font-weight:800;color:var(--ink3)}.dr-n.on{color:var(--brand)}
+.dr-seg{display:flex;padding:3px;border-radius:11px;background:var(--pill)}.dr-seg button{height:34px;padding:0 13px;border:0;border-radius:9px;background:transparent;font:inherit;font-size:14px;font-weight:700;color:#3d4652}.dr-seg button.here{background:var(--good);color:#fff}.dr-seg button.out{background:var(--bad);color:#fff}
+.dr-bar{position:sticky;bottom:-1px;display:flex;align-items:center;gap:12px;background:#fff;padding:12px 2px 6px;margin-top:10px;border-top:1px solid var(--line)}.dr-bar span{flex:1;font-size:14.5px;color:#3d4652}.dr-bar .tk-go{width:auto;padding:0 26px;height:50px;margin:0;font-size:16px}
+.gw-card{margin-top:10px}.gw-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gw-grid button{display:block;text-align:left;padding:9px 10px;border-radius:12px;background:var(--pill);border:0;font:inherit;color:var(--ink)}.gw-grid button i{display:block;font:800 12.5px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-style:normal}.gw-grid button b{display:block;font-size:14px;margin-top:2px}.gw-grid button small{display:block;font-size:12.5px;color:var(--ink2)}.gw-grid button.r{background:#fdecec}.gw-grid button.r small{color:var(--bad);font-weight:700}.gw-grid button.w small{color:#8a5f00;font-weight:700}
+.gw-chips{display:flex;flex-wrap:wrap;gap:8px}.gw-chips button{padding:8px 12px;border-radius:999px;border:0;background:var(--pill);font:inherit;font-size:13.5px;font-weight:700;color:var(--ink)}
+.cell.hit2{border-color:#5b8bd0;background:#e7f0fa;box-shadow:0 0 0 2px rgba(91,139,208,.35)}.pmap .cell.hit2{background:#a9c8f0;border-color:#1e5fae;box-shadow:0 0 0 2px #5b8bd0;z-index:1}
+.scanhero{display:flex;align-items:center;gap:16px;width:100%;min-height:84px;padding:0 18px;border:0;border-radius:20px;background:var(--accent);color:#fff;text-align:left;margin:0 0 12px;font:inherit}.scanhero .si{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:none}.scanhero b{display:block;font-size:20px;font-weight:800}.scanhero small{display:block;font-size:14px;opacity:.85;margin-top:3px}
+.tk-gr{cursor:default}.tk-gl{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer}.tk-gr .t .tk-pl{color:var(--accent);font-weight:700}.tk-gr .t .tk-pl:empty{display:none}.tk-gr.off .t b{color:var(--ink2)}
+.tk-pc{display:flex;align-items:center;gap:6px;flex:none}.tk-pc button{width:36px;height:36px;border-radius:999px;border:0;background:#e7f0fa;color:var(--brand);font-size:20px;font-weight:700;line-height:1;padding:0}.tk-pc b{min-width:26px;text-align:center;font-size:17px;font-weight:800;color:var(--brand)}.tk-gr.off .tk-pc b{color:var(--ink3)}
 </style></head>
 <body>
 <header><div class="wrap"><div class="htop"><p class="eyebrow">Workshop Navigator · <span id="today"></span></p>
 <button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button>
 <button type="button" class="chip" id="menuBtn" aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
 <h1 class="big">Workshop</h1>
-<nav class="pageswitch" aria-label="Switch page"><a class="on" href="workshop.html" aria-current="page">Workshop App</a><a href="index.html">Checklist</a></nav></div></header>
+<nav class="pageswitch" aria-label="Switch page"><a class="on" href="workshop.html" aria-current="page">Workshop App</a><a href="index.html?checklist">Checklist</a></nav></div></header>
 <div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label><button type="button" class="scanbtn app-only" data-act="scancode" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8h3v3H8zM13 13h3v3h-3zM13 8h3M8 13v3"/></svg></button></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
@@ -347,10 +378,12 @@ function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = 
 function go(h) { if (location.hash === h) render(); else location.hash = h; }
 window.addEventListener('hashchange', () => { deepLink(); render(); window.scrollTo(0, 0); });
 function deepLink() {
-  const h = location.hash, m = h.match(/^#(part|loc)=(.+)$/); if (!m) return false;
+  const h = location.hash; if (h === '#scan') { history.replaceState(null, '', '#/'); render(); setTimeout(() => window.WNScan(), 300); return true; }
+  const m = h.match(/^#(part|loc)=(.+)$/); if (!m) return false;
   const v = decodeURIComponent(m[2]);
   if (m[1] === 'part') { history.replaceState(null, '', '#/'); render(); openSheet('part', v); }
-  else { const f = S.find(doc(), v); history.replaceState(null, '', f ? '#/storage/' + f.unit.id : '#/storage'); render(); if (f) openSheet('slot', f.slot.code); else toast(v + ' isn’t on your storage map'); }
+  else { const unit = S.units(doc()).find(u => u.id === v.toUpperCase()); if (unit) { history.replaceState(null, '', '#/storage/' + unit.id); render(); return true; }
+    const f = S.find(doc(), v); history.replaceState(null, '', f ? '#/storage/' + f.unit.id : '#/storage'); render(); if (f) openDrawer(f.slot.code, true); else toast(v + ' isn’t on your storage map'); }
   return true;
 }
 
@@ -381,7 +414,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.13 · Nov 4</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.16 · Nov 5</span></p>`;
 const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a drawer</span><b class="${D.noDrawer.length ? 'b' : ''}">${D.noDrawer.length}</b>${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.c.instock} in stock · ${D.cats} families</div>${hBar([[D.c.instock, 'var(--brand)'], [D.c.tobuy, 'var(--bad)']], D.n)}<div class="s xs">${D.n - D.marked} not marked yet</div></button>`;
 const storageCard = (D) => `<button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div><div class="n">${D.placed}<small> / ${D.spots}</small></div><div class="s">spots used · ${D.us.length} units</div>${hBar([[D.placed, 'var(--brand)']], D.spots)}<div class="s xs">${D.noDrawer.length ? `${D.noDrawer.length} in stock without a drawer` : 'Every in-stock part has a drawer'}</div></button>`;
@@ -412,7 +445,7 @@ function pcMore(D, skip) {
 }
 function home() {
   const D = HD();
-  return `<div class="cards p3">${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="h"></i>parts <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
+  return `<button type="button" class="scanhero app-only" data-act="scancode"><span class="si"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg></span><span><b>Scan a drawer</b><small>Take out or put back · see what’s inside</small></span></button><div class="cards p3">${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="h"></i>parts <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -430,7 +463,8 @@ function family(cat) {
 }
 function attention() {
   const it = items(), sec = (t, l) => l.length ? `<div class="h3">${t} <span class="c">${l.length}</span></div><div class="rows">${sortedParts(l).map(partRow).join('')}</div>` : '';
-  const body = sec('To buy', it.filter(x => x.need)) + sec('Running low', it.filter(isLow)) + sec('Bought, not put away', it.filter(x => itemStatus(x) === 'putaway'));
+  const gb = gwForBuying(), gws = gb.length ? `<div class="h3">Goes with what you’re buying <span class="c">${gb.length}</span></div><div class="rows">${gb.map(({ y, for: f }) => `<div class="row">${photo(y)}<div class="t"><b>${esc(y.name)}</b><span>for ${esc(f.name)} · ${esc(!y.store ? 'not in stock' : STOCK_LABEL[stockLevel(y)] || '')}</span></div><button type="button" class="gbtn" data-act="needit" data-id="${esc(y.id)}">Add</button></div>`).join('')}</div>` : '';
+  const body = sec('To buy', it.filter(x => x.need)) + gws + sec('Running low', it.filter(isLow)) + sec('Bought, not put away', it.filter(x => itemStatus(x) === 'putaway'));
   return head('Needs attention', '#/') + (body || '<div class="rows"><div class="empty">Nothing needs attention. 👍</div></div>');
 }
 function storage() {
@@ -466,10 +500,10 @@ function wallHtml(cabs) {
 }
 // Draw a unit. hit = code to highlight. compact = no names (used inside sheets).
 function mapHtml(u, hit, compact) {
-  const ix = index(), spots = u.spots || {}, cell = (s, list) => { const ps = [...(ix.by.get(s.code) || []), ...(ix.th.get(s.code) || [])], f = flag(ix.by.get(s.code) || []), h = s.code === hit, tall = s.h > 1 ? ` style="min-height:${Math.round(40 * s.h)}px"` : '', pur = spots[s.code] || '';
+  const ix = index(), spots = u.spots || {}, cell = (s, list) => { const ps = [...(ix.by.get(s.code) || []), ...(ix.th.get(s.code) || [])], f = flag(ix.by.get(s.code) || []), hs = Array.isArray(hit) ? hit : [hit], h = s.code === hs[0], h2 = !h && hs.includes(s.code), tall = s.h > 1 ? ` style="min-height:${Math.round(40 * s.h)}px"` : '', pur = spots[s.code] || '';
     const empty = pur ? `<span style="color:var(--ink3);font-style:italic">For: ${esc(pur)}</span>` : '<span style="color:var(--ink3)">Empty</span>';
     const names = list ? `<span class="cn">${ps.length ? esc(ps.map(shortName).join(' · ')) : empty}</span>` : (!compact && (ps.length || pur) ? `<span class="cn"${ps.length ? '' : ' style="font-style:italic;color:var(--ink3)"'}>${esc(ps.length ? shortName(ps[0]) : pur)}</span>` : '');
-    return `<button type="button" class="cell${ps.length ? ' has' : pur ? ' pur' : ''}${h ? ' hit' : ''}"${tall} data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : pur ? ', for ' + esc(pur) : ', empty'}"><span class="cl">${esc(s.label)}</span>${names}${ps.length > 1 && !list ? `<span class="k2">${ps.length}</span>` : ''}${f ? `<i class="d ${f}"></i>` : ''}</button>`; };
+    return `<button type="button" class="cell${ps.length ? ' has' : pur ? ' pur' : ''}${h ? ' hit' : h2 ? ' hit2' : ''}"${tall} data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : pur ? ', for ' + esc(pur) : ', empty'}"><span class="cl">${esc(s.label)}</span>${names}${ps.length > 1 && !list ? `<span class="k2">${ps.length}</span>` : ''}${f ? `<i class="d ${f}"></i>` : ''}</button>`; };
   const sl = S.slots(u), grid = (cells, cols) => `<div class="mgrid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${cells}</div>`;
   const LK = S.look && S.look(u);
   if (LK) { // photo map: the drawers are placed on the unit's real picture
@@ -501,7 +535,7 @@ function searchView(q) {
   const best = list.find(x => canon(x.location)) || tHits.find(x => canon(x.location));
   let top = '';
   if (slotHit) { const ps = index().by.get(slotHit.slot.code) || []; top = `<div class="where"><div class="wc">${esc(slotHit.slot.code)}</div><div class="wd">${esc(slotHit.unit.name)} · ${esc(slotHit.slot.where)} · ${ps.length ? esc(ps.map(x => x.name).join(', ')) : 'empty'}</div>${mapHtml(slotHit.unit, slotHit.slot.code, true)}<div class="btns"><button type="button" class="gbtn" data-slot="${esc(slotHit.slot.code)}">Open this spot</button></div></div>`; }
-  else if (best) { const f = S.find(doc(), best.location); top = `<div class="where"><div style="font-size:13px;font-weight:700;color:var(--ink2)">${hl(best.name)}</div><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}</div>${mapHtml(f.unit, f.slot.code, true)}</div>`; }
+  else if (best) { const f = S.find(doc(), best.location), part = !!itemById(best.id), gwc = part ? gwCodes(best) : []; top = `<div class="where"><div style="font-size:13px;font-weight:700;color:var(--ink2)">${hl(best.name)}</div><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}${gwc.length ? ' · <span style="color:#5b8bd0;font-weight:700">what goes with it lit too</span>' : ''}</div>${mapHtml(f.unit, [f.slot.code, ...gwc], true)}${part ? `<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(best.id)}">Take out / put back</button></div>` : ''}</div>${part ? gwCard(best) : ''}`; }
   const uh = !slotHit && unitHits.length ? `<div class="h3">Storage</div><div class="rows">${unitHits.map(u => `<button type="button" class="row" data-go="#/storage/${esc(u.id)}"><span class="loc">${esc(u.id)}</span><div class="t"><b>${esc(u.name)}</b><span>${esc(u.model || '')}</span></div></button>`).join('')}</div>` : '';
   const th = tHits.length ? `<div class="h3">Tools &amp; other items <span class="c">${tHits.length}</span></div><div class="rows">${tHits.slice(0, 40).map(t => thingRow(t)).join('')}</div>` : '';
   return top + uh + th + `<div class="h3">Parts <span class="c">${list.length}</span></div><div class="rows">${list.slice(0, 80).map(partRow).join('') || `<div class="empty">No parts match “${esc(q)}”.</div>`}${list.length > 80 ? `<div class="empty">Showing 80 of ${list.length}. Add a size to narrow it down.</div>` : ''}</div>`;
@@ -529,7 +563,7 @@ function sheetTyping() { const a = document.activeElement; return !!(a && shBody
 function paintSheet(fresh) {
   const top = stack[stack.length - 1]; if (!top) return closeSheet();
   $('shBack').hidden = stack.length < 2;
-  let r; try { r = ({ organize: organizeSheet, part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet })[top.k](top); }
+  let r; try { r = ({ organize: organizeSheet, part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet })[top.k](top); }
   catch (e) { console.error(e); r = { title: 'Something went wrong', body: `<p class="note">Pull down to reload the page — that usually fixes it after an update.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button></div>` }; }
   if (!r) return closeSheet();
   $('shTitle').textContent = r.title; shBody.innerHTML = r.body; hydrate(shBody);
@@ -544,7 +578,8 @@ function partSheet(t) {
   if (f) where = `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}</div>${mapHtml(f.unit, f.slot.code, true)}<div class="btns"><button type="button" class="gbtn" data-act="pick" data-part="${esc(x.id)}">Move</button><button type="button" class="gbtn danger" data-act="unplace" data-part="${esc(x.id)}">Take out of drawer</button></div></div>`;
   else if (loc) { const sug = S.suggest(loc), ok = sug && S.find(doc(), sug); where = `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div class="wc" style="color:#8a5f00">${esc(loc)}</div><div class="wd">Typed location — not on your map yet.</div><div class="btns">${ok ? `<button type="button" class="pbtn2" data-act="setloc" data-part="${esc(x.id)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : ''}<button type="button" class="${ok ? 'gbtn' : 'pbtn2'}" data-act="pick" data-part="${esc(x.id)}">Pick on the map</button></div></div>`; }
   else where = `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div class="wd" style="margin:0 0 4px">Not in a drawer yet.</div><div class="btns"><button type="button" class="pbtn2" data-act="pick" data-part="${esc(x.id)}">Put in a drawer</button></div></div>`;
-  return { title: x.category || 'Part', body: `<div class="ph">${photo(x, true)}<div style="min-width:0"><div class="nm">${esc(x.name)}</div><div class="pills"><span class="pill st-${st}">${ST_LABEL[st]}</span><span class="pill">${esc(x.id)}</span></div></div><div class="bigc">${q == null ? `<b>${lv ? STOCK_LABEL[lv] : '—'}</b><small>${lv ? 'stock' : 'no count'}</small>` : `<b class="${qtyClass(x)}">${q}</b><small>${STOCK_LABEL[lv] || 'on hand'}</small>`}</div></div>${where}${x.notes ? `<p class="note">${esc(x.notes)}</p>` : ''}<div class="btns"><a class="gbtn" href="index.html#edit=${encodeURIComponent(x.id)}">Edit count &amp; status in Checklist</a></div>` };
+  return { title: x.category || 'Part', body: `<div class="ph">${photo(x, true)}<div style="min-width:0"><div class="nm">${esc(x.name)}</div><div class="pills"><span class="pill st-${st}">${ST_LABEL[st]}</span><span class="pill">${esc(x.id)}</span></div></div><div class="bigc">${q == null ? `<b>${lv ? STOCK_LABEL[lv] : '—'}</b><small>${lv ? 'stock' : 'no count'}</small>` : `<b class="${qtyClass(x)}">${q}</b><small>${STOCK_LABEL[lv] || 'on hand'}</small>`}</div></div>${where}${x.notes ? `<p class="note">${esc(x.notes)}</p>` : ''}<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(x.id)}">Take out / put back</button><a class="gbtn" href="index.html?checklist#edit=${encodeURIComponent(x.id)}">Edit in Checklist</a></div>${gwCard(x)}<label class="note" style="display:flex;align-items:center;gap:8px;margin-top:12px">Counted in <input id="unitIn" value="${esc(x.unit || '')}" placeholder="${esc(SETS.unitWord({ ...x, unit: '' }, 2))}" style="width:120px;height:36px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit;font-size:15px"></label>`,
+    after: () => { const i = $('unitIn'); if (i) i.addEventListener('change', () => { const y = itemById(x.id); if (!y) return; const v = i.value.trim(); if (v) y.unit = v; else delete y.unit; commit(); toast(v ? `Counted in ${v}` : 'Back to the usual word'); }); } };
 }
 const toolIc = '<span class="pthumb" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.4 2.4-2.6-.6-.6-2.6z"/></svg></span>';
 const itemIc = '<span class="pthumb" style="color:var(--ink2)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>';
@@ -557,6 +592,212 @@ function slotSheet(t) {
     <div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink2)">What this spot is for</div><div style="font-size:15px;margin-top:2px;${pur ? '' : 'color:var(--ink3)'}">${pur ? esc(pur) : 'Not set'}</div></div><button type="button" class="gbtn" data-act="purpose" data-slot="${esc(f.slot.code)}">${pur ? 'Change' : 'Set'}</button></div>
     <div class="rows" style="box-shadow:none;border:1px solid var(--line)">${rows || '<div class="empty">Nothing here yet.</div>'}</div>
     <div class="btns"><button type="button" class="pbtn2" data-act="addwhat" data-slot="${esc(f.slot.code)}">Add to this spot</button><button type="button" class="gbtn" data-act="print" data-codes="${esc(f.slot.code)}">Print labels</button></div>` };
+}
+// ---------------------------------------------------------------- scan a drawer → take out / put back · what's in a drawer · goes with
+// Counts change exactly as in the Checklist (count, "full", Plenty/Low/Out level), so both pages agree. Every change is logged
+// (shared list, newest 300) with Undo. Saves on this device first and syncs when there's a connection, like every other change.
+const SETS = window.WNSets;
+const unitW = (x, n) => SETS.unitWord(x, n);
+const devName = () => (window.WNNative && window.WNNative.device) || (P.phone() ? 'phone' : 'computer');
+const snapOf = (x) => ({ qty: x.qty, full: x.full, stock: x.stock, store: x.store, buy: x.buy, ordered: x.ordered, need: x.need });
+function restoreSnap(x, s) { for (const k in s) { if (s[k] === undefined) delete x[k]; else x[k] = s[k]; } }
+function setCount(x, v) { v = Math.max(0, Math.floor(Number(v) || 0)); x.qty = v; if (!(Number(x.full) >= v)) x.full = v; x.stock = countLevel(x); if (!x.store) { x.store = true; x.buy = true; x.ordered = false; } }
+function addLog(ch) {
+  const a = doc().app.alerts, at = Date.now(), id = 'lg-' + at.toString(36) + Math.random().toString(36).slice(2, 6);
+  a.push({ id, kind: 'log', at, from: devName(), ch });
+  const logs = a.filter(e => e && e.kind === 'log'); if (logs.length > 300) logs.slice(0, logs.length - 300).forEach(e => { const i = a.indexOf(e); if (i >= 0) a.splice(i, 1); });
+  return id;
+}
+// Apply take-outs (d < 0) and put-backs (d > 0), plus tools taken out / brought back. → what happened, for the summary and Undo.
+function applyChanges(list, tools) {
+  const res = { list: [], snaps: [], lows: [], autoBuy: [], tools: [] };
+  for (const { x, d } of list) {
+    if (!d) continue;
+    const prev = stockLevel(x), q = qtyNum(x); res.snaps.push([x.id, snapOf(x)]);
+    if (q != null) setCount(x, q + d);
+    const now = stockLevel(x);
+    if (now === 'out' && prev !== 'out' && !x.need) { x.need = true; res.autoBuy.push(x); }
+    else if (now === 'low' && prev !== 'low' && prev !== 'out' && !x.need) res.lows.push(x);
+    res.list.push({ x, d, q: qtyNum(x) });
+  }
+  for (const { t, out } of (tools || [])) { res.tools.push([t.id, t.out]); if (out) t.out = new Date().toISOString().slice(0, 10); else delete t.out; }
+  if (!res.list.length && !res.tools.length) return null;
+  res.logId = addLog([...res.list.map(e => ({ id: e.x.id, name: e.x.name, d: e.d, q: e.q })), ...(tools || []).map(({ t, out }) => ({ tool: t.id, name: t.name, out: !!out }))]);
+  commit(); refresh();
+  return res;
+}
+function undoChanges(res) {
+  if (!res) return;
+  res.snaps.forEach(([id, s]) => { const x = itemById(id); if (x) restoreSnap(x, s); });
+  res.tools.forEach(([id, was]) => { const t = thingById(id); if (t) { if (was) t.out = was; else delete t.out; } });
+  const a = doc().app.alerts, i = a.findIndex(e => e && e.id === res.logId); if (i >= 0) a.splice(i, 1);
+  commit(); refresh(); toast('Undone');
+}
+const several = () => LS.get('wn-scan-several', '') === '1';
+const plural = (n, x) => `${n} ${unitW(x, n)}`;
+function summaryLine(res) {
+  const [main, ...rest] = res.list, verb = main.d < 0 ? 'Took' : 'Put back';
+  const head = `${verb} ${Math.abs(main.d)}${main.q != null ? ` · ${main.q} ${main.d < 0 ? 'left' : 'in the drawer'}` : ''}`;
+  const same = rest.length && rest.every(e => Math.abs(e.d) === Math.abs(main.d));
+  const also = !rest.length ? '' : `Also ${main.d < 0 ? 'took' : 'put back'} ` + (same ? `${Math.abs(main.d)} each: ${rest.map(e => shortName(e.x)).join(', ')}` : rest.map(e => `${Math.abs(e.d)} × ${shortName(e.x)}`).join(', '));
+  return { head, also };
+}
+function doneHtml(res) {
+  if (!res) return '';
+  const { head, also } = summaryLine(res), main = res.list[0];
+  const lows = res.lows.filter(x => !x.need);
+  return `<div class="tk-done"><i aria-hidden="true">✓</i><div style="flex:1;min-width:0"><b>${esc(head)}</b><span>${esc(main.x.name)}${also ? ' · ' + esc(also) : ''}</span></div><button type="button" class="gbtn" data-act="tkundo">Undo</button></div>`
+    + (res.autoBuy.length ? `<div class="tk-ok">Out — added to To buy: ${esc(res.autoBuy.map(x => x.name).join(', '))}</div>` : '')
+    + (lows.length ? `<div class="tk-low"><b>Running low</b><p>${lows.map(x => `${esc(x.name)}: ${qtyNum(x)} left, under your low mark of ${lowAt(x)}`).join('<br>')}</p><div class="bb"><button type="button" data-act="tkbuy">Add to To buy</button><button type="button" class="n" data-act="tknotnow">Not now</button></div></div>` : '');
+}
+const doneBtns = () => `<button type="button" class="tk-go app-only" data-act="tknext">Scan next drawer</button><button type="button" class="tk-link" data-act="close">Done</button>`;
+
+// ---- the take / put back sheet (one part)
+function takeSheet(t) {
+  const x = itemById(t.a); if (!x) return null;
+  const code = t.code || canon(x.location) || '', f = code ? S.find(doc(), code) : null, q = qtyNum(x), lv = stockLevel(x);
+  if (t.n == null) t.n = Math.max(1, Number(LS.get('wn-take:' + x.id, '1')) || 1);
+  if (!t.mode) t.mode = 'take';
+  if (!t.step) t.step = q == null && !lv ? 'count' : 'edit';
+  const head = `<div class="tk-h">${code ? `<span class="tk-code">${esc(code)}</span><span class="tk-w">${f ? esc(f.unit.name + ' · ' + f.slot.where) : ''}</span>` : '<span class="tk-w">Not in a drawer yet</span>'}</div>
+    <div class="tk-p">${photo(x)}<div style="min-width:0"><div class="tk-nm">${esc(x.name)}</div><div class="tk-sub">${esc(x.category || '')}${t.step === 'count' ? ' · first count' : ''}</div></div></div>`;
+  if (t.step === 'done') return { title: 'Saved', body: head + doneHtml(t.res) + doneBtns() };
+  if (t.step === 'count') return { title: 'Count the drawer', body: head + `<div class="tk-ask"><b>How many are in the drawer?</b><span>Count once. After this, scans just take out or put back.</span></div>
+    <label class="tk-lbl" for="tkCount">Count</label><input id="tkCount" class="tk-in" type="number" inputmode="numeric" min="0" placeholder="0" value="${t.cnt == null ? '' : esc(t.cnt)}">
+    <div class="tk-lbl">Or roughly</div><div class="tk-rough"><button type="button" class="r1" data-act="tkrough" data-v="plenty">Plenty</button><button type="button" class="r2" data-act="tkrough" data-v="low">Low</button><button type="button" class="r3" data-act="tkrough" data-v="out">Out</button></div>
+    <button type="button" class="tk-go" data-act="tkcount">Save count</button><button type="button" class="tk-link" data-act="tkskip">Skip counting</button>` };
+  // edit: how many, take or put back, and what goes with it
+  const take = t.mode === 'take', gw = SETS.goesWith(x, items()), set = gw ? gw.set : [];
+  if (!t.on) { t.on = {}; set.forEach(e => { t.on[e.x.id] = e.on; }); }
+  if (!t.per) { t.per = {}; set.forEach(e => { t.per[e.x.id] = Number(LS.get(perKey(gw, e.role), '')) || 1; }); }   // how many per bolt, remembered per size
+  const stats = `<div class="tk-stats"><div><small>In the drawer</small><b class="${q == null ? '' : q === 0 ? 'out' : qtyClass(x)}">${q == null ? (lv ? STOCK_LABEL[lv] : '—') : q}</b></div>${q != null ? `<div><small>Running low at</small><b>${lowAt(x)}</b></div>` : `<div><small>Count</small><b style="font-size:16px;margin-top:8px"><button type="button" class="gbtn" data-act="tkrecount">Count it</button></b></div>`}</div>`;
+  const chips = [1, 5, 10, 25, 50].map(v => `<button type="button" data-act="tkn" data-v="${v}" class="${t.n === v ? 'on' : ''}">${v}</button>`).join('');
+  const gwRows = set.map(e => { const y = e.x, yq = qtyNum(y), ylv = stockLevel(y), yc = canon(y.location);
+    const st = yq != null ? `${yq} left` : ylv ? STOCK_LABEL[ylv] : 'no count', bad = ylv === 'out' || yq === 0;
+    const per = t.per[y.id], on = !!t.on[y.id], pl = perLabel(per, x);
+    return `<div class="tk-gr${e.instead ? ' alt' : ''}${on ? '' : ' off'}"><label class="tk-gl"><input type="checkbox" data-act="tkset" data-id="${esc(y.id)}"${on ? ' checked' : ''}><span class="t"><b>${esc(y.name)}${e.instead ? ' <span style="display:inline;font-weight:600;color:var(--ink2)">· instead</span>' : ''}</b><span class="${bad ? 'r' : ''}">${yc ? esc(yc) + ' · ' : 'no drawer · '}${esc(st)}${e.instead ? ' · replaces hex nut + lock washer' : ''}${e.otherMat ? ' · different material' : ''}</span><span class="tk-pl" data-pl="${esc(y.id)}">${esc(pl)}</span></span></label>
+      <span class="tk-pc"><button type="button" data-act="tkper" data-id="${esc(y.id)}" data-v="-1" aria-label="One less ${esc(y.name)}">−</button><b data-x="${esc(y.id)}">${amtOf(t, y.id)}</b><button type="button" data-act="tkper" data-id="${esc(y.id)}" data-v="1" aria-label="One more ${esc(y.name)}">+</button></span></div>`; }).join('');
+  const nOn = set.filter(e => t.on[e.x.id]).length, total = setTotal(t, set), verb = take ? 'Take' : 'Put back';
+  return { title: take ? 'Take out' : 'Put back', body: head + stats + `<div class="tk-seg" role="group" aria-label="Take out or put back"><button type="button" data-act="tkmode" data-v="take" class="${take ? 'on' : ''}" aria-pressed="${take}">↑ Take out</button><button type="button" data-act="tkmode" data-v="back" class="${take ? '' : 'on'}" aria-pressed="${!take}">↓ Put back</button></div>
+    <div class="tk-step"><button type="button" class="tk-pm" data-act="tkpm" data-v="-1" aria-label="One less">−</button><label class="tk-num"><input id="tkN" type="number" inputmode="numeric" min="1" value="${t.n}" aria-label="How many"><span id="tkUnit">${esc(unitW(x, t.n))}</span></label><button type="button" class="tk-pm" data-act="tkpm" data-v="1" aria-label="One more">+</button></div>
+    <div class="tk-chips">${chips}</div><div class="tk-after" id="tkAfter">${afterHtml(x, t)}</div>
+    ${set.length ? `<div class="tk-gwh"><b>Goes with</b><span>tap − / + to change</span></div><div class="tk-gw">${gwRows}</div>` : ''}
+    <button type="button" class="tk-go" id="tkGo" data-act="tkgo">${nOn ? `${verb} the set · ${total} pieces` : `${verb} ${t.n}`}</button>
+    ${nOn ? `<button type="button" class="tk-link" data-act="tkgo" data-solo="1" id="tkSolo">Just the ${esc(plural(t.n, x))}</button>` : `<button type="button" class="tk-link" data-act="tkrecount">Count the whole drawer instead</button>`}
+    <label class="tk-sw app-only"><input type="checkbox" data-act="tkseveral"${several() ? ' checked' : ''}>Scan several in a row</label>`,
+    after: () => { const i = $('tkN'); if (i) i.addEventListener('input', () => { const v = Math.floor(Number(i.value)); if (v > 0) { t.n = v; tkLive(t); } }); } };
+}
+// Each matching part has its own amount: "per bolt" × how many bolts (1 bolt → 2 flat washers keeps 2 per bolt when you take 4).
+const perKey = (gw, role) => 'wn-per:' + (gw.me.thread || gw.me.dia) + ':' + role;
+const amtOf = (t, id) => Math.max(0, Math.round((t.per && t.per[id] || 1) * t.n));
+const setTotal = (t, set) => t.n + set.filter(e => t.on && t.on[e.x.id]).reduce((a, e) => a + amtOf(t, e.x.id), 0);
+function perLabel(per, x) { if (!per || Math.abs(per - 1) < 1e-9) return ''; const v = Math.round(per * 100) / 100; return `${v} per ${unitW(x, 1)}`; }
+function afterHtml(x, t) {
+  const q = qtyNum(x); if (q == null) return `<span style="color:var(--ink2)">No count yet — this is just logged</span>`;
+  const take = t.mode === 'take', after = take ? Math.max(0, q - t.n) : q + t.n;
+  return `${q} → <b>${after}</b> ${take ? 'left' : 'in the drawer'}${take && t.n > q ? ` <span class="warn">· only ${q} in the drawer</span>` : ''}`;
+}
+function tkLive(t) { // typing a number: update without redrawing (keeps the keyboard up)
+  const x = itemById(t.a); if (!x) return; const set = (SETS.goesWith(x, items()) || { set: [] }).set, nOn = set.filter(e => t.on && t.on[e.x.id]).length, verb = t.mode === 'take' ? 'Take' : 'Put back';
+  const a = $('tkAfter'); if (a) a.innerHTML = afterHtml(x, t); const u = $('tkUnit'); if (u) u.textContent = unitW(x, t.n);
+  const g = $('tkGo'); if (g) g.textContent = nOn ? `${verb} the set · ${setTotal(t, set)} pieces` : `${verb} ${t.n}`;
+  const so = $('tkSolo'); if (so) so.textContent = `Just the ${plural(t.n, x)}`;
+  shBody.querySelectorAll('[data-x]').forEach(el => { el.textContent = amtOf(t, el.dataset.x); });
+  shBody.querySelectorAll('[data-act="tkn"]').forEach(b => b.classList.toggle('on', Number(b.dataset.v) === t.n));
+}
+function tkGo(t, solo) {
+  const x = itemById(t.a); if (!x) return; const sign = t.mode === 'take' ? -1 : 1;
+  const gw = SETS.goesWith(x, items()), set = solo || !gw ? [] : gw.set.filter(e => t.on && t.on[e.x.id] && amtOf(t, e.x.id) > 0);
+  LS.set('wn-take:' + x.id, String(t.n));
+  if (gw && !solo) set.forEach(e => LS.set(perKey(gw, e.role), String(t.per[e.x.id] || 1)));   // next time this size suggests the same ratio
+  const res = applyChanges([{ x, d: sign * t.n }, ...set.map(e => ({ x: e.x, d: sign * amtOf(t, e.x.id) }))]); if (!res) return;
+  const quiet = several() && P.native() && !res.lows.length;
+  if (quiet) { const { head } = summaryLine(res); closeSheet(); toast(`${head} · ${shortName(x)}`, 'Undo', () => undoChanges(res)); setTimeout(scanFlow, 450); return; }
+  t.res = res; t.step = 'done'; paintSheet(true);
+}
+
+// ---- what's in a drawer (a QR label, a drawer with several parts, or tools)
+function drawerSheet(t) {
+  const f = S.find(doc(), t.a); if (!f) return null;
+  const ix = index(), ps = sortedParts(ix.by.get(f.slot.code) || []), ts = (ix.th.get(f.slot.code) || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+  t.d = t.d || {}; t.out = t.out || {};
+  const headH = `<div class="tk-h"><span class="tk-code">${esc(f.slot.code)}</span><span class="tk-w">${esc(f.unit.name)} · ${esc(f.slot.where)}</span></div>`;
+  if (t.step === 'done') return { title: f.slot.code, body: headH + doneHtml(t.res) + (t.toolLine ? `<div class="tk-ok">${esc(t.toolLine)}</div>` : '') + doneBtns() };
+  const tools = ts.filter(x => x.kind === 'tool'), others = ts.filter(x => x.kind !== 'tool');
+  const pRow = (x) => { const q = qtyNum(x), lv = stockLevel(x), d = t.d[x.id] || 0;
+    const st = q != null ? `${q} ${unitW(x, q)} in the drawer` : lv ? STOCK_LABEL[lv] : 'no count yet', cls = lv === 'out' ? 'r' : lv === 'low' ? 'w' : '';
+    return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + x.category))}">${photo(x)}<span class="t"><button type="button" data-act="tkopen" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${cls}">${esc(st)}</span></span><button type="button" class="dr-pm" data-act="drd" data-id="${esc(x.id)}" data-v="-1" aria-label="Take one ${esc(x.name)}">−</button><span class="dr-n${d ? ' on' : ''}">${d > 0 ? '+' + d : d < 0 ? '−' + (-d) : 0}</span><button type="button" class="dr-pm" data-act="drd" data-id="${esc(x.id)}" data-v="1" aria-label="Put back one ${esc(x.name)}">+</button></div>`; };
+  const tRow = (x) => { const out = x.id in t.out ? t.out[x.id] : !!x.out;
+    return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + (x.type || '')))}">${toolIc}<span class="t"><button type="button" data-act="thing" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${out ? 'r' : ''}">${out ? (x.out ? 'Out since ' + esc(fmtDay(x.out)) : 'Out') : 'Here'}</span></span><div class="dr-seg" role="group" aria-label="${esc(x.name)} here or out"><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="here" class="${out ? '' : 'here'}">Here</button><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="out" class="${out ? 'out' : ''}">Out</button></div></div>`; };
+  const n = ps.length + ts.length, changes = Object.values(t.d).filter(Boolean).length + Object.keys(t.out).filter(k => { const th = thingById(k); return th && !!th.out !== t.out[k]; }).length;
+  const firstCh = Object.entries(t.d).find(([, v]) => v); let sum = 'Tap − to take out, + to put back';
+  if (changes) { const [id, v] = firstCh || []; const x = id && itemById(id); sum = `<b>${changes} change${changes > 1 ? 's' : ''}</b>${x ? ` · ${v < 0 ? 'took' : 'put back'} ${esc(plural(Math.abs(v), x))}` : ''}`; }
+  return { title: 'In this drawer', body: headH + `<p class="note" style="margin-top:-4px">${n ? `${n} thing${n > 1 ? 's' : ''}${ps.length && ts.length ? ` · ${ps.length} part${ps.length > 1 ? 's' : ''}, ${ts.length} tool${ts.length > 1 ? 's' : ''} &amp; items` : ''}` : 'Nothing here yet.'}</p>
+    ${n > 5 ? `<input id="drFind" type="search" class="sinput" placeholder="Find in this drawer" aria-label="Find in this drawer" style="width:100%;box-sizing:border-box;height:44px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:inherit;font-size:16px;margin-bottom:10px">` : ''}
+    ${ps.length ? `<div class="h3" style="margin-top:4px">Parts</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${ps.map(pRow).join('')}</div>` : ''}
+    ${tools.length ? `<div class="h3">Tools</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${tools.map(tRow).join('')}</div>` : ''}
+    ${others.length ? `<div class="h3">Other items</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${others.map(x => thingRow(x, false)).join('')}</div>` : ''}
+    <div class="btns"><button type="button" class="gbtn" data-act="drmanage" data-slot="${esc(f.slot.code)}">Manage this spot</button><button type="button" class="gbtn" data-act="print" data-codes="${esc(f.slot.code)}">Print labels</button></div>
+    ${n ? `<div class="dr-bar"><span>${sum}</span><button type="button" class="tk-go" data-act="drsave"${changes ? '' : ' disabled'}>Save</button></div>` : ''}`,
+    after: () => { const i = $('drFind'); if (i) i.addEventListener('input', () => { const q = normS(i.value).trim(); shBody.querySelectorAll('.dr-row').forEach(r => { r.style.display = !q || r.dataset.find.includes(q) ? '' : 'none'; }); }); } };
+}
+function drSave(t) {
+  const list = Object.entries(t.d).filter(([, v]) => v).map(([id, d]) => ({ x: itemById(id), d })).filter(e => e.x);
+  const tools = Object.entries(t.out).map(([id, out]) => ({ t: thingById(id), out })).filter(e => e.t && !!e.t.out !== e.out);
+  const res = applyChanges(list, tools); if (!res) return;
+  t.toolLine = tools.length ? tools.map(e => `${e.t.name}: ${e.out ? 'out' : 'back'}`).join(' · ') : '';
+  if (!res.list.length) { closeSheet(); toast(t.toolLine || 'Saved', 'Undo', () => undoChanges(res)); return; }
+  t.d = {}; t.out = {}; t.res = res; t.step = 'done'; paintSheet(true);
+}
+
+// ---- open the right sheet for a scanned or tapped drawer
+// Data Matrix (Akro-Mils side label) with one part → take / put back. A QR, or a drawer holding several things → what's in it.
+function openDrawer(code, viaQR) {
+  const f = S.find(doc(), code); if (!f) return false;
+  const ix = index(), ps = ix.by.get(f.slot.code) || [], ts = ix.th.get(f.slot.code) || [];
+  if (!viaQR && ps.length === 1 && !ts.length) openSheet('take', ps[0].id, false, { code: f.slot.code });
+  else if (!ps.length && !ts.length) openSheet('slot', f.slot.code);
+  else openSheet('drawer', f.slot.code);
+  return true;
+}
+function scanFlow() {
+  P.scanCode().then(code => {
+    code = String(code || '').trim(); if (!code) return;
+    const lk = code.match(/[#&?]loc=([^&#]+)/), viaQR = !!lk || /^https?:/i.test(code);   // a QR label holds a link to its drawer
+    if (lk) code = decodeURIComponent(lk[1]);
+    if (sheet.open) closeSheet();
+    const unit = S.units(doc()).find(u => u.id === code.toUpperCase());
+    if (unit) { go('#/storage/' + unit.id); return; }                                    // a cabinet's QR → its map
+    const f = S.find(doc(), code);
+    if (f) { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + f.unit.id); setTimeout(() => openDrawer(f.slot.code, viaQR), 120); return; }
+    if (itemById(code)) { openSheet('take', code); return; } if (thingById(code)) { openSheet('thing', code); return; }
+    qEl.value = code; $('qClear').hidden = false; render(); toast('Scanned: ' + code);
+  }, e => toast(e.message));
+}
+window.WNScan = () => { if (sheet.open) closeSheet(); setTimeout(scanFlow, sheet.open ? 220 : 0); };
+
+// ---- goes with: shown on a part, in search, and for what's on the To buy list
+function gwCard(x, opts) {
+  const gw = SETS.goesWith(x, items()); if (!gw) return '';
+  const comp = ['flat', 'lock', 'nut', 'nyloc'].map(k => gw[k] && { y: gw[k].x, k }).filter(Boolean);
+  const lens = gw.bolts.slice(0, 10);
+  if (!comp.length && !lens.length) return '';
+  const cell = ({ y }) => { const q = qtyNum(y), lv = stockLevel(y), c = canon(y.location), bad = lv === 'out' || q === 0, w = !bad && lv === 'low';
+    return `<button type="button" class="${bad ? 'r' : w ? 'w' : ''}" data-act="gwopen" data-id="${esc(y.id)}"><i>${c ? esc(c) : 'no drawer'}</i><b>${esc(shortName(y))}</b><small>${y.need ? 'on To buy' : bad ? 'Out' : w ? 'Low · ' + q + ' left' : q != null ? q + ' left' : y.store ? (lv ? STOCK_LABEL[lv] : 'in stock') : 'not marked'}</small></button>`; };
+  const need = comp.filter(({ y }) => !y.need && (stockLevel(y) === 'out' || stockLevel(y) === 'low' || (!y.store && x.need)));
+  const lensTitle = gw.me.role === 'bolt' ? `Other ${esc(gw.me.thread || gw.me.dia)} lengths` : `Fits ${esc(gw.me.thread || gw.me.dia)}`;
+  return `<div class="gw-card where" style="box-shadow:none;border:1px solid var(--line)">${comp.length ? `<div class="h3" style="margin:0 2px 8px">Goes with</div><div class="gw-grid">${comp.map(cell).join('')}</div>` : ''}
+    ${need.length ? `<div class="btns"><button type="button" class="pbtn2" data-act="gwbuy" data-ids="${esc(need.map(e => e.y.id).join(','))}">Add ${need.length === 1 ? esc(shortName(need[0].y)) : need.length + ' of these'} to To buy</button></div>` : ''}
+    ${lens.length && !(opts && opts.noLens) ? `<div class="h3" style="margin:12px 2px 8px">${lensTitle}</div><div class="gw-chips">${lens.map(b => `<button type="button" data-act="gwopen" data-id="${esc(b.id)}">${esc(shortName(b))}${canon(b.location) ? ' · ' + esc(canon(b.location)) : ''}</button>`).join('')}</div>` : ''}</div>`;
+}
+// codes to light up on a map next to the part's own drawer
+function gwCodes(x) { const gw = SETS.goesWith(x, items()); return gw ? ['flat', 'lock', 'nut', 'nyloc'].map(k => gw[k] && canon(gw[k].x.location)).filter(Boolean) : []; }
+// To buy: matching nuts / washers that are also out or low
+function gwForBuying() {
+  const seen = new Set(), out = [];
+  for (const x of items().filter(y => y.need)) { const gw = SETS.goesWith(x, items()); if (!gw) continue;
+    for (const k of ['flat', 'lock', 'nut']) { const y = gw[k] && gw[k].x; if (!y || y.need || seen.has(y.id)) continue; const lv = stockLevel(y); if (lv === 'out' || lv === 'low' || !y.store) { seen.add(y.id); out.push({ y, for: x }); } } }
+  return out;
 }
 function addWhatSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null;
@@ -744,7 +985,8 @@ function labelData(code) { const f = S.find(doc(), code), c = f ? f.slot.code : 
   return L.content(c, stuff.length ? stuff : pur ? [{ name: pur, category: 'Reserved' }] : [], f ? `${f.unit.name.replace(/^(Husky|Akro-Mils)\s/, '')} · ${f.slot.where}` : ''); }
 function zplFor(roll, codes, copies) { return codes.map(c => L.zpl(roll, labelData(c), copies)).join(''); }
 const P = window.WNPrinters;
-let dest = { local: null, checked: false }; // local = the printer jobs go to from this device (null → send to the computer)
+// local = the printer jobs go to from this device (null → send to the computer). Starts as the printer picked last time, so nothing waits on a look-around.
+let dest = (() => { const q = P.quick(); return q ? { local: q.brand !== 'computer' ? q : null, checked: true } : { local: null, checked: false }; })();
 async function checkPrinter(force) { await P.scan(force); const p = P.current(); dest = { local: p && p.brand !== 'computer' ? p : null, checked: true }; return dest.local; }
 const rollSize = (roll) => roll === 'side' ? '1″ × 1″' : '1.5″ × 0.5″';
 const brandPill = (p) => { const b = P.label(p), col = { Zebra: '#e7f0fa;color:#173a5c', DYMO: '#fdecec;color:#a3262b', Other: '#eef0f3;color:#4a5260', Computer: '#e3f5ea;color:#167a42' }[b] || ''; return `<span class="pill" style="background:${col};font-weight:800">${b}</span>`; };
@@ -761,8 +1003,12 @@ function destHtml(roll, sheetOk) {
 async function printHere(roll, labels, copies, opts) {
   if (P.chosenId() === P.OTHER.id) { // print dialog must open straight from the tap
     P.print(P.OTHER, roll, labels, copies, opts).then(r => { if (P.native()) toast(r.cancelled ? 'Print cancelled' : `Sent ${r.n} label${r.n === 1 ? '' : 's'} to AirPrint`); }, e => toast(e.message)); return true; }
+  const done = (r, p) => toast(`Printed ${r.n} label${r.n === 1 ? '' : 's'}${p.brand === 'zebra' ? '' : ' on ' + r.where}`);
+  // Fast: straight to the printer used last time. Only if that fails, look around and try again.
+  const q = P.quick(); if (q && q.brand === 'computer') return false;
+  if (q && q.brand !== 'other') { try { done(await P.print(q, roll, labels, copies, opts), q); return true; } catch (e) { } }
   const p = await checkPrinter(true); if (!p) return false;
-  try { const r = await P.print(p, roll, labels, copies, opts); toast(`Printed ${r.n} label${r.n === 1 ? '' : 's'}${p.brand === 'zebra' ? '' : ' on ' + r.where}`); } catch (e) { toast(e.message); }
+  try { const r = await P.print(p, roll, labels, copies, opts); if (!P.chosenId()) P.choose(p.id); done(r, p); } catch (e) { toast(e.message); }
   return true;
 }
 function printSheet(t) {
@@ -781,7 +1027,7 @@ function printSheet(t) {
     <div class="frow" style="align-items:end;margin-top:12px"><label class="fld"><span>Copies of each</span><select data-act-sel="copies">${[1, 2, 3].map(k => `<option${k === t.copies ? ' selected' : ''}>${k}</option>`).join('')}</select></label><div class="fld"><button type="button" class="pbtn2" data-act="doprint" style="height:46px"${codes.length ? '' : ' disabled'}>Print ${n} label${n === 1 ? '' : 's'}</button></div></div>
     ${dlg ? `<div class="tabsel"><button type="button" class="${!t.sheet ? 'on' : ''}" data-act="psheet" data-v="0">One label per page (label printer)</button><button type="button" class="${t.sheet ? 'on' : ''}" data-act="psheet" data-v="1">Sheet of paper (cut out)</button></div>` : ''}
     <p class="note" id="destLine">${destLine}</p>`,
-    after: () => { const sel = shBody.querySelector('[data-act-sel="copies"]'); if (sel) sel.onchange = () => { t.copies = +sel.value; paintSheet(); }; if (!dest.checked) checkPrinter().then(() => { if (stack[stack.length - 1] === t) paintSheet(); }); } };
+    after: () => { P.warm(); const sel = shBody.querySelector('[data-act-sel="copies"]'); if (sel) sel.onchange = () => { t.copies = +sel.value; paintSheet(); }; if (!dest.checked) checkPrinter().then(() => { if (stack[stack.length - 1] === t) paintSheet(); }); } };
 }
 async function doPrint(t) {
   const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null, all = u ? S.slots(u).map(s => s.code) : (t.a.codes || []);
@@ -791,7 +1037,8 @@ async function doPrint(t) {
   commit(); paintBadge(); toast(`Sent ${codes.length * t.copies} label${codes.length * t.copies === 1 ? '' : 's'} to your computer`); paintSheet();
 }
 // Custom label: your own text, printed as big as it fits (no code on the label).
-function customInfo(t) { const ck = L.check(t.data), st = L.style(t.roll); return ck.ok ? `${st === 'text' ? 'Prints as text, as big as it fits' : 'Prints a ' + STYLE_NAMES[st] + ' that holds this text'} · ${ck.chars} character${ck.chars === 1 ? '' : 's'}` : `<span class="danger">${esc(ck.why)}</span>`; }
+function customInfo(t) { const ck = L.check(t.data), st = L.style(t.roll), symOk = ck.ok && st !== 'text' && !!L.layout(t.roll, L.custom(t.data, '', t.line2)).sym;
+  return ck.ok ? `${st === 'text' ? 'Prints as text, as big as it fits' : symOk ? 'Prints a ' + STYLE_NAMES[st] + ' that holds this text' : '<span class="danger">Too long for a ' + STYLE_NAMES[st] + ' — this prints as text</span>'} · ${ck.chars} character${ck.chars === 1 ? '' : 's'}` : `<span class="danger">${esc(ck.why)}</span>`; }
 function customPrev(t) { const ck = L.check(t.data); if (!ck.ok) return '<div class="empty">Your label appears here as you type.</div>'; return L.preview(t.roll, L.custom(t.data, '', t.line2), t.roll === 'side' ? 260 : 220); }
 function customSheet(t) {
   if (t.data == null) { t.data = ''; t.caption = ''; t.line2 = ''; t.roll = loadedRoll(); t.copies = 1; }
@@ -865,7 +1112,7 @@ async function drain() {
   if (!isHost() || draining || Date.now() - drainFail < 60000) return;
   const todo = jobs().filter(j => (j.roll || 'front') === loadedRoll()).sort((a, b) => a.at - b.at); if (!todo.length) return;
   draining = true;
-  try { const p = await checkPrinter(true); if (!p || p.brand === 'other') { drainFail = Date.now(); return; }
+  try { const q = P.quick(), p = q && q.brand !== 'computer' && q.brand !== 'other' ? q : await checkPrinter(true); if (!p || p.brand === 'other') { drainFail = Date.now(); return; }
     for (const j of todo) { if (!jobs().some(x => x.id === j.id)) continue; await P.print(p, j.roll || 'front', jobLabels(j), j.copies || 1); removeJob(j.id); toast(`Printed ${(j.custom ? 1 : j.codes.length) * (j.copies || 1)} label(s) from ${j.from || 'your phone'}`); }
   } catch (e) { drainFail = Date.now(); toast('Printing stopped: ' + e.message); }
   finally { draining = false; paintBadge(); if ($('sheet').open && stack.length && stack[stack.length - 1].k === 'printer') paintSheet(); }
@@ -925,10 +1172,39 @@ document.addEventListener('click', (e) => {
   if (act === 'addnet') { const ip = ($('netIp') || {}).value || '', err = $('netErr'); if (!ip.trim()) { if (err) err.textContent = 'Type the printer’s IP address, like 192.168.1.40'; return; } t.disabled = true; if (err) err.textContent = 'Checking the printer…';
     P.addNetwork(ip.trim()).then(d => { conn = null; checkPrinter(false).then(() => { paintSheet(); toast('Added ' + pName(d) + ' — labels now print there'); }); }, e => { t.disabled = false; const er = $('netErr'); if (er) er.textContent = e.message; }); return; }
   if (act === 'forgetp') { P.forget(t.dataset.id).then(() => checkPrinter(false)).then(() => { conn = null; paintSheet(); toast('Printer removed'); }); return; }
-  if (act === 'scancode') { P.scanCode().then(code => { code = String(code || '').trim(); if (!code) return; const lk = code.match(/[#&?]loc=([^&#]+)/); if (lk) code = decodeURIComponent(lk[1]);   // a QR label holds a link to its drawer if (sheet.open) closeSheet();
-      const f = S.find(doc(), code); if (f) { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + f.unit.id); setTimeout(() => openSheet('slot', f.slot.code), 80); return; }
-      if (itemById(code)) { openSheet('part', code); return; } if (thingById(code)) { openSheet('thing', code); return; }
-      qEl.value = code; $('qClear').hidden = false; render(); toast('Scanned: ' + code); }, e => toast(e.message)); return; }
+  if (act === 'scancode') { scanFlow(); return; }
+  // ---- take / put back, drawer contents, goes with
+  if (act && /^(tk|dr|gw)/.test(act) || act === 'needit') { const top = stack[stack.length - 1] || {};
+    if (act === 'tkmode') { top.mode = t.dataset.v; paintSheet(); return; }
+    if (act === 'tkpm') { top.n = Math.max(1, (top.n || 1) + Number(t.dataset.v)); paintSheet(); return; }
+    if (act === 'tkn') { top.n = Number(t.dataset.v); paintSheet(); return; }
+    if (act === 'tkset') { top.on = top.on || {}; top.on[t.dataset.id] = t.checked; paintSheet(); return; }
+    if (act === 'tkper') { const id = t.dataset.id; top.on = top.on || {}; top.per = top.per || {}; const v = Number(t.dataset.v);
+      if (!top.on[id]) { if (v > 0) top.on[id] = true; paintSheet(); return; }          // + on an unticked row ticks it at its usual amount
+      const a = amtOf(top, id) + v; if (a <= 0) top.on[id] = false; else top.per[id] = a / (top.n || 1); paintSheet(); return; }
+    if (act === 'tkseveral') { LS.set('wn-scan-several', t.checked ? '1' : null); return; }
+    if (act === 'tkgo') { const i = $('tkN'); if (i) { const v = Math.floor(Number(i.value)); if (v > 0) top.n = v; } tkGo(top, !!t.dataset.solo); return; }
+    if (act === 'tkrecount') { top.step = 'count'; top.cnt = qtyNum(itemById(top.a) || {}); paintSheet(true); setTimeout(() => { const i = $('tkCount'); if (i) i.focus(); }, 60); return; }
+    if (act === 'tkskip') { top.step = 'edit'; top.skip = true; paintSheet(true); return; }
+    if (act === 'tkcount') { const x = itemById(top.a), i = $('tkCount'); if (!x || !i) return; if (i.value === '' || isNaN(Number(i.value))) { toast('Type how many are in the drawer'); i.focus(); return; }
+      const before = snapOf(x), prev = stockLevel(x); setCount(x, i.value); if (stockLevel(x) === 'out' && prev !== 'out' && !x.need) x.need = true;
+      const id = addLog([{ id: x.id, name: x.name, set: qtyNum(x), q: qtyNum(x) }]); commit(); refresh(); top.step = 'edit'; paintSheet(true);
+      toast(`Counted ${plural(qtyNum(x), x)}`, 'Undo', () => undoChanges({ snaps: [[x.id, before]], tools: [], logId: id })); return; }
+    if (act === 'tkrough') { const x = itemById(top.a); if (!x) return; const before = snapOf(x); x.stock = t.dataset.v; if (!x.store) { x.store = true; x.buy = true; x.ordered = false; } if (t.dataset.v === 'out' && !x.need) x.need = true; commit(); refresh(); top.step = 'edit'; paintSheet(true);
+      toast(`${x.name}: ${STOCK_LABEL[t.dataset.v]}`, 'Undo', () => undoChanges({ snaps: [[x.id, before]], tools: [], logId: '' })); return; }
+    if (act === 'tkundo') { undoChanges(top.res); closeSheet(); return; }
+    if (act === 'tkbuy') { const r = top.res; if (r) { r.lows.forEach(x => { x.need = true; }); commit(); refresh(); toast('Added to To buy'); r.lows = []; paintSheet(); } return; }
+    if (act === 'tknotnow') { if (top.res) { top.res.lows = []; paintSheet(); } return; }
+    if (act === 'tknext') { closeSheet(); setTimeout(scanFlow, 250); return; }
+    if (act === 'tkopen') { openSheet('take', t.dataset.id, sheet.open, { code: top.k === 'drawer' ? top.a : undefined }); return; }
+    if (act === 'drd') { top.d = top.d || {}; top.d[t.dataset.id] = (top.d[t.dataset.id] || 0) + Number(t.dataset.v); paintSheet(); return; }
+    if (act === 'drtool') { const th = thingById(t.dataset.id); if (!th) return; top.out = top.out || {}; const want = t.dataset.v === 'out'; if (!!th.out === want) delete top.out[th.id]; else top.out[th.id] = want; paintSheet(); return; }
+    if (act === 'drsave') { drSave(top); return; }
+    if (act === 'drmanage') { openSheet('slot', t.dataset.slot, true); return; }
+    if (act === 'gwopen') { openSheet('part', t.dataset.id, sheet.open && !!t.closest('#shBody')); return; }
+    if (act === 'gwbuy') { const ids = (t.dataset.ids || '').split(',').filter(Boolean), xs = ids.map(itemById).filter(Boolean); xs.forEach(x => { x.need = true; if (!x.store) x.buy = false; }); commit(); refresh(); toast(`Added ${xs.length === 1 ? xs[0].name : xs.length + ' parts'} to To buy`, 'Undo', () => { xs.forEach(x => { x.need = false; }); commit(); refresh(); }); return; }
+    if (act === 'needit') { const x = itemById(t.dataset.id); if (x) { x.need = true; if (!x.store) x.buy = false; commit(); refresh(); toast(`${x.name} added to To buy`); } return; }
+  }
   if (act === 'usep') { P.choose(t.dataset.id); conn = null; checkPrinter(false).then(() => { paintSheet(); const p = P.current(); toast('Labels now print on ' + (p.brand === 'computer' ? 'your computer' : pName(p))); }); return; }
   if (act === 'pscan') { dest.checked = false; paintSheet(); checkPrinter(true).then(() => { if (stack.length && stack[stack.length - 1].k === 'printer') paintSheet(); }); return; }
   if (act === 'psheet') { const top = stack[stack.length - 1]; top.sheet = t.dataset.v === '1'; paintSheet(); return; }
