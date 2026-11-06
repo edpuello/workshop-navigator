@@ -2,7 +2,7 @@
 <title>Workshop Navigator — Workshop</title>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261105s"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261104x"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261105s"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -139,7 +139,7 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
 #toast span,.toast-in span{overflow-wrap:anywhere}#toast button,.toast-in button{flex:none;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:9px;padding:6px 11px;font-weight:700}
 /* iPhone app vs web: things that only make sense in one of them */
 .app-only{display:none!important}.native .app-only{display:revert!important}.native .web-only{display:none!important}
-.scanbtn{flex:none;border:0;background:var(--brand);color:#fff;border-radius:14px;width:50px;height:50px;place-items:center;padding:0}.native .scanfab.app-only{display:grid!important}.native .tk-sw.app-only{display:flex!important}.native .tk-go.app-only{display:block!important}.scanbtn svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.scanbtn{flex:none;border:0;background:var(--brand);color:#fff;border-radius:14px;width:50px;height:50px;place-items:center;padding:0}.native .scanfab.app-only,.webcam .scanfab.app-only{display:grid!important}.webcam .tk-sw.app-only{display:flex!important}.webcam .tk-go.app-only{display:block!important}.native .tk-sw.app-only{display:flex!important}.native .tk-go.app-only{display:block!important}.scanbtn svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .native .dock .wrap{display:flex;gap:8px}.native .dock .sbar{flex:1;min-width:0}
 /* organize by size */
 .rtag{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px 1px;min-height:34px;text-align:center;overflow:hidden;background:var(--pill);color:#2b2f36}
@@ -272,9 +272,16 @@ main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)
 .tabbar a.on{color:var(--brand)}.tabbar a.on svg{stroke-width:2.3}
 .scanfab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(80px + env(safe-area-inset-bottom));z-index:31;width:62px;height:62px;border-radius:50%;border:0;background:var(--brand);color:#fff;place-items:center;padding:0;box-shadow:0 14px 30px -8px rgba(0,0,0,.45);transition:transform .12s}
 .scanfab:active{transform:scale(.94)}.scanfab svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}.native main{padding-bottom:calc(160px + env(safe-area-inset-bottom))!important}
-#toast{bottom:calc(86px + env(safe-area-inset-bottom))}.native #toast{bottom:calc(154px + env(safe-area-inset-bottom))}
+main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}.native main,.webcam main{padding-bottom:calc(160px + env(safe-area-inset-bottom))!important}
+#toast{bottom:calc(86px + env(safe-area-inset-bottom))}.native #toast,.webcam #toast{bottom:calc(154px + env(safe-area-inset-bottom))}
 @media print{.tabbar,.scanfab{display:none!important}}
+
+/* ---- 10.20: the website's camera scanner (js/webscan.js) */
+.wscan{position:fixed;inset:0;z-index:95;background:#0b0f14;color:#fff;display:flex;flex-direction:column;align-items:center;padding:max(14px,env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom))}
+.wscan-top{width:100%;max-width:560px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.wscan-top b{font-size:18px}
+.wscan-x{width:44px;height:44px;border-radius:999px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:28px;line-height:1;padding:0}
+.wscan-view{width:100%;max-width:560px;border-radius:18px;overflow:hidden;background:#000}.wscan-view video{display:block;width:100%!important;height:auto!important}
+.wscan-hint{margin:16px 0 0;font-size:15px;color:#c7d0da;text-align:center}.wscan-err{margin:10px 0 0;padding:10px 14px;border-radius:12px;background:#5c1d1f;color:#ffd9da;font-size:14.5px;text-align:center;max-width:520px}
 </style></head>
 <body>
 <header><div class="wrap"><div class="htop"><p class="eyebrow">Workshop Navigator · <span id="today"></span></p>
@@ -427,7 +434,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.19 · Nov 5</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.20 · Nov 6</span></p>`;
 const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a drawer</span><b class="${D.noDrawer.length ? 'b' : ''}">${D.noDrawer.length}</b>${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.c.instock} in stock · ${D.cats} families</div>${hBar([[D.c.instock, 'var(--brand)'], [D.c.tobuy, 'var(--bad)']], D.n)}<div class="s xs">${D.n - D.marked} not marked yet</div></button>`;
 const storageCard = (D) => `<button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div><div class="n">${D.placed}<small> / ${D.spots}</small></div><div class="s">spots used · ${D.us.length} units</div>${hBar([[D.placed, 'var(--brand)']], D.spots)}<div class="s xs">${D.noDrawer.length ? `${D.noDrawer.length} in stock without a drawer` : 'Every in-stock part has a drawer'}</div></button>`;
@@ -647,6 +654,12 @@ function undoChanges(res) {
   commit(); refresh(); toast('Undone');
 }
 const several = () => LS.get('wn-scan-several', '') === '1';
+// Scanning: the iPhone app's own scanner, or the website's camera scanner (js/webscan.js) when this device has a camera.
+const canScan = () => P.native() || document.documentElement.classList.contains('webcam');
+if (!window.WNPrinters.native() && window.WNWebScan && WNWebScan.available()) {
+  document.documentElement.classList.add('webcam');
+  try { navigator.mediaDevices.enumerateDevices().then(d => { if (!d.some(x => x.kind === 'videoinput')) document.documentElement.classList.remove('webcam'); }, () => { }); } catch (e) { }
+}
 const plural = (n, x) => `${n} ${unitW(x, n)}`;
 function summaryLine(res) {
   const [main, ...rest] = res.list, verb = main.d < 0 ? 'Took' : 'Put back';
@@ -724,7 +737,7 @@ function tkGo(t, solo) {
   LS.set('wn-take:' + x.id, String(t.n));
   if (gw && !solo) set.forEach(e => LS.set(perKey(gw, e.role), String(t.per[e.x.id] || 1)));   // next time this size suggests the same ratio
   const res = applyChanges([{ x, d: sign * t.n }, ...set.map(e => ({ x: e.x, d: sign * amtOf(t, e.x.id) }))]); if (!res) return;
-  const quiet = several() && P.native() && !res.lows.length;
+  const quiet = several() && canScan() && !res.lows.length;
   if (quiet) { const { head } = summaryLine(res); closeSheet(); toast(`${head} · ${shortName(x)}`, 'Undo', () => undoChanges(res)); setTimeout(scanFlow, 450); return; }
   t.res = res; t.step = 'done'; paintSheet(true);
 }

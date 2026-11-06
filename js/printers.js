@@ -137,7 +137,8 @@
     if (!q.known) return { state: 'ready', printer: { name: p.name }, model: p.model, note: p.kind === 'ble' ? 'Connected over Bluetooth.' : 'Connected (the printer didn’t report its status).' };
     return q.probs.length ? { state: 'problem', printer: { name: p.name }, model: p.model, probs: q.probs } : { state: 'ready', printer: { name: p.name }, model: p.model };
   }
-  const scanCode = () => nat('scan');
+  // The iPhone app scans with its own built-in scanner; the website uses the camera through js/webscan.js.
+  const scanCode = () => native() ? nat('scan') : window.WNWebScan && WNWebScan.available() ? WNWebScan.scan() : Promise.reject(new Error('Scanning needs a camera on this device'));
   // ---------------- what's here
   let found = [OTHER, COMPUTER], apps = { zebra: '', dymo: '' }, scanned = 0, scanning = null;
   async function scan(force) {
