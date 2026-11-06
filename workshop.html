@@ -2,7 +2,7 @@
 <title>Workshop Navigator — Workshop</title>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261103d"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261104x"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261105s"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261104x"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -139,7 +139,7 @@ dialog.sheet.closing{animation:shDown .2s ease-in forwards}
 #toast span,.toast-in span{overflow-wrap:anywhere}#toast button,.toast-in button{flex:none;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:9px;padding:6px 11px;font-weight:700}
 /* iPhone app vs web: things that only make sense in one of them */
 .app-only{display:none!important}.native .app-only{display:revert!important}.native .web-only{display:none!important}
-.scanbtn{flex:none;border:0;background:var(--brand);color:#fff;border-radius:14px;width:50px;height:50px;place-items:center;padding:0}.native .scanbtn.app-only{display:grid!important}.scanbtn svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.scanbtn{flex:none;border:0;background:var(--brand);color:#fff;border-radius:14px;width:50px;height:50px;place-items:center;padding:0}.native .scanfab.app-only{display:grid!important}.native .tk-sw.app-only{display:flex!important}.native .tk-go.app-only{display:block!important}.scanbtn svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .native .dock .wrap{display:flex;gap:8px}.native .dock .sbar{flex:1;min-width:0}
 /* organize by size */
 .rtag{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px 1px;min-height:34px;text-align:center;overflow:hidden;background:var(--pill);color:#2b2f36}
@@ -264,6 +264,17 @@ main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)
 .scanhero{display:flex;align-items:center;gap:16px;width:100%;min-height:84px;padding:0 18px;border:0;border-radius:20px;background:var(--accent);color:#fff;text-align:left;margin:0 0 12px;font:inherit}.scanhero .si{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:none}.scanhero b{display:block;font-size:20px;font-weight:800}.scanhero small{display:block;font-size:14px;opacity:.85;margin-top:3px}
 .tk-gr{cursor:default}.tk-gl{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer}.tk-gr .t .tk-pl{color:var(--accent);font-weight:700}.tk-gr .t .tk-pl:empty{display:none}.tk-gr.off .t b{color:var(--ink2)}
 .tk-pc{display:flex;align-items:center;gap:6px;flex:none}.tk-pc button{width:36px;height:36px;border-radius:999px;border:0;background:#e7f0fa;color:var(--brand);font-size:20px;font-weight:700;line-height:1;padding:0}.tk-pc b{min-width:26px;text-align:center;font-size:17px;font-weight:800;color:var(--brand)}.tk-gr.off .tk-pc b{color:var(--ink3)}
+
+/* ---- 10.17: bottom tab bar on every screen + one Scan button bottom right (same spot as the Checklist's +) */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;gap:4px;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid rgba(20,24,31,.08);padding:6px max(10px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+.tabbar a{flex:1;max-width:140px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 0 3px;border-radius:12px;color:#6b7684;text-decoration:none;font-size:11.5px;font-weight:650;letter-spacing:.1px}
+.tabbar a svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tabbar a.on{color:var(--brand)}.tabbar a.on svg{stroke-width:2.3}
+.scanfab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(80px + env(safe-area-inset-bottom));z-index:31;width:62px;height:62px;border-radius:50%;border:0;background:var(--brand);color:#fff;place-items:center;padding:0;box-shadow:0 14px 30px -8px rgba(0,0,0,.45);transition:transform .12s}
+.scanfab:active{transform:scale(.94)}.scanfab svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}.native main{padding-bottom:calc(160px + env(safe-area-inset-bottom))!important}
+#toast{bottom:calc(86px + env(safe-area-inset-bottom))}.native #toast{bottom:calc(154px + env(safe-area-inset-bottom))}
+@media print{.tabbar,.scanfab{display:none!important}}
 </style></head>
 <body>
 <header><div class="wrap"><div class="htop"><p class="eyebrow">Workshop Navigator · <span id="today"></span></p>
@@ -271,8 +282,8 @@ main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)
 <button type="button" class="chip" id="menuBtn" aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
 <h1 class="big">Workshop</h1>
 <nav class="pageswitch" aria-label="Switch page"><a class="on" href="workshop.html" aria-current="page">Workshop App</a><a href="index.html?checklist">Checklist</a></nav></div></header>
-<div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label><button type="button" class="scanbtn app-only" data-act="scancode" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8h3v3H8zM13 13h3v3h-3zM13 8h3M8 13v3"/></svg></button></div></div>
-<main><div class="wrap" id="view"></div></main>
+<div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label></div></div>
+<main><div class="wrap" id="view"></div></main><nav class="tabbar" aria-label="Sections"><a href="#/" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h5v-5h3v5h5V10"/></svg><span>Home</span></a><a href="#/parts" data-tab="parts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span>Parts</span></a><a href="#/storage" data-tab="storage"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/></svg><span>Storage</span></a><a href="#/tools" data-tab="tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3.5 17.3a1.8 1.8 0 0 0 2.5 2.5l5.8-5.8a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.6-.6-2.3z"/></svg><span>Tools</span></a></nav><button type="button" class="scanfab app-only" data-act="scancode" aria-label="Scan a drawer" title="Scan a drawer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg></button>
 <div class="menu" id="menu" role="menu">
  <a href="#/storage" role="menuitem">Storage map</a>
  <button type="button" role="menuitem" data-act="printer">Labels &amp; printer <small id="qBadge"></small></button>
@@ -388,7 +399,9 @@ function deepLink() {
 }
 
 // ---------------------------------------------------------------- views
-function render() {
+const TAB_OF = { home: 'home', attention: 'home', parts: 'parts', storage: 'storage', unplaced: 'storage', tools: 'tools' };
+function markTab() { const t = TAB_OF[route().v] || 'home'; document.querySelectorAll('.tabbar a').forEach(a => { const on = a.dataset.tab === t; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
+function render() { markTab();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
   try { $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)(); }
@@ -414,7 +427,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.16 · Nov 5</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.18 · Nov 5</span></p>`;
 const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a drawer</span><b class="${D.noDrawer.length ? 'b' : ''}">${D.noDrawer.length}</b>${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.c.instock} in stock · ${D.cats} families</div>${hBar([[D.c.instock, 'var(--brand)'], [D.c.tobuy, 'var(--bad)']], D.n)}<div class="s xs">${D.n - D.marked} not marked yet</div></button>`;
 const storageCard = (D) => `<button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div><div class="n">${D.placed}<small> / ${D.spots}</small></div><div class="s">spots used · ${D.us.length} units</div>${hBar([[D.placed, 'var(--brand)']], D.spots)}<div class="s xs">${D.noDrawer.length ? `${D.noDrawer.length} in stock without a drawer` : 'Every in-stock part has a drawer'}</div></button>`;
@@ -445,7 +458,7 @@ function pcMore(D, skip) {
 }
 function home() {
   const D = HD();
-  return `<button type="button" class="scanhero app-only" data-act="scancode"><span class="si"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg></span><span><b>Scan a drawer</b><small>Take out or put back · see what’s inside</small></span></button><div class="cards p3">${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="h"></i>parts <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
+  return `<div class="cards p3">${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="h"></i>parts <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -1268,7 +1281,7 @@ function closeMenu() { menu.classList.remove('on'); mb.setAttribute('aria-expand
 mb.onclick = (e) => { e.stopPropagation(); if (menu.classList.contains('on')) return closeMenu(); const r = mb.getBoundingClientRect(); menu.style.top = (r.bottom + 8) + 'px'; menu.style.right = Math.max(10, innerWidth - r.right) + 'px'; menu.classList.add('on'); mb.setAttribute('aria-expanded', 'true'); };
 document.addEventListener('pointerdown', (e) => { if (menu.classList.contains('on') && !menu.contains(e.target) && e.target !== mb && !mb.contains(e.target)) closeMenu(); });
 function paintSync() { const s = WN.status || {}, d = $('syncDot'); d.className = 'dot ' + (s.state === 'live' ? 'ok' : s.state === 'busy' ? 'busy' : s.state === 'error' || s.state === 'paused' ? 'err' : ''); $('syncChip').title = s.msg || ''; }
-$('syncChip').onclick = () => { const s = WN.status || {}; if (!WN.user) toast('Not signed in — sign in on the Checklist', 'Sign in', () => { location.href = 'index.html#settings'; }); else toast(s.msg || 'Synced'); };
+$('syncChip').onclick = () => { const s = WN.status || {}; if (!WN.user) toast('Not signed in — sign in on the Checklist', 'Sign in', () => { location.href = 'index.html#settings'; }); else if (s.state === 'live') toast(s.msg || 'Synced'); else { toast('Syncing…'); WN.syncNow().then(() => toast((WN.status || {}).msg || 'Synced'), e => toast('Sync problem: ' + (e.message || e))); } };
 WN.on('status', paintSync); WN.on('auth', () => { paintSync(); hydrate(document); });
 WN.on('change', (d, src) => { if (src === 'local') return; refresh(); paintBadge(); drain(); });
 $('today').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });

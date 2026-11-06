@@ -190,7 +190,8 @@
     status = { state, realtime: !!(channel && channel.__live), msg: msg || status.msg };
     emit('status', status);
   }
-  const synced = () => { if (status.state !== 'busy') setStatus('live', 'Synced · ' + new Date().toLocaleTimeString()); };
+  // "Connecting…" ends as soon as the cloud is checked; only an upload in progress ("Syncing…") keeps it busy.
+  const synced = () => { if (status.state !== 'busy' || !pushing) setStatus('live', 'Synced · ' + new Date().toLocaleTimeString()); };
 
   // Replace the working document with a merged one and tell the page (only if it changed).
   function adopt(next, source) {
