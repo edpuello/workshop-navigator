@@ -3,7 +3,7 @@
 <title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261106b"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261107a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script><script src="js/tabbar.js?v=20261107j"></script><script src="js/notify.js?v=20261107a"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261106b"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261107a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261107b"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script><script src="js/tabbar.js?v=20261107j"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -55,7 +55,7 @@ main{padding:4px max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-
 .lvl3{display:flex;gap:8px;margin:0 0 12px}.lvl3 button{flex:1;border:1.5px solid var(--line);background:none;border-radius:12px;padding:11px 0;font:700 14px/1 inherit;color:var(--ink2);cursor:pointer}.lvl3 button.on.plenty{border-color:var(--ok);background:rgba(31,138,76,.1);color:#1f8a4c}.lvl3 button.on.low{border-color:var(--warn);background:rgba(224,160,0,.12);color:#8a5a00}.lvl3 button.on.out{border-color:var(--bad);background:rgba(220,50,50,.1);color:var(--bad)}
 .pill.lo{background:#fff4e0;color:#8a5a00}.pill.ex{background:#ffe9e6;color:#b42318}.pill.lent{background:#e8f0fb;color:#1d4f91}html.dark .pill.lo{background:#3a2f17;color:#f1c56b}html.dark .pill.ex{background:#3b1d1a;color:#ff9b8f}html.dark .pill.lent{background:#1d2a3d;color:#9cc2f5}
 .fld textarea{width:100%;box-sizing:border-box;min-height:84px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;background:var(--card,#fff);color:inherit;resize:vertical}
-html.dark .pthumb.ico{background:#26262b!important;color:#9cc2f5!important}.h3.room{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+html.dark .pthumb.ico{background:#26262b!important;color:#9cc2f5!important}.chipb{border:1.5px solid var(--line);background:none;border-radius:999px;padding:7px 12px;font:650 13px/1 inherit;color:var(--ink2);cursor:pointer}.chipb.on{border-color:var(--brand);background:rgba(23,58,99,.08);color:var(--brand)}html.dark .chipb.on{background:rgba(120,170,240,.14);color:#9cc2f5;border-color:#5b8fd6}.h3.room{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
 .pill{font-size:12px;font-weight:650;border-radius:7px;padding:2px 7px;background:var(--pill);color:var(--ink2)}
 .st-instock{background:#e3f5ea;color:#167a42}.st-tobuy{background:#fdecec;color:#c23b3f}.st-putaway{background:#fff3d6;color:#8a5f00}
 .loc{font:700 12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.3px;background:#e7f0fa;color:var(--brand);border-radius:7px;padding:5px 7px;white-space:nowrap}
@@ -476,13 +476,16 @@ function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = 
 function clearQ() { const e = $('q'); if (!e || !e.value) return false; e.value = ''; $('qClear').hidden = true; if (document.activeElement === e) e.blur(); return true; }
 function go(h) { clearQ(); if (location.hash === h) render(); else location.hash = h; }
 window.addEventListener('hashchange', () => { clearQ(); deepLink(); render(); window.scrollTo(0, 0); });
+window.addEventListener('wn-labelfont', () => { if ($('sheet').open && $('shBody').querySelector('.zlabel')) paintSheet(); });   // the label font arrived: redraw previews with it
 document.addEventListener('click', (e) => { const a = e.target.closest('.tabbar a'); if (a && clearQ()) setTimeout(render, 0); }, true);
 function deepLink() {
-  const h = location.hash; if (h === '#scan') { history.replaceState(null, '', '#/'); render(); setTimeout(() => window.WNScan(), 300); return true; }
+  const h = location.hash; if ((h === '#scan' || /^#(part|loc)=/.test(h)) && window.WNShell && WNShell.on()) WNShell.hide();   // a scan / link while the Checklist is showing: back to the Workshop
+  if (h === '#scan') { history.replaceState(null, '', '#/'); render(); setTimeout(() => window.WNScan(), 300); return true; }
   const m = h.match(/^#(part|loc)=(.+)$/); if (!m) return false;
   const v = decodeURIComponent(m[2]);
   if (m[1] === 'part') { history.replaceState(null, '', '#/'); render(); openSheet('part', v); }
   else { const unit = S.units(doc()).find(u => u.id === v.toUpperCase()); if (unit) { history.replaceState(null, '', '#/storage/' + unit.id); render(); if (unit.type === 'box') openDrawer(unit.id, true); return true; }
+    const mo = moduleOf(v); if (mo && mo.m.bins > 0) { history.replaceState(null, '', '#/storage/' + mo.u.id); render(); openSheet('group', mo.code); return true; }
     const f = S.find(doc(), v); history.replaceState(null, '', f ? '#/storage/' + f.unit.id : '#/storage'); render(); if (f) openDrawer(f.slot.code, true); else toast(v + ' isn’t on your storage map'); }
   return true;
 }
@@ -710,7 +713,7 @@ function storage() {
   const rooms = [...new Set(us.map(S.roomOf))], wallRoom = wallUs.length > 1 ? S.roomOf(wallUs[0]) : '';
   const byRoom = rooms.length > 1 ? rooms.map(r => { const list = restUs.filter(u => S.roomOf(u) === r), n = us.filter(u => S.roomOf(u) === r).length; return `<div class="h3 room">${esc(r)} <span class="c">${n}</span></div>${r === wallRoom ? wallHtml(wallUs) : ''}${list.length ? `<div class="cards">${list.map(ucard).join('')}</div>` : ''}`; }).join('')
     : (wallUs.length > 1 ? wallHtml(wallUs) : '') + `<div class="cards">${restUs.map(ucard).join('')}</div>`;
-  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add storage</button>') + upHtml + orgBanner() + (homeN ? `<div class="rows" style="margin-bottom:14px"><button type="button" class="row" data-go="#/unplaced"><div class="t"><b>Needs a home</b><span>Things you've added that don't have a spot yet</span></div><span class="cnt" style="color:var(--ink2)">${homeN}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>` : '') + byRoom +
+  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="loclabels">Location labels</button><button type="button" class="gbtn" data-act="newunit">Add storage</button>') + upHtml + orgBanner() + (homeN ? `<div class="rows" style="margin-bottom:14px"><button type="button" class="row" data-go="#/unplaced"><div class="t"><b>Needs a home</b><span>Things you've added that don't have a spot yet</span></div><span class="cnt" style="color:var(--ink2)">${homeN}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>` : '') + byRoom +
     (loose.length ? `<div class="h3">Not on the map yet <span class="c">${loose.reduce((a, l) => a + l.parts.length, 0)}</span></div><p class="note">These parts have a location typed in that isn't one of your map codes.</p><div class="rows">${loose.map(l => { const sug = S.suggest(l.text), ok = sug && S.find(doc(), sug); return `<div class="row"><span class="loc old">${esc(l.text)}</span><div class="t"><b>${l.parts.length} part${l.parts.length > 1 ? 's' : ''}</b><span>${esc(l.parts.map(x => x.name).join(', '))}</span></div>${ok ? `<button type="button" class="gbtn" data-act="convert" data-from="${esc(l.text)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : `<button type="button" class="gbtn" data-part="${esc(l.parts[0].id)}">Place</button>`}</div>`; }).join('')}</div>` : '') +
     '';
 }
@@ -761,10 +764,43 @@ function mapHtml(u, hit, compact) {
   if (u.type === 'modules') return `<div class="map">${(u.modules || []).map((m, i) => { const ms = sl.filter(s => s.m === i + 1), many = m.bins > 0; return `<div class="mod${many ? '' : ' stack'}"><h4>${i + 1} · ${esc(m.name || 'Module')}</h4>${grid(ms.map(s => cell(s, !many)).join(''), many ? Math.min(m.cols || 6, m.bins) : 1)}</div>`; }).join('')}<div class="mapcap"><span>1 = top module</span></div></div>`;
   return '';
 }
+// every spot in a list that holds something: code, what's in it, where it is
+function insideList(codes, title) {
+  const ix = index(), rows = codes.map(c => { const ps = ix.by.get(c) || [], ts = ix.th.get(c) || []; if (!ps.length && !ts.length) return ''; const f = S.find(doc(), c);
+    return `<button type="button" class="row" data-slot="${esc(c)}"><span class="loc">${esc(c)}</span><div class="t"><b>${esc([...ps.map(shortName), ...ts.map(t => t.name)].join(' · '))}</b><span>${esc(f ? f.slot.where : '')}</span></div></button>`; }).filter(Boolean);
+  return rows.length ? `<div class="h3">${title} <span class="c">${rows.length}</span></div><div class="rows">${rows.join('')}</div>` : '';
+}
+// an organizer of a modules unit (e.g. M1-2): its own QR label opens all of its bins
+function moduleOf(code) { const m = String(code || '').trim().toUpperCase().match(/^([A-Z]\d)-(\d{1,2})$/); if (!m) return null; const u = S.units(doc()).find(x => x.id === m[1]); if (!u || u.type !== 'modules') return null; const k = +m[2], mod = (u.modules || [])[k - 1]; if (!mod) return null;
+  return { u, k, m: mod, code: `${u.id}-${k}`, codes: S.slots(u).filter(x => x.m === k).map(x => x.code) }; }
+// the name printed under a location's QR code
+function locName(code) { const us = S.units(doc()), u = us.find(x => x.id === code); if (u) return u.name; const mo = moduleOf(code); if (mo && mo.m.bins > 0) return `${mo.m.name || 'Organizer'} · organizer ${mo.k}`;
+  const f = S.find(doc(), code); return f ? f.unit.name.replace(/^(Husky|Akro-Mils)\s/, '') : ''; }
+function groupSheet(t) { const mo = moduleOf(t.a); if (!mo) return null; const body = insideList(mo.codes, 'What’s inside');
+  return { title: `${mo.m.name || 'Organizer'} · ${mo.code}`, body: `<p class="note" style="margin-top:-4px">${esc(mo.u.name)} · organizer ${mo.k} · ${mo.codes.length} bins</p>` + (body || '<div class="rows"><div class="empty">Nothing in this organizer yet.</div></div>') + `<div class="btns"><button type="button" class="gbtn" data-go="#/storage/${esc(mo.u.id)}">Open ${esc(mo.u.id)} map</button></div>` }; }
+// Storage → Location labels: one QR label per cabinet, drawer, organizer, bin, tote or shelf
+function locOpts(u) {
+  const out = [], sl = S.slots(u), noun = u.type === 'box' ? (u.box || 'container').toLowerCase() : u.type === 'shelves' ? 'shelf unit' : u.type === 'bins' ? 'set of bins' : 'cabinet';
+  out.push({ key: u.id, label: u.type === 'box' ? 'One label' : 'Whole ' + noun, codes: ['loc:' + u.id], def: ['grid', 'box', 'shelves'].includes(u.type) });
+  if (u.type === 'modules') { const ks = (u.modules || []).map((m, i) => i + 1); out.push({ key: u.id + ':m', label: `Each organizer (${ks.length})`, codes: ks.map(k => 'loc:' + u.id + '-' + k), def: true }); }
+  else if (u.type !== 'box' && u.type !== 'grid') { const word = u.type === 'bins' ? 'bin' : u.type === 'shelves' ? ((u.per || 1) > 1 ? 'spot' : 'shelf') : 'drawer'; out.push({ key: u.id + ':s', label: `Each ${word} (${sl.length})`, codes: sl.map(x => 'loc:' + x.code), def: u.type !== 'shelves' }); }
+  return out;
+}
+function locSheet(t) {
+  const us = S.units(doc()).filter(u => !t.a || u.id === t.a);
+  if (!t.sel) { t.sel = {}; us.forEach(u => locOpts(u).forEach(o => { if (t.a ? o.key === u.id : o.def) t.sel[o.key] = true; })); }
+  const codes = [...new Set(us.flatMap(u => locOpts(u).filter(o => t.sel[o.key]).flatMap(o => o.codes)))];
+  const rooms = [...new Set(us.map(S.roomOf))];
+  const urow = (u) => `<div class="row" style="flex-wrap:wrap;gap:8px 12px"><span class="loc">${esc(u.id)}</span><div class="t" style="min-width:140px"><b>${esc(u.name)}</b><span>${esc(u.model || S.TYPES[u.type] || '')}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap">${locOpts(u).map(o => `<button type="button" class="chipb${t.sel[o.key] ? ' on' : ''}" data-act="locpick" data-k="${esc(o.key)}" aria-pressed="${!!t.sel[o.key]}">${t.sel[o.key] ? '✓ ' : ''}${esc(o.label)}</button>`).join('')}</div></div>`;
+  const go = `<button type="button" class="pbtn2" data-act="locgo"${codes.length ? '' : ' disabled'}>Next · ${codes.length} label${codes.length === 1 ? '' : 's'}</button>`;
+  return { title: 'Location labels', body: `<p class="note" style="margin-top:-4px">A QR code for each place. Scan it with the app's Scan button to see everything inside — the cabinet's map, the drawer, the organizer or the tote.</p><div class="btns" style="margin:0 0 12px">${go}</div>
+    ${rooms.map(r => `${rooms.length > 1 ? `<div class="h3 room">${esc(r)}</div>` : ''}<div class="rows" style="box-shadow:none;border:1px solid var(--line)">${us.filter(u => S.roomOf(u) === r).map(urow).join('')}</div>`).join('')}
+    <div class="btns">${go}</div>` };
+}
 function unitView(id) {
   const u = S.units(doc()).find(x => x.id === id); if (!u) return head('Storage', '#/storage') + '<div class="rows"><div class="empty">That unit isn’t on your map.</div></div>';
   const sl = S.slots(u), used = sl.filter(s => occupied(s.code)).length;
-  return head(`${esc(u.name)}`, '#/storage', `${O.CABS.includes(u.id) ? `<button type="button" class="gbtn" data-act="organize" data-unit="${esc(u.id)}">Organize</button>` : ''}<button type="button" class="gbtn" data-act="print" data-unit="${esc(u.id)}">Labels</button><button type="button" class="gbtn" data-act="editunit" data-unit="${esc(u.id)}">Edit</button>`) + `<p class="note" style="margin-top:-6px"><span class="loc">${esc(u.id)}</span> ${esc(u.model || '')} · ${used} of ${sl.length} used · tap a spot to see or add parts</p>` + mapHtml(u, '');
+  return head(`${esc(u.name)}`, '#/storage', `${O.CABS.includes(u.id) ? `<button type="button" class="gbtn" data-act="organize" data-unit="${esc(u.id)}">Organize</button>` : ''}<button type="button" class="gbtn" data-act="print" data-unit="${esc(u.id)}">Labels</button><button type="button" class="gbtn" data-act="loclabels" data-unit="${esc(u.id)}">QR label</button><button type="button" class="gbtn" data-act="editunit" data-unit="${esc(u.id)}">Edit</button>`) + `<p class="note" style="margin-top:-6px"><span class="loc">${esc(u.id)}</span> ${esc(u.model || '')} · ${used} of ${sl.length} used · tap a spot to see or add parts</p>` + mapHtml(u, '') + insideList(sl.map(x => x.code), 'What’s inside');
 }
 function searchView(q) {
   const raw = S.norm(q), slotHit = S.find(doc(), raw), unitHits = S.units(doc()).filter(u => normS(u.name + ' ' + u.model).includes(normS(q)) || u.id === raw);
@@ -820,7 +856,7 @@ function sheetTyping() { const a = document.activeElement; return !!(a && shBody
 function paintSheet(fresh) {
   const top = stack[stack.length - 1]; if (!top) return closeSheet();
   $('shBack').hidden = stack.length < 2;
-  let r; try { r = ({ organize: organizeSheet, part: (t) => isSupply(itemById(t.a)) ? supplySheet(t) : partSheet(t), supply: supplySheet, additem: addItemSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet })[top.k](top); }
+  let r; try { r = ({ organize: organizeSheet, part: (t) => isSupply(itemById(t.a)) ? supplySheet(t) : partSheet(t), supply: supplySheet, additem: addItemSheet, locs: locSheet, group: groupSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet })[top.k](top); }
   catch (e) { console.error(e); r = { title: 'Something went wrong', body: `<p class="note">Pull down to reload the page — that usually fixes it after an update.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button></div>` }; }
   if (!r) return closeSheet();
   $('shTitle').textContent = r.title; shBody.innerHTML = r.body; hydrate(shBody);
@@ -1036,6 +1072,7 @@ function scanFlow() {
     if (lk) code = decodeURIComponent(lk[1]);
     if (sheet.open) closeSheet();
     const unit = S.units(doc()).find(u => u.id === code.toUpperCase());
+    const mo = !unit && moduleOf(code); if (mo && mo.m.bins > 0) { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + mo.u.id); setTimeout(() => openSheet('group', mo.code), 120); return; }
     if (unit && unit.type === 'box') { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + unit.id); setTimeout(() => openDrawer(unit.id, true), 120); return; }   // a tote / case → what's inside
     if (unit) { go('#/storage/' + unit.id); return; }                                    // a cabinet's QR → its map
     const f = S.find(doc(), code);
@@ -1295,7 +1332,8 @@ const STYLE_NAMES = { text: 'Text', dm: 'Data Matrix', qr: 'QR code' };
 const paperTabs = (roll, act) => `<div class="h3" style="margin:2px 0 6px">Paper in the printer</div><div class="tabsel"><button type="button" class="${roll === 'front' ? 'on' : ''}" data-act="${act}" data-v="front">1.5″ × 0.5″</button><button type="button" class="${roll === 'side' ? 'on' : ''}" data-act="${act}" data-v="side">1″ × 1″</button></div>`;
 const styleTabs = (roll) => { const st = L.style(roll); return `<div class="h3" style="margin:2px 0 6px">Print as</div><div class="tabsel">${L.STYLES.map(x => `<button type="button" class="${st === x ? 'on' : ''}" data-act="lstyle" data-v="${x}">${STYLE_NAMES[x]}</button>`).join('')}</div>`; };
 const jobs = () => (doc().app.alerts || []).filter(a => a && a.kind === 'print');
-function labelData(code) { const f = S.find(doc(), code), c = f ? f.slot.code : code, ix = index(), pur = purposeOf(c);
+function labelData(code) { if (String(code).startsWith('loc:')) { const c = String(code).slice(4); return L.location(c, locName(c)); }
+  const f = S.find(doc(), code), c = f ? f.slot.code : code, ix = index(), pur = purposeOf(c);
   const stuff = [...(ix.by.get(c) || []), ...(ix.th.get(c) || []).map(t => ({ name: t.name, category: t.kind === 'tool' ? (t.brand ? t.brand + ' · tool' : 'Tool') : 'Supplies' }))];
   return L.content(c, stuff.length ? stuff : pur ? [{ name: pur, category: 'Reserved' }] : [], f ? `${f.unit.name.replace(/^(Husky|Akro-Mils)\s/, '')} · ${f.slot.where}` : ''); }
 function zplFor(roll, codes, copies) { return codes.map(c => L.zpl(roll, labelData(c), copies)).join(''); }
@@ -1330,13 +1368,14 @@ function printSheet(t) {
   const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null;
   const all = u ? S.slots(u).map(s => s.code) : (t.a.codes || []);
   const filled = all.filter(c => occupied(c) || purposeOf(c));
-  if (t.roll == null) t.roll = loadedRoll();
-  if (t.only == null) t.only = !!u && t.roll === 'front';
+  const isLoc = all.length && all.every(c => String(c).startsWith('loc:'));
+  if (t.roll == null) t.roll = isLoc ? 'side' : loadedRoll();
+  if (t.only == null) t.only = !!u && t.roll === 'front' && !isLoc;
   t.copies = t.copies || 1;
   const codes = t.only ? filled : all, n = codes.length * t.copies, show = codes.slice(0, 8);
   const waiting = jobs().length;
   const destLine = destHtml(t.roll, true), dlg = dest.local && dest.local.brand === 'other';
-  return { title: u ? 'Labels · ' + u.id : 'Labels · ' + (all[0] || ''), body: `${paperTabs(t.roll, 'roll')}${styleTabs(t.roll)}
+  return { title: isLoc ? 'Location labels' : u ? 'Labels · ' + u.id : 'Labels · ' + (all[0] || ''), body: `${paperTabs(t.roll, 'roll')}${isLoc ? '<p class="note" style="margin:-2px 0 8px">QR code with the place’s code and name. The 1″ × 1″ roll gives the biggest code.</p>' : styleTabs(t.roll)}
     ${u ? `<div class="tabsel"><button type="button" class="${t.only ? 'on' : ''}" data-act="only" data-v="1">Spots with parts (${filled.length})</button><button type="button" class="${!t.only ? 'on' : ''}" data-act="only" data-v="0">All spots (${all.length})</button></div>` : ''}
     <div class="lprev">${show.map(c => L.preview(t.roll, labelData(c), 150)).join('') || '<div class="empty">No spots with parts yet.</div>'}</div>${codes.length > show.length ? `<p class="note">…and ${codes.length - show.length} more.</p>` : ''}
     <div class="frow" style="align-items:end;margin-top:12px"><label class="fld"><span>Copies of each</span><select data-act-sel="copies">${[1, 2, 3].map(k => `<option${k === t.copies ? ' selected' : ''}>${k}</option>`).join('')}</select></label><div class="fld"><button type="button" class="pbtn2" data-act="doprint" style="height:46px"${codes.length ? '' : ' disabled'}>Print ${n} label${n === 1 ? '' : 's'}</button></div></div>
@@ -1536,6 +1575,9 @@ document.addEventListener('click', (e) => {
   const fromChooser = () => { const top = stack[stack.length - 1]; if (top && top.k === 'additem') { stack.pop(); return; } if (stack.length > 1 && top && top.k === 'addwhat') stack.pop(); };
   const popSaved = () => { if (stack.length > 1) { stack.pop(); paintSheet(true); if (stack[stack.length - 1].k === 'addwhat') { stack.pop(); paintSheet(true); } } else closeSheet(); };
   if (act === 'additem') { openSheet('additem', '', false); return; }
+  if (act === 'loclabels') { openSheet('locs', t.dataset.unit || '', false); return; }
+  if (act === 'locpick') { const top = stack[stack.length - 1]; top.sel[t.dataset.k] = !top.sel[t.dataset.k]; paintSheet(); return; }
+  if (act === 'locgo') { const top = stack[stack.length - 1], us = S.units(doc()).filter(u => !top.a || u.id === top.a); const codes = [...new Set(us.flatMap(u => locOpts(u).filter(o => top.sel[o.key]).flatMap(o => o.codes)))]; if (codes.length) openSheet('print', { codes }, true); return; }
   if (act === 'addpart') { closeSheet(); if (window.WNShell) WNShell.show('#add'); else location.href = 'index.html?checklist#add'; return; }
   if (act === 'newsupply') { fromChooser(); openSheet('supply', '', sheet.open && !!t.closest('#shBody') && stack.length > 0, { group: t.dataset.group || '', slot: t.dataset.slot || '' }); return; }
   if (act === 'supply') { openSheet('supply', t.dataset.id, sheet.open && !!t.closest('#shBody')); return; }
