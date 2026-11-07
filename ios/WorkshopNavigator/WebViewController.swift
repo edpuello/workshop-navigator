@@ -32,7 +32,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         web.scrollView.maximumZoomScale = 1
         web.scrollView.bouncesZoom = false
         UNUserNotificationCenter.current().delegate = NotificationPresenter.shared   // 10.21: banners while open
-        web.scrollView.bounces = true             // 10.21: the iPhone's rubber-band at the top/bottom (the bar is on its own layer, so it doesn't dim)
+        web.scrollView.bounces = false            // 10.21: the stretch at the top/bottom is drawn by the page (js/tabbar.js) so the bottom bar never moves or vanishes
+        web.scrollView.alwaysBounceVertical = false
         content.addUserScript(WKUserScript(source: "(function(){var m=document.querySelector('meta[name=viewport]');var v='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';if(m)m.setAttribute('content',v);else{m=document.createElement('meta');m.name='viewport';m.content=v;document.head.appendChild(m);}document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});})();", injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         web.isOpaque = false
         web.backgroundColor = .white   // 10.21: white headers (the page tells us when Dark is on — see darkChrome)

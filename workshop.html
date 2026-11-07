@@ -3,7 +3,7 @@
 <title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261106a"></script><script src="js/sync.js?v=20261106b"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script><script src="js/tabbar.js?v=20261107a"></script><script src="js/notify.js?v=20261107a"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261106b"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261107a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script><script src="js/tabbar.js?v=20261107j"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -51,6 +51,11 @@ main{padding:4px max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-
 .row .t{flex:1;min-width:0}.row .t b{display:block;font-size:15.5px;font-weight:650;line-height:1.25}.row .t span{display:block;font-size:13px;color:var(--ink2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .rt{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}
 .pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.seg2{display:flex;background:#e6e6eb;border-radius:12px;padding:3px;margin:0 0 14px;gap:2px}.seg2 button{flex:1;border:0;background:none;padding:9px 0;border-radius:10px;font:650 14px/1 inherit;color:var(--ink2);cursor:pointer}.seg2 button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.13)}html.dark .seg2{background:#232327}html.dark .seg2 button.on{background:#3a3a40;color:#fff}
+.lvl3{display:flex;gap:8px;margin:0 0 12px}.lvl3 button{flex:1;border:1.5px solid var(--line);background:none;border-radius:12px;padding:11px 0;font:700 14px/1 inherit;color:var(--ink2);cursor:pointer}.lvl3 button.on.plenty{border-color:var(--ok);background:rgba(31,138,76,.1);color:#1f8a4c}.lvl3 button.on.low{border-color:var(--warn);background:rgba(224,160,0,.12);color:#8a5a00}.lvl3 button.on.out{border-color:var(--bad);background:rgba(220,50,50,.1);color:var(--bad)}
+.pill.lo{background:#fff4e0;color:#8a5a00}.pill.ex{background:#ffe9e6;color:#b42318}.pill.lent{background:#e8f0fb;color:#1d4f91}html.dark .pill.lo{background:#3a2f17;color:#f1c56b}html.dark .pill.ex{background:#3b1d1a;color:#ff9b8f}html.dark .pill.lent{background:#1d2a3d;color:#9cc2f5}
+.fld textarea{width:100%;box-sizing:border-box;min-height:84px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;background:var(--card,#fff);color:inherit;resize:vertical}
+html.dark .pthumb.ico{background:#26262b!important;color:#9cc2f5!important}.h3.room{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
 .pill{font-size:12px;font-weight:650;border-radius:7px;padding:2px 7px;background:var(--pill);color:var(--ink2)}
 .st-instock{background:#e3f5ea;color:#167a42}.st-tobuy{background:#fdecec;color:#c23b3f}.st-putaway{background:#fff3d6;color:#8a5f00}
 .loc{font:700 12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.3px;background:#e7f0fa;color:var(--brand);border-radius:7px;padding:5px 7px;white-space:nowrap}
@@ -60,7 +65,7 @@ main{padding:4px max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-
 .empty{padding:22px;text-align:center;color:var(--ink2);font-size:14.5px}
 .pthumb,.pphoto{width:48px!important;height:48px!important;border-radius:13px!important;background:var(--pill)!important;border:0!important;display:grid;place-items:center;overflow:hidden;flex:none}
 .pthumb img{max-width:42px!important;max-height:36px!important}.pphoto img{width:100%;height:100%;object-fit:cover}
-.nozoom{display:contents}
+.nozoom{display:contents}.btns .plbl{display:inline-flex;align-items:center;gap:7px}
 mark{background:#fff0a8;color:inherit;border-radius:3px}
 /* storage */
 .ucard{min-height:0}.ucard .code{position:absolute;right:14px;top:14px;font:800 13px ui-monospace,Menlo,monospace;color:var(--brand);background:#e7f0fa;border-radius:8px;padding:4px 7px}
@@ -356,6 +361,7 @@ const ICO = {
   alert: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/>',
   clip: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12l2 2 4-4"/>',
   chev: '<path d="m9 6 6 6-6 6"/>',
+  sup: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
 };
 const ic = (k) => `<span class="ic"><svg viewBox="0 0 24 24">${ICO[k]}</svg></span>`;
 const chev = `<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>`;
@@ -373,13 +379,27 @@ const codesOf = (x) => [...new Set(locList(x).map(canon).filter(Boolean))];
 const loc1 = (x) => codesOf(x)[0] || '';
 const locKey = (v) => (canon(v) || String(v || '').trim()).toUpperCase();
 function writeLocs(x, list) { const seen = new Set(), out = []; list.forEach(v => { v = String(v || '').trim(); const k = locKey(v); if (v && !seen.has(k)) { seen.add(k); out.push(canon(v) || v); } }); x.location = out.join(', '); }
-const things = () => (doc().app.inventory || []).filter(t => t && (t.kind === 'tool' || t.kind === 'item'));
+const things = () => (doc().app.inventory || []).filter(t => t && (t.kind === 'tool' || t.kind === 'item' || t.kind === 'gear'));
+// 10.22: supplies (tape, glue, caulk, paint, paper…) are list items with kind 'supply' — they share counts, Running low and the Checklist with parts
+const isSupply = (x) => !!x && x.kind === 'supply';
+const fasteners = () => items().filter(x => !isSupply(x));
+const supplies = () => items().filter(isSupply);
+const SUP_GROUPS = ['Tape', 'Glue & sealants', 'Painting', 'Printing & paper', 'Cleaning', 'Electrical', 'Other supplies'];
+const SUP_UNITS = ['rolls', 'tubes', 'bottles', 'cans', 'packs', 'boxes', 'reams', 'sheets', 'cartridges', 'pieces'];
+const GROUP_UNIT = { 'Tape': 'rolls', 'Glue & sealants': 'tubes', 'Painting': 'pieces', 'Printing & paper': 'packs', 'Cleaning': 'bottles', 'Electrical': 'pieces', 'Other supplies': 'pieces' };
+const GEAR_GROUPS = ['Camera & video', 'Audio', 'Computer', 'Printers & office', 'Phones & tablets', 'Other gear'];
+// things that don't have a home yet: in-stock parts and supplies without a spot, tools / gear / items without one
+const noHome = () => ({ parts: fasteners().filter(x => x.store && !String(x.location || '').trim()), sup: supplies().filter(x => x.store && !String(x.location || '').trim()), th: things().filter(t => !String(t.location || '').trim()) });
+const noHomeN = () => { const h = noHome(); return h.parts.length + h.sup.length + h.th.length; };
+const dayDiff = (d) => { const t = new Date(String(d) + 'T12:00:00'); return isNaN(t) ? null : Math.round((t - new Date(new Date().toDateString() + ' 12:00')) / 864e5); };
+const expiring = () => supplies().filter(x => x.expires && x.store && dayDiff(x.expires) != null && dayDiff(x.expires) <= 30).sort((a, b) => String(a.expires).localeCompare(String(b.expires)));
+const lentOut = () => things().filter(t => String(t.lent || '').trim());
 const thingById = (id) => (doc().app.inventory || []).find(t => t && t.id === id);
 function nextThingId(prefix) { const ids = [...(doc().app.inventory || []).map(x => x && x.id), ...Object.keys(doc().del || {}).filter(k => k.startsWith('app.inventory:')).map(k => k.slice(14))]; const n = ids.filter(x => String(x || '').startsWith(prefix)).map(x => Number(String(x).slice(prefix.length)) || 0); return prefix + String(Math.max(0, ...n) + 1).padStart(4, '0'); }
 const purposeOf = (code) => { const f = S.find(doc(), code); return f ? ((f.unit.spots || {})[f.slot.code] || '') : ''; };
 const occupied = (code) => { const ix = index(); return (ix.by.get(code) || []).length + (ix.th.get(code) || []).length; };
 const heldCodes = () => { const ix = index(); return [...new Set([...ix.by.keys(), ...ix.th.keys()])]; };
-function thingSub(t) { return t.kind === 'tool' ? [t.type, t.brand, t.model, t.voltage, t.platform].filter(Boolean).join(' · ') || 'Tool' : (t.notes || 'Other item'); }
+function thingSub(t) { return t.kind === 'tool' ? [t.type, t.brand, t.model, t.voltage, t.platform].filter(Boolean).join(' · ') || 'Tool' : t.kind === 'gear' ? [t.group, t.brand, t.model].filter(Boolean).join(' · ') || 'Gear' : (t.notes || 'Other item'); }
 function index() {
   if (IDX) return IDX;
   const by = new Map(), loose = new Map(), th = new Map();
@@ -402,7 +422,7 @@ const lvlLine = (c) => `<span class="lv"><i class="g"></i>${c.ok} in stock</span
 function shortName(x) { return String(x.name || '').replace(/\s+in\b/g, '″').replace(/\s*×\s*/g, '×'); }
 function countHtml(x) { const q = qtyNum(x), lv = stockLevel(x); return q == null ? (lv ? `<span class="cnt" style="font-size:14px">${STOCK_LABEL[lv]}</span>` : '') : `<span class="cnt ${qtyClass(x)}">${q}</span>`; }
 function locChip(x) {
-  const l = locList(x); if (!l.length) return x.store ? '<span class="loc no">No drawer</span>' : '';
+  const l = locList(x); if (!l.length) return x.store ? `<span class="loc no">${isSupply(x) ? 'No spot' : 'No drawer'}</span>` : '';
   const c = canon(l[0]), more = l.length > 1 ? ` +${l.length - 1}` : '', all = esc(l.map(v => canon(v) || v).join(', '));
   return c ? `<span class="loc" title="${all}">${esc(c)}${more}</span>` : `<span class="loc old" title="Not on the map yet: ${all}">${esc(l[0])}${more}</span>`;
 }
@@ -462,14 +482,14 @@ function deepLink() {
   const m = h.match(/^#(part|loc)=(.+)$/); if (!m) return false;
   const v = decodeURIComponent(m[2]);
   if (m[1] === 'part') { history.replaceState(null, '', '#/'); render(); openSheet('part', v); }
-  else { const unit = S.units(doc()).find(u => u.id === v.toUpperCase()); if (unit) { history.replaceState(null, '', '#/storage/' + unit.id); render(); return true; }
+  else { const unit = S.units(doc()).find(u => u.id === v.toUpperCase()); if (unit) { history.replaceState(null, '', '#/storage/' + unit.id); render(); if (unit.type === 'box') openDrawer(unit.id, true); return true; }
     const f = S.find(doc(), v); history.replaceState(null, '', f ? '#/storage/' + f.unit.id : '#/storage'); render(); if (f) openDrawer(f.slot.code, true); else toast(v + ' isn’t on your storage map'); }
   return true;
 }
 
 // ---------------------------------------------------------------- views
-const TAB_OF = { home: 'home', attention: 'home', parts: 'parts', storage: 'storage', unplaced: 'storage', tools: 'tools' };
-function markTab() { const t = TAB_OF[route().v] || 'home'; document.querySelectorAll('.tabbar a').forEach(a => { const on = a.dataset.tab === t; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
+const TAB_OF = { home: 'home', attention: 'home', parts: 'parts', supplies: 'parts', storage: 'storage', unplaced: 'storage', tools: 'tools' };
+function markTab() { if (window.WNShell && WNShell.on()) return; const t = TAB_OF[route().v] || 'home'; document.querySelectorAll('.tabbar a').forEach(a => { const on = a.dataset.tab === t; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
 function render() { markTab();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
@@ -483,24 +503,25 @@ const head = (title, back, extra) => `<div class="vhead"><button type="button" c
 
 // ---------------------------------------------------------------- home page (10.9): the four cards + the Akro-Mils wall; PC adds a details section
 function HD() {
-  const it = items(), n = it.length, c = { instock: 0, tobuy: 0, putaway: 0, unmarked: 0 }; it.forEach(x => c[itemStatus(x)]++);
-  const tobuy = it.filter(x => x.need), low = it.filter(isLow), cats = new Set(it.map(x => x.category)).size;
+  const it = fasteners(), n = it.length, c = { instock: 0, tobuy: 0, putaway: 0, unmarked: 0 }; it.forEach(x => c[itemStatus(x)]++);
+  const all = items(), tobuy = all.filter(x => x.need), low = all.filter(isLow), cats = new Set(it.map(x => x.category)).size;
   const us = S.units(doc()), spots = us.reduce((a, u) => a + S.slots(u).length, 0), ix = index(), placed = [...ix.by.values()].reduce((a, v) => a + v.length, 0);
   const noDrawer = it.filter(x => x.store && !loc1(x));
-  const tools = (doc().app.inventory || []).filter(t => t && t.kind === 'tool').length;
+  const tools = (doc().app.inventory || []).filter(t => t && (t.kind === 'tool' || t.kind === 'gear')).length, sup = supplies(), homeN = noHomeN(), exp = expiring(), lent = lentOut();
   const akro = us.filter(u => O.CABS.includes(u.id) && u.type === 'grid').map(u => { const sl = S.slots(u); let used = 0, lo = 0, out = 0; const cells = sl.map(s => { const ps = ix.by.get(s.code) || [], f = flag(ps); if (ps.length) used++; if (f === 'w') lo++; if (f === 'r') out++; return `<i class="${f}"></i>`; }).join(''); return { u, used, n: sl.length, lo, out, cells }; });
   const marked = c.instock + c.tobuy + c.putaway;
-  return { it, n, c, tobuy, low, cats, us, spots, placed, noDrawer, tools, akro, marked, lv: lvlCount(it) };
+  return { it, n, c, tobuy, low, cats, us, spots, placed, noDrawer, tools, akro, marked, lv: lvlCount(it), sup, homeN, exp, lent };
 }
 const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).map(p => `<i style="flex:${p[0]};background:${p[1]}"></i>`).join('')}${total - parts.reduce((a, p) => a + p[0], 0) > 0 ? `<i style="flex:${total - parts.reduce((a, p) => a + p[0], 0)}"></i>` : ''}</div>`;
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
 const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.21 · Nov 6</span></p>`;
-const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a drawer</span><b class="${D.noDrawer.length ? 'b' : ''}">${D.noDrawer.length}</b>${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
+const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a home</span><b class="${D.homeN ? 'b' : ''}">${D.homeN}</b>${D.exp.length ? `<span>Expiring</span><b class="r">${D.exp.length}</b>` : ''}${D.lent.length ? `<span>Lent out</span><b>${D.lent.length}</b>` : ''}${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
 const storageCard = (D) => `<button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div><div class="n">${D.placed}<small> / ${D.spots}</small></div><div class="s">spots used · ${D.us.length} units</div>${hBar([[D.placed, 'var(--brand)']], D.spots)}<div class="s xs">${D.noDrawer.length ? `${D.noDrawer.length} in stock without a drawer` : 'Every in-stock part has a drawer'}</div></button>`;
-const toolsCard = (D, tw) => `<button type="button" class="card${tw ? ' tw' : ''}" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${D.tools}</div><div class="s">${D.tools ? 'with brand, model, serial' : 'Add your tools — brand, model, serial, battery'}</div>${D.tools ? '' : '<span class="hcta">+ Add a tool</span>'}</button>`;
+const toolsCard = (D, tw) => `<button type="button" class="card${tw ? ' tw' : ''}" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools &amp; Gear</div><div class="n">${D.tools}</div><div class="s">${D.tools ? 'brand, model, serial, warranty' : 'Tools, cameras, audio, computer parts…'}</div>${D.tools ? '' : '<span class="hcta">+ Add</span>'}</button>`;
+const supCard = (D) => { const c = lvlCount(D.sup), b = D.sup.filter(x => x.need).length; return `<button type="button" class="card wide col" data-go="#/supplies">${chev}<div class="k">${ic('sup')}Supplies</div>${D.sup.length ? `<div class="n">${D.sup.length}</div><div class="s">tape, glue, paint, paper…${b ? ` · <b style="font:inherit;color:var(--bad)">${b} to buy</b>` : ''}</div>${lvlBar(c, D.sup.length)}<div class="s xs lvs">${lvlLine(c)}</div>` : `<div class="s">Things you use up — tape, glue, caulk, paint, paper, ink. Low and Out go on the Checklist.</div><span class="hcta">+ Add a supply</span>`}</button>`; };
 const attCard = (D, pch) => `<button type="button" class="card${pch ? ' pch' : ''}" data-go="#/attention">${chev}<div class="k">${ic('alert')}Needs attention</div><div class="att">${attRows(D)}</div></button>`;
 const picRow = (x, meta, cls) => `<button type="button" class="prow" data-part="${esc(x.id)}">${photo(x)}<span class="pt"><b>${esc(x.name)}</b><small>${esc(x.category || '')}</small></span>${meta ? `<em class="${cls || ''}">${meta}</em>` : ''}</button>`;
 const picBlock = (title, list, meta, cls, more, empty) => `<div class="hblk"><div class="hbt">${title}<span>${list.length}</span></div>${list.length ? list.slice(0, more).map(x => picRow(x, meta(x), cls)).join('') + (list.length > more ? `<span class="hmore">+${list.length - more} more</span>` : '') : `<span class="hok">${empty}</span>`}</div>`;
@@ -527,20 +548,31 @@ function pcMore(D, skip) {
 }
 function home() {
   const D = HD();
-  return `<div class="cards p3">${freshCard()}${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="g"></i>in stock <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
+  return `<div class="cards p3">${freshCard()}${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}${supCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="g"></i>in stock <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
+}
+const SUP_IC = { 'Tape': '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', 'Glue & sealants': '<path d="M10 2h4v4l2 3v12H8V9l2-3z"/><path d="M8 13h8"/>', 'Painting': '<rect x="3" y="3" width="14" height="6" rx="2"/><path d="M17 6h3v5h-8v3"/><rect x="10.5" y="14" width="3" height="7" rx="1"/>', 'Printing & paper': '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>', 'Cleaning': '<path d="M9 3h5v4l3 3v11H7V10l2-3z"/><path d="M14 5h3"/>', 'Electrical': '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>' };
+const supIc = (x) => `<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SUP_IC[x.category] || ICO.box}</svg></span>`;
+const ONE = { rolls: 'roll', tubes: 'tube', bottles: 'bottle', cans: 'can', packs: 'pack', boxes: 'box', reams: 'ream', sheets: 'sheet', cartridges: 'cartridge', pieces: 'piece' };
+const supAmt = (x) => { const q = qtyNum(x); if (q != null) return `${q} ${q === 1 ? ONE[x.unit] || x.unit || '' : x.unit || ''}`.trim(); const lv = stockLevel(x); return lv ? STOCK_LABEL[lv] : ''; };
+const expPill = (x) => { if (!x.expires) return ''; const d = dayDiff(x.expires); if (d == null || d > 30) return ''; return d < 0 ? '<span class="pill ex">Expired</span>' : `<span class="pill lo">Expires ${d === 0 ? 'today' : d === 1 ? 'tomorrow' : 'in ' + d + ' days'}</span>`; };
+function supplyRow(x) {
+  const lv = lvlOf(x), pill = lv === 'out' ? '<span class="pill ex">Out</span>' : lv === 'low' ? '<span class="pill lo">Low</span>' : '<span class="pill st-instock">In stock</span>';
+  return `<button type="button" class="row" data-act="supply" data-id="${esc(x.id)}">${x.img ? photo(x) : supIc(x)}<div class="t"><b>${hl(x.name)}</b><div class="pills">${pill}${x.need ? '<span class="pill st-tobuy">To buy</span>' : ''}${expPill(x)}</div></div><div class="rt"><span class="cnt" style="font-size:15px;white-space:nowrap">${esc(supAmt(x))}</span>${locChip(x)}</div></button>`;
 }
 function partRow(x) {
+  if (isSupply(x)) return supplyRow(x);
   const st = itemStatus(x);
   return `<button type="button" class="row" data-part="${esc(x.id)}">${photo(x)}<div class="t"><b>${hl(x.name)}</b><div class="pills"><span class="pill st-${st}">${ST_LABEL[st]}</span>${x.store && x.need ? '<span class="pill st-tobuy">Reorder</span>' : ''}</div></div><div class="rt">${countHtml(x)}${locChip(x)}</div></button>`;
 }
 function sortedParts(list) { const idx = orderIndex(doc().items), cats = [...new Set(list.map(x => x.category))]; return cats.flatMap(c => sortCat(list.filter(x => x.category === c), idx)); }
+const seg2 = (on) => `<div class="seg2" role="tablist"><button type="button" role="tab" aria-selected="${on === 'f'}" class="${on === 'f' ? 'on' : ''}" data-go="#/parts">Fasteners</button><button type="button" role="tab" aria-selected="${on === 's'}" class="${on === 's' ? 'on' : ''}" data-go="#/supplies">Supplies</button></div>`;
 function parts() {
-  const it = items(), cats = [...new Set(sortCat(it, orderIndex(doc().items)).map(x => x.category))];
+  const it = fasteners(), cats = [...new Set(sortCat(it, orderIndex(doc().items)).map(x => x.category))];
   const fam = (cat) => { const l = it.filter(x => x.category === cat), c = lvlCount(l), b = l.filter(x => x.need).length; return `<button type="button" class="row" data-go="#/parts/${encodeURIComponent(cat)}"><div class="t"><b>${esc(cat || 'Other')}</b><span class="lvs">${lvlLine(c)}${b ? `<span class="lv">${b} to buy</span>` : ''}</span>${lvlBar(c, l.length)}</div><span class="cnt" style="color:var(--ink2)">${l.length}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>`; };
-  const all = lvlCount(it); return head(`Parts <span style="color:var(--ink3);font-weight:700">${it.length}</span>`, '#/') + `<div class="lvsum">${lvlBar(all, it.length)}<div class="lvs">${lvlLine(all)}</div></div><div class="rows">${cats.map(fam).join('') || '<div class="empty">No parts yet. Add them on the Checklist.</div>'}</div>`;
+  const all = lvlCount(it); return head(`Parts <span style="color:var(--ink3);font-weight:700">${it.length}</span>`, '#/') + seg2('f') + `<div class="lvsum">${lvlBar(all, it.length)}<div class="lvs">${lvlLine(all)}</div></div><div class="rows">${cats.map(fam).join('') || '<div class="empty">No parts yet. Add them on the Checklist.</div>'}</div>`;
 }
 function family(cat) {
-  const list = sortedParts(items().filter(x => x.category === cat));
+  const list = sortedParts(fasteners().filter(x => x.category === cat));
   return head(esc(cat) + ` <span style="color:var(--ink3);font-weight:700">${list.length}</span>`, '#/parts') + `<div class="rows">${list.map(partRow).join('') || '<div class="empty">Nothing here.</div>'}</div>`;
 }
 // ---------------------------------------------------------------- 10.21: press and hold a part in a family list, then drag it to a new spot
@@ -660,7 +692,8 @@ function applyFresh() {
 function attention() {
   const it = items(), sec = (t, l) => l.length ? `<div class="h3">${t} <span class="c">${l.length}</span></div><div class="rows">${sortedParts(l).map(partRow).join('')}</div>` : '';
   const gb = gwForBuying(), gws = gb.length ? `<div class="h3">Goes with what you’re buying <span class="c">${gb.length}</span></div><div class="rows">${gb.map(({ y, for: f }) => `<div class="row">${photo(y)}<div class="t"><b>${esc(y.name)}</b><span>for ${esc(f.name)} · ${esc(!y.store ? 'not in stock' : STOCK_LABEL[stockLevel(y)] || '')}</span></div><button type="button" class="gbtn" data-act="needit" data-id="${esc(y.id)}">Add</button></div>`).join('')}</div>` : '';
-  const body = sec('To buy', it.filter(x => x.need)) + gws + sec('Running low', it.filter(isLow)) + sec('Bought, not put away', it.filter(x => itemStatus(x) === 'putaway'));
+  const exp = expiring(), lent = lentOut();
+  const body = sec('To buy', it.filter(x => x.need)) + gws + sec('Running low', it.filter(isLow)) + (exp.length ? `<div class="h3">Expired or expiring soon <span class="c">${exp.length}</span></div><div class="rows">${exp.map(supplyRow).join('')}</div>` : '') + (lent.length ? `<div class="h3">Lent out <span class="c">${lent.length}</span></div><div class="rows">${lent.map(t => thingRow(t)).join('')}</div>` : '') + sec('Bought, not put away', it.filter(x => itemStatus(x) === 'putaway'));
   return head('Needs attention', '#/') + (body || '<div class="rows"><div class="empty">Nothing needs attention. 👍</div></div>');
 }
 function storage() {
@@ -669,12 +702,17 @@ function storage() {
    <div class="rows" style="box-shadow:none;border:1px solid var(--line)">${S.MY_UNITS.map(u => `<div class="row" style="min-height:52px"><span class="loc">${u.id}</span><div class="t"><b>${esc(u.name)}</b><span>${S.slots(u).length} spots · ${esc(u.model)}</span></div></div>`).join('')}</div>
    <div class="btns"><button type="button" class="pbtn2" data-act="setup">Add my storage</button><button type="button" class="gbtn" data-act="newunit">Add a different unit</button></div></div>`;
   const ups = typeof S.pendingUpdates === 'function' ? S.pendingUpdates(doc()) : [], upHtml = ups.length ? `<div class="where" style="border:1.5px solid #c9dbef"><div style="font-weight:800">Layout updates ready</div><p class="note" style="margin:4px 0 8px">From what you told me. Nothing changes until you tap Apply.</p>${ups.map(x => `<div class="row" style="padding:8px 0;min-height:0"><span class="loc">${esc(x.id)}</span><div class="t"><b style="font-size:14.5px">${esc(x.text)}</b></div><button type="button" class="pbtn2" data-act="applyupd" data-unit="${esc(x.id)}">Apply</button></div>`).join('')}</div>` : '';
-  const loose = [...ix.loose.values()], noDrawer = items().filter(x => x.store && !String(x.location || '').trim());
-  const ucard = (u) => { const sl = S.slots(u), used = sl.filter(s => occupied(s.code)), lowN = used.filter(s => flag(ix.by.get(s.code) || [])).length; return `<button type="button" class="card ucard" data-go="#/storage/${esc(u.id)}"><span class="code">${esc(u.id)}</span><div class="k" style="padding-right:44px">${esc(u.name)}</div><div class="s">${esc(u.model || '')}</div><div class="s" style="margin-top:auto">${used.length} of ${sl.length} used${lowN ? ` · <b style="color:#b07205">${lowN} low</b>` : ''}</div><div class="meter"><i style="width:${sl.length ? Math.round(used.length / sl.length * 100) : 0}%"></i></div></button>`; };
+  const loose = [...ix.loose.values()], homeN = noHomeN();
+  const ucard = (u) => { const sl = S.slots(u), used = sl.filter(s => occupied(s.code)), lowN = used.filter(s => flag(ix.by.get(s.code) || [])).length;
+    if (u.type === 'box') { const n = occupied(u.id); return `<button type="button" class="card ucard" data-go="#/storage/${esc(u.id)}"><span class="code">${esc(u.id)}</span><div class="k" style="padding-right:44px">${esc(u.name)}</div><div class="s">${esc([u.box || 'Container', u.model].filter(Boolean).join(' · '))}</div><div class="s" style="margin-top:auto">${n ? `${n} thing${n > 1 ? 's' : ''} inside` : 'Empty'}</div></button>`; }
+    return `<button type="button" class="card ucard" data-go="#/storage/${esc(u.id)}"><span class="code">${esc(u.id)}</span><div class="k" style="padding-right:44px">${esc(u.name)}</div><div class="s">${esc(u.model || '')}</div><div class="s" style="margin-top:auto">${used.length} of ${sl.length} used${lowN ? ` · <b style="color:#b07205">${lowN} low</b>` : ''}</div><div class="meter"><i style="width:${sl.length ? Math.round(used.length / sl.length * 100) : 0}%"></i></div></button>`; };
   const wallUs = us.filter(u => O.CABS.includes(u.id) && u.type === 'grid'), restUs = wallUs.length > 1 ? us.filter(u => !wallUs.includes(u)) : us;
-  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add unit</button>') + upHtml + orgBanner() + (wallUs.length > 1 ? wallHtml(wallUs) : '') + `<div class="cards">${restUs.map(ucard).join('')}</div>` +
+  const rooms = [...new Set(us.map(S.roomOf))], wallRoom = wallUs.length > 1 ? S.roomOf(wallUs[0]) : '';
+  const byRoom = rooms.length > 1 ? rooms.map(r => { const list = restUs.filter(u => S.roomOf(u) === r), n = us.filter(u => S.roomOf(u) === r).length; return `<div class="h3 room">${esc(r)} <span class="c">${n}</span></div>${r === wallRoom ? wallHtml(wallUs) : ''}${list.length ? `<div class="cards">${list.map(ucard).join('')}</div>` : ''}`; }).join('')
+    : (wallUs.length > 1 ? wallHtml(wallUs) : '') + `<div class="cards">${restUs.map(ucard).join('')}</div>`;
+  return head('Storage', '#/', '<button type="button" class="gbtn" data-act="newunit">Add storage</button>') + upHtml + orgBanner() + (homeN ? `<div class="rows" style="margin-bottom:14px"><button type="button" class="row" data-go="#/unplaced"><div class="t"><b>Needs a home</b><span>Things you've added that don't have a spot yet</span></div><span class="cnt" style="color:var(--ink2)">${homeN}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>` : '') + byRoom +
     (loose.length ? `<div class="h3">Not on the map yet <span class="c">${loose.reduce((a, l) => a + l.parts.length, 0)}</span></div><p class="note">These parts have a location typed in that isn't one of your map codes.</p><div class="rows">${loose.map(l => { const sug = S.suggest(l.text), ok = sug && S.find(doc(), sug); return `<div class="row"><span class="loc old">${esc(l.text)}</span><div class="t"><b>${l.parts.length} part${l.parts.length > 1 ? 's' : ''}</b><span>${esc(l.parts.map(x => x.name).join(', '))}</span></div>${ok ? `<button type="button" class="gbtn" data-act="convert" data-from="${esc(l.text)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : `<button type="button" class="gbtn" data-part="${esc(l.parts[0].id)}">Place</button>`}</div>`; }).join('')}</div>` : '') +
-    (noDrawer.length ? `<div class="h3">To put away</div><div class="rows"><button type="button" class="row" data-go="#/unplaced"><div class="t"><b>In stock, no drawer yet</b><span>Tap to see them and give each one a spot</span></div><span class="cnt" style="color:var(--ink2)">${noDrawer.length}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>` : '');
+    '';
 }
 // The Akro-Mils wall: every cabinet as a mini map (has parts / low / out / empty). Tap a drawer to open it,
 // tap the cabinet's name to open its full map. PC shows them side by side; the iOS app and phones show one at a time.
@@ -716,6 +754,10 @@ function mapHtml(u, hit, compact) {
   if (u.type === 'sections') { const ex = sl.filter(s => s.extra);
     return `<div class="map stack">${ex.length ? grid(ex.map(s => cell(s, true)).join(''), 1) : ''}${(u.sections || []).map((sec, si) => `<div class="mod"><h4>${esc(sec.name || 'Section ' + (si + 1))}</h4>${(sec.blocks || []).map((bl, bi) => { const bs = sl.filter(s => s.s === si && s.b === bi);
       return bl.cols ? `<div class="scols" style="grid-template-columns:${bl.cols.map(c => (c.w || 1) + 'fr').join(' ')}">${bl.cols.map((c, ci) => `<div class="mgrid">${bs.filter(s => s.col === ci).map(s => cell(s, true)).join('')}</div>`).join('')}</div>` : grid(bs.map(s => cell(s, true)).join(''), 1); }).join('')}</div>`).join('')}<div class="mapcap"><span>Numbered like a page: left → right, top → bottom</span></div></div>`; }
+  if (u.type === 'shelves') return (u.per || 1) > 1
+    ? `<div class="map"><div class="mgrid" style="grid-template-columns:repeat(${u.per},minmax(0,1fr))">${sl.map(s => cell(s)).join('')}</div><div class="mapcap"><span>Row A = top shelf</span><span>Spot 1 = left</span></div></div>`
+    : `<div class="map stack">${grid(sl.map(s => cell(s, true)).join(''), 1)}<div class="mapcap"><span>S01 = top shelf</span></div></div>`;
+  if (u.type === 'box') return `<div class="map stack">${grid(sl.map(s => cell(s, true)).join(''), 1)}</div>`;
   if (u.type === 'modules') return `<div class="map">${(u.modules || []).map((m, i) => { const ms = sl.filter(s => s.m === i + 1), many = m.bins > 0; return `<div class="mod${many ? '' : ' stack'}"><h4>${i + 1} · ${esc(m.name || 'Module')}</h4>${grid(ms.map(s => cell(s, !many)).join(''), many ? Math.min(m.cols || 6, m.bins) : 1)}</div>`; }).join('')}<div class="mapcap"><span>1 = top module</span></div></div>`;
   return '';
 }
@@ -736,14 +778,33 @@ function searchView(q) {
   const th = tHits.length ? `<div class="h3">Tools &amp; other items <span class="c">${tHits.length}</span></div><div class="rows">${tHits.slice(0, 40).map(t => thingRow(t)).join('')}</div>` : '';
   return top + uh + th + `<div class="h3">Parts <span class="c">${list.length}</span></div><div class="rows">${list.slice(0, 80).map(partRow).join('') || `<div class="empty">No parts match “${esc(q)}”.</div>`}${list.length > 80 ? `<div class="empty">Showing 80 of ${list.length}. Add a size to narrow it down.</div>` : ''}</div>`;
 }
-function unplaced() { const l = sortedParts(items().filter(x => x.store && !String(x.location || '').trim())); return head(`No drawer yet <span style="color:var(--ink3);font-weight:700">${l.length}</span>`, '#/storage') + `<p class="note" style="margin-top:-6px">Tap a part, then “Put in a drawer”.</p><div class="rows">${l.map(partRow).join('') || '<div class="empty">Every part in stock has a spot. 👍</div>'}</div>`; }
-function toolsView() {
-  const ts = things().slice().sort((a, b) => a.name.localeCompare(b.name)), tools = ts.filter(t => t.kind === 'tool'), other = ts.filter(t => t.kind === 'item');
-  return head(`Tools <span style="color:var(--ink3);font-weight:700">${tools.length}</span>`, '#/', '<button type="button" class="pbtn2" data-act="newthing" data-kind="tool">Add a tool</button>') +
-    `<div class="rows">${tools.map(t => thingRow(t)).join('') || '<div class="empty">No tools yet. Tap “Add a tool”, or open a drawer on the Storage map → Add to this spot → A tool.</div>'}</div>` +
-    `<div class="h3">Other items <span class="c">${other.length}</span><span style="flex:1"></span><button type="button" class="gbtn" data-act="newthing" data-kind="item" style="padding:6px 12px;font-size:13px;text-transform:none;letter-spacing:0">Add</button></div><div class="rows">${other.map(t => thingRow(t)).join('') || '<div class="empty">Zip ties, blades, tape… anything that isn’t a part or a tool.</div>'}</div>`;
+function suppliesView() {
+  const all = supplies(), grp = route().a, byName = (a, b) => a.name.localeCompare(b.name);
+  const add = (g) => `<button type="button" class="pbtn2" data-act="newsupply"${g ? ` data-group="${esc(g)}"` : ''}>Add a supply</button>`;
+  if (grp) { const l = all.filter(x => (x.category || 'Other supplies') === grp).sort(byName); return head(esc(grp) + ` <span style="color:var(--ink3);font-weight:700">${l.length}</span>`, '#/supplies', add(grp)) + `<div class="rows">${l.map(supplyRow).join('') || '<div class="empty">Nothing here yet.</div>'}</div>`; }
+  const groups = [...new Set([...SUP_GROUPS, ...all.map(x => x.category || 'Other supplies')])].filter(g => all.some(x => (x.category || 'Other supplies') === g));
+  const grow = (g) => { const l = all.filter(x => (x.category || 'Other supplies') === g), c = lvlCount(l), b = l.filter(x => x.need).length; return `<button type="button" class="row" data-go="#/supplies/${encodeURIComponent(g)}">${supIc({ category: g })}<div class="t"><b>${esc(g)}</b><span class="lvs">${lvlLine(c)}${b ? `<span class="lv">${b} to buy</span>` : ''}</span>${lvlBar(c, l.length)}</div><span class="cnt" style="color:var(--ink2)">${l.length}</span></button>`; };
+  const exp = expiring(), c = lvlCount(all);
+  return head(`Supplies <span style="color:var(--ink3);font-weight:700">${all.length}</span>`, '#/', add('')) + seg2('s') +
+    (all.length ? `<div class="lvsum">${lvlBar(c, all.length)}<div class="lvs">${lvlLine(c)}</div></div>` + (exp.length ? `<div class="h3">Expired or expiring soon <span class="c">${exp.length}</span></div><div class="rows">${exp.map(supplyRow).join('')}</div><div class="h3">Groups</div>` : '') + `<div class="rows">${groups.map(grow).join('')}</div>`
+      : `<div class="where"><div style="font-weight:800">Things you use up</div><p class="note">Tape, glue, caulk, paint rollers, printer paper, ink, label rolls… Count them (3 rolls) or just mark them Plenty, Low or Out. Low and Out show under Running low, and Out goes on the Checklist so you remember to buy more.</p><div class="btns">${add('')}</div></div>`);
 }
-const VIEWS = { tools: toolsView, unplaced, home, fresh: freshView, parts: () => route().a ? family(route().a) : parts(), attention, storage: () => route().a ? unitView(route().a) : storage() };
+function unplaced() {
+  const h = noHome(), n = h.parts.length + h.sup.length + h.th.length;
+  const sec = (t, body, c) => c ? `<div class="h3">${t} <span class="c">${c}</span></div><div class="rows">${body}</div>` : '';
+  return head(`Needs a home <span style="color:var(--ink3);font-weight:700">${n}</span>`, '#/storage') + `<p class="note" style="margin-top:-6px">Everything you've added that doesn't have a spot yet. Tap one, then pick where it lives — any drawer, shelf, tote or case.</p>` +
+    (n ? sec('Parts', sortedParts(h.parts).map(partRow).join(''), h.parts.length) + sec('Supplies', h.sup.map(supplyRow).join(''), h.sup.length) + sec('Tools &amp; gear', h.th.slice().sort((a, b) => a.name.localeCompare(b.name)).map(t => thingRow(t)).join(''), h.th.length) : '<div class="rows"><div class="empty">Everything has a home. 👍</div></div>');
+}
+function toolsView() {
+  const ts = things().slice().sort((a, b) => a.name.localeCompare(b.name)), tools = ts.filter(t => t.kind === 'tool'), gear = ts.filter(t => t.kind === 'gear').sort((a, b) => GEAR_GROUPS.indexOf(a.group) - GEAR_GROUPS.indexOf(b.group) || a.name.localeCompare(b.name)), other = ts.filter(t => t.kind === 'item');
+  const small = (kind) => `<span style="flex:1"></span><button type="button" class="gbtn" data-act="newthing" data-kind="${kind}" style="padding:6px 12px;font-size:13px;text-transform:none;letter-spacing:0">Add</button>`;
+  const gGroups = [...new Set(gear.map(t => t.group || 'Other gear'))];
+  return head(`Tools &amp; Gear <span style="color:var(--ink3);font-weight:700">${tools.length + gear.length}</span>`, '#/', '<button type="button" class="pbtn2" data-act="additem">Add</button>') +
+    `<div class="h3">Tools <span class="c">${tools.length}</span>${small('tool')}</div><div class="rows">${tools.map(t => thingRow(t)).join('') || '<div class="empty">No tools yet. Drill, saw, wrench set… with brand, model and serial.</div>'}</div>` +
+    `<div class="h3">Gear <span class="c">${gear.length}</span>${small('gear')}</div>${gear.length ? gGroups.map(g => `${gGroups.length > 1 ? `<p class="note" style="margin:10px 4px 6px;font-weight:700">${esc(g)}</p>` : ''}<div class="rows">${gear.filter(t => (t.group || 'Other gear') === g).map(t => thingRow(t)).join('')}</div>`).join('') : '<div class="rows"><div class="empty">Cameras, tripods, audio, computer parts, printers — with serial, warranty, what comes in the kit and who you lent it to.</div></div>'}` +
+    `<div class="h3">Other items <span class="c">${other.length}</span>${small('item')}</div><div class="rows">${other.map(t => thingRow(t)).join('') || '<div class="empty">Anything that isn’t a part, a supply, a tool or gear.</div>'}</div>`;
+}
+const VIEWS = { supplies: suppliesView, tools: toolsView, unplaced, home, fresh: freshView, parts: () => route().a ? family(route().a) : parts(), attention, storage: () => route().a ? unitView(route().a) : storage() };
 
 // ---------------------------------------------------------------- sheets: a part, a spot, picking a spot, editing a unit
 const sheet = $('sheet'), shBody = $('shBody');
@@ -759,7 +820,7 @@ function sheetTyping() { const a = document.activeElement; return !!(a && shBody
 function paintSheet(fresh) {
   const top = stack[stack.length - 1]; if (!top) return closeSheet();
   $('shBack').hidden = stack.length < 2;
-  let r; try { r = ({ organize: organizeSheet, part: partSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet })[top.k](top); }
+  let r; try { r = ({ organize: organizeSheet, part: (t) => isSupply(itemById(t.a)) ? supplySheet(t) : partSheet(t), supply: supplySheet, additem: addItemSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet })[top.k](top); }
   catch (e) { console.error(e); r = { title: 'Something went wrong', body: `<p class="note">Pull down to reload the page — that usually fixes it after an update.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button></div>` }; }
   if (!r) return closeSheet();
   $('shTitle').textContent = r.title; shBody.innerHTML = r.body; hydrate(shBody);
@@ -777,12 +838,14 @@ function partSheet(t) {
     const codes = codesOf(x), f0 = codes.length ? S.find(doc(), codes[0]) : null, same = f0 ? codes.filter(c => S.find(doc(), c).unit.id === f0.unit.id) : [];
     where = `<div class="where" style="${box}"><div class="lhd">${ls.length > 1 ? `In ${ls.length} places` : 'Where it is'}</div>${rows}${f0 ? mapHtml(f0.unit, same, true) : ''}<div class="btns"><button type="button" class="gbtn" data-act="pick" data-part="${id}" data-mode="add">+ Add another location</button></div></div>`;
   } else where = `<div class="where" style="${box}"><div class="wd" style="margin:0 0 4px">Not in a drawer yet.</div><div class="btns"><button type="button" class="pbtn2" data-act="pick" data-part="${id}">Put in a drawer</button></div></div>`;
-  return { title: x.category || 'Part', body: `<div class="ph">${photo(x, true)}<div style="min-width:0"><div class="nm">${esc(x.name)}</div><div class="pills"><span class="pill st-${st}">${ST_LABEL[st]}</span><span class="pill">${esc(x.id)}</span></div></div><div class="bigc">${q == null ? `<b>${lv ? STOCK_LABEL[lv] : '—'}</b><small>${lv ? 'stock' : 'no count'}</small>` : `<b class="${qtyClass(x)}">${q}</b><small>${STOCK_LABEL[lv] || 'on hand'}</small>`}</div></div>${where}${x.notes ? `<p class="note">${esc(x.notes)}</p>` : ''}<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(x.id)}">Take out / put back</button><a class="gbtn" href="index.html?checklist#edit=${encodeURIComponent(x.id)}">Edit in Checklist</a></div>${gwCard(x)}<label class="note" style="display:flex;align-items:center;gap:8px;margin-top:12px">Counted in <input id="unitIn" value="${esc(x.unit || '')}" placeholder="${esc(SETS.unitWord({ ...x, unit: '' }, 2))}" style="width:120px;height:36px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit;font-size:15px"></label>`,
+  return { title: x.category || 'Part', body: `<div class="ph">${photo(x, true)}<div style="min-width:0"><div class="nm">${esc(x.name)}</div><div class="pills"><span class="pill st-${st}">${ST_LABEL[st]}</span><span class="pill">${esc(x.id)}</span></div></div><div class="bigc">${q == null ? `<b>${lv ? STOCK_LABEL[lv] : '—'}</b><small>${lv ? 'stock' : 'no count'}</small>` : `<b class="${qtyClass(x)}">${q}</b><small>${STOCK_LABEL[lv] || 'on hand'}</small>`}</div></div>${where}${x.notes ? `<p class="note">${esc(x.notes)}</p>` : ''}<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(x.id)}">Take out / put back</button><button type="button" class="gbtn plbl" data-act="plabel" data-part="${esc(x.id)}"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>Print label</button><a class="gbtn" href="index.html?checklist#edit=${encodeURIComponent(x.id)}">Edit in Checklist</a></div>${gwCard(x)}<label class="note" style="display:flex;align-items:center;gap:8px;margin-top:12px">Counted in <input id="unitIn" value="${esc(x.unit || '')}" placeholder="${esc(SETS.unitWord({ ...x, unit: '' }, 2))}" style="width:120px;height:36px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit;font-size:15px"></label>`,
     after: () => { const i = $('unitIn'); if (i) i.addEventListener('change', () => { const y = itemById(x.id); if (!y) return; const v = i.value.trim(); if (v) y.unit = v; else delete y.unit; commit(); toast(v ? `Counted in ${v}` : 'Back to the usual word'); }); } };
 }
-const toolIc = '<span class="pthumb" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.4 2.4-2.6-.6-.6-2.6z"/></svg></span>';
-const itemIc = '<span class="pthumb" style="color:var(--ink2)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>';
-function thingRow(t, inSpot) { return `<div class="row"><button type="button" class="nozoom" data-act="thing" data-id="${esc(t.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${t.kind === 'tool' ? toolIc : itemIc}<div class="t"><b>${hl(t.name)}</b><span>${esc(thingSub(t))}</span></div>${inSpot ? '' : (canon(t.location) ? `<span class="loc">${esc(canon(t.location))}</span>` : '<span class="loc no">No spot</span>')}</button>${inSpot ? `<button type="button" class="xbtn" data-act="unplacething" data-id="${esc(t.id)}" aria-label="Take ${esc(t.name)} out of this spot">×</button>` : ''}</div>`; }
+const toolIc = '<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.4 2.4-2.6-.6-.6-2.6z"/></svg></span>';
+const gearIc = '<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.5l2-3h7l2 3H21v11H3z"/><circle cx="12" cy="13" r="3.6"/></svg></span>';
+const itemIc = '<span class="pthumb ico" style="color:var(--ink2)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>';
+const warnPill = (t) => { if (!t.warranty) return ''; const d = dayDiff(t.warranty); return d != null && d >= 0 && d <= 30 ? `<span class="pill lo">Warranty ends ${d === 0 ? 'today' : 'in ' + d + ' days'}</span>` : ''; };
+function thingRow(t, inSpot) { const pills = (t.lent ? `<span class="pill lent">Lent to ${esc(t.lent)}</span>` : '') + warnPill(t); return `<div class="row"><button type="button" class="nozoom" data-act="thing" data-id="${esc(t.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${t.kind === 'tool' ? toolIc : t.kind === 'gear' ? gearIc : itemIc}<div class="t"><b>${hl(t.name)}</b><span>${esc(thingSub(t))}</span>${pills ? `<div class="pills">${pills}</div>` : ''}</div>${inSpot ? '' : (canon(t.location) ? `<span class="loc">${esc(canon(t.location))}</span>` : '<span class="loc no">No spot</span>')}</button>${inSpot ? `<button type="button" class="xbtn" data-act="unplacething" data-id="${esc(t.id)}" aria-label="Take ${esc(t.name)} out of this spot">×</button>` : ''}</div>`; }
 function slotSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null;
   const ix = index(), ps = sortedParts(ix.by.get(f.slot.code) || []), ts = (ix.th.get(f.slot.code) || []).slice().sort((a, b) => a.name.localeCompare(b.name)), pur = (f.unit.spots || {})[f.slot.code] || '';
@@ -796,7 +859,7 @@ function slotSheet(t) {
 // Counts change exactly as in the Checklist (count, "full", Plenty/Low/Out level), so both pages agree. Every change is logged
 // (shared list, newest 300) with Undo. Saves on this device first and syncs when there's a connection, like every other change.
 const SETS = window.WNSets;
-const unitW = (x, n) => SETS.unitWord(x, n);
+const unitW = (x, n) => isSupply(x) ? (n === 1 ? ONE[x.unit] || x.unit || 'piece' : x.unit || 'pieces') : SETS.unitWord(x, n);
 const devName = () => (window.WNNative && window.WNNative.device) || (P.phone() ? 'phone' : 'computer');
 const snapOf = (x) => ({ qty: x.qty, full: x.full, stock: x.stock, store: x.store, buy: x.buy, ordered: x.ordered, need: x.need });
 function restoreSnap(x, s) { for (const k in s) { if (s[k] === undefined) delete x[k]; else x[k] = s[k]; } }
@@ -931,18 +994,18 @@ function drawerSheet(t) {
   if (t.step === 'done') return { title: f.slot.code, body: headH + doneHtml(t.res) + (t.toolLine ? `<div class="tk-ok">${esc(t.toolLine)}</div>` : '') + doneBtns() };
   const tools = ts.filter(x => x.kind === 'tool'), others = ts.filter(x => x.kind !== 'tool');
   const pRow = (x) => { const q = qtyNum(x), lv = stockLevel(x), d = t.d[x.id] || 0;
-    const st = q != null ? `${q} ${unitW(x, q)} in the drawer` : lv ? STOCK_LABEL[lv] : 'no count yet', cls = lv === 'out' ? 'r' : lv === 'low' ? 'w' : '';
+    const st = q != null ? `${q} ${unitW(x, q)} ${f.unit.type === 'box' ? 'inside' : f.unit.type === 'shelves' ? 'here' : 'in the drawer'}` : lv ? STOCK_LABEL[lv] : 'no count yet', cls = lv === 'out' ? 'r' : lv === 'low' ? 'w' : '';
     return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + x.category))}">${photo(x)}<span class="t"><button type="button" data-act="tkopen" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${cls}">${esc(st)}</span></span><button type="button" class="dr-pm" data-act="drd" data-id="${esc(x.id)}" data-v="-1" aria-label="Take one ${esc(x.name)}">−</button><span class="dr-n${d ? ' on' : ''}">${d > 0 ? '+' + d : d < 0 ? '−' + (-d) : 0}</span><button type="button" class="dr-pm" data-act="drd" data-id="${esc(x.id)}" data-v="1" aria-label="Put back one ${esc(x.name)}">+</button></div>`; };
   const tRow = (x) => { const out = x.id in t.out ? t.out[x.id] : !!x.out;
-    return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + (x.type || '')))}">${toolIc}<span class="t"><button type="button" data-act="thing" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${out ? 'r' : ''}">${out ? (x.out ? 'Out since ' + esc(fmtDay(x.out)) : 'Out') : 'Here'}</span></span><div class="dr-seg" role="group" aria-label="${esc(x.name)} here or out"><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="here" class="${out ? '' : 'here'}">Here</button><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="out" class="${out ? 'out' : ''}">Out</button></div></div>`; };
+    return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + (x.type || '')))}">${x.kind === 'tool' ? toolIc : x.kind === 'gear' ? gearIc : itemIc}<span class="t"><button type="button" data-act="thing" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${out ? 'r' : ''}">${out ? (x.out ? 'Out since ' + esc(fmtDay(x.out)) : 'Out') : 'Here'}</span></span><div class="dr-seg" role="group" aria-label="${esc(x.name)} here or out"><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="here" class="${out ? '' : 'here'}">Here</button><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="out" class="${out ? 'out' : ''}">Out</button></div></div>`; };
   const n = ps.length + ts.length, changes = Object.values(t.d).filter(Boolean).length + Object.keys(t.out).filter(k => { const th = thingById(k); return th && !!th.out !== t.out[k]; }).length;
   const firstCh = Object.entries(t.d).find(([, v]) => v); let sum = 'Tap − to take out, + to put back';
   if (changes) { const [id, v] = firstCh || []; const x = id && itemById(id); sum = `<b>${changes} change${changes > 1 ? 's' : ''}</b>${x ? ` · ${v < 0 ? 'took' : 'put back'} ${esc(plural(Math.abs(v), x))}` : ''}`; }
-  return { title: 'In this drawer', body: headH + `<p class="note" style="margin-top:-4px">${n ? `${n} thing${n > 1 ? 's' : ''}${ps.length && ts.length ? ` · ${ps.length} part${ps.length > 1 ? 's' : ''}, ${ts.length} tool${ts.length > 1 ? 's' : ''} &amp; items` : ''}` : 'Nothing here yet.'}</p>
+  return { title: f.unit.type === 'box' ? 'Inside ' + f.unit.name : f.unit.type === 'shelves' ? 'On this shelf' : 'In this drawer', body: headH + `<p class="note" style="margin-top:-4px">${n ? `${n} thing${n > 1 ? 's' : ''}${ps.length && ts.length ? ` · ${ps.length} part${ps.length > 1 ? 's' : ''}, ${ts.length} tool${ts.length > 1 ? 's' : ''} &amp; items` : ''}` : 'Nothing here yet.'}</p>
     ${n > 5 ? `<input id="drFind" type="search" class="sinput" placeholder="Find in this drawer" aria-label="Find in this drawer" style="width:100%;box-sizing:border-box;height:44px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:inherit;font-size:16px;margin-bottom:10px">` : ''}
     ${ps.length ? `<div class="h3" style="margin-top:4px">Parts</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${ps.map(pRow).join('')}</div>` : ''}
     ${tools.length ? `<div class="h3">Tools</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${tools.map(tRow).join('')}</div>` : ''}
-    ${others.length ? `<div class="h3">Other items</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${others.map(x => thingRow(x, false)).join('')}</div>` : ''}
+    ${others.length ? `<div class="h3">Tools, gear &amp; other items</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${others.map(x => thingRow(x, false)).join('')}</div>` : ''}
     <div class="btns"><button type="button" class="gbtn" data-act="drmanage" data-slot="${esc(f.slot.code)}">Manage this spot</button><button type="button" class="gbtn" data-act="print" data-codes="${esc(f.slot.code)}">Print labels</button></div>
     ${n ? `<div class="dr-bar"><span>${sum}</span><button type="button" class="tk-go" data-act="drsave"${changes ? '' : ' disabled'}>Save</button></div>` : ''}`,
     after: () => { const i = $('drFind'); if (i) i.addEventListener('input', () => { const q = normS(i.value).trim(); shBody.querySelectorAll('.dr-row').forEach(r => { r.style.display = !q || r.dataset.find.includes(q) ? '' : 'none'; }); }); } };
@@ -973,6 +1036,7 @@ function scanFlow() {
     if (lk) code = decodeURIComponent(lk[1]);
     if (sheet.open) closeSheet();
     const unit = S.units(doc()).find(u => u.id === code.toUpperCase());
+    if (unit && unit.type === 'box') { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + unit.id); setTimeout(() => openDrawer(unit.id, true), 120); return; }   // a tote / case → what's inside
     if (unit) { go('#/storage/' + unit.id); return; }                                    // a cabinet's QR → its map
     const f = S.find(doc(), code);
     if (f) { qEl.value = ''; $('qClear').hidden = true; go('#/storage/' + f.unit.id); setTimeout(() => openDrawer(f.slot.code, viaQR), 120); return; }
@@ -1011,24 +1075,63 @@ function addWhatSheet(t) {
   return { title: 'What goes in ' + f.slot.code + '?', body: `<div class="rows" style="box-shadow:none;border:1px solid var(--line)">
     ${opt('addto', '', 'A part from my list', 'Screws, bolts, washers, anchors… from the Checklist', `<span class="pthumb">${WNParts.thumb({ name: 'hex bolt', category: 'SAE Hex Bolts' }).replace(/^<span class="pthumb[^"]*">|<\/span>$/g, '')}</span>`)}
     ${opt('newthing', 'tool', 'A tool', 'Drill, saw, wrench set… with brand, model and serial', toolIc)}
-    ${opt('newthing', 'item', 'Something else', 'Zip ties, blades, tape, glue… just a name and a note', itemIc)}
+    ${opt('newsupply', '', 'A supply', 'Tape, glue, caulk, paint, paper… things you use up', supIc({ category: 'Tape' }))}
+    ${opt('newthing', 'gear', 'Gear', 'Camera, audio, computer parts, printers…', gearIc)}
+    ${opt('newthing', 'item', 'Something else', 'Zip ties, blades… just a name and a note', itemIc)}
     ${opt('purpose', '', 'Say what this spot is for', 'Reserve it before you fill it — shows on the map and the label', '<span class="pthumb" style="font-weight:800;color:var(--brand)">Aa</span>')}</div>` };
 }
 const TOOL_TYPES = ['Cordless power tool', 'Corded power tool', 'Hand tool', 'Measuring / layout', 'Air tool', 'Gas tool', 'Other'];
 const VOLTS = ['', '12V', '18V', '20V', '40V', '60V', '80V', 'Other'];
 function thingSheet(t) {
-  if (!t.draft) { const ex = t.a ? thingById(t.a) : null; if (t.a && !ex) return null; t.draft = ex ? JSON.parse(JSON.stringify(ex)) : { kind: t.kind || 'tool', name: '', location: t.slot || '' }; }
-  const d = t.draft, tool = d.kind === 'tool', isNew = !t.a, f = S.find(doc(), d.location);
+  if (!t.draft) { const ex = t.a ? thingById(t.a) : null; if (t.a && !ex) return null; t.draft = ex ? JSON.parse(JSON.stringify(ex)) : { kind: t.kind || 'tool', name: '', location: t.slot || '', ...(t.kind === 'gear' ? { group: GEAR_GROUPS[0] } : {}) }; }
+  const d = t.draft, tool = d.kind === 'tool', gear = d.kind === 'gear', isNew = !t.a, f = S.find(doc(), d.location);
+  const dt = (k, label) => `<label class="fld"><span>${label}</span><input type="date" data-tf="${k}" value="${esc(d[k] || '')}"></label>`;
+  const keep = tool || gear ? `<div class="fld" style="margin-top:6px"><span>Purchase &amp; warranty</span></div><div class="frow">${dt('bought', 'Bought')}<label class="fld"><span>Price</span><input data-tf="price" value="${esc(d.price || '')}" inputmode="decimal" placeholder="$" autocomplete="off"></label></div>${dt('warranty', 'Warranty ends')}
+    <label class="fld"><span>${gear ? 'Kit contents (one per line)' : 'Comes with (one per line)'}</span><textarea data-tf="kit" placeholder="${gear ? 'Body&#10;24-70mm lens&#10;3 batteries + charger' : 'Battery&#10;Charger&#10;Case'}">${esc(d.kit || '')}</textarea></label>
+    <div class="frow"><label class="fld"><span>Lent to</span><input data-tf="lent" value="${esc(d.lent || '')}" placeholder="Nobody" autocomplete="off"></label>${dt('lentOn', 'Since')}</div>${d.lent && !isNew ? '<div class="btns" style="margin:-4px 0 10px"><button type="button" class="gbtn" data-act="gotback">Got it back</button></div>' : ''}` : '';
   const inp = (k, label, ph) => `<label class="fld"><span>${label}</span><input data-tf="${k}" value="${esc(d[k] || '')}" placeholder="${ph || ''}" autocomplete="off"></label>`;
   const sel = (k, label, opts) => `<label class="fld"><span>${label}</span><select data-tf="${k}">${opts.map(o => `<option value="${esc(o)}"${(d[k] || '') === o ? ' selected' : ''}>${o || '—'}</option>`).join('')}</select></label>`;
   const where = `<div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0">${f ? `<span class="loc">${esc(f.slot.code)}</span> <span class="note">${esc(f.unit.name)} · ${esc(f.slot.where)}</span>` : '<span class="note" style="margin:0">Not in a spot yet</span>'}</div><button type="button" class="gbtn" data-act="pickthing">${f ? 'Change' : 'Pick a spot'}</button></div>`;
-  return { title: (isNew ? 'New ' : '') + (tool ? 'tool' : 'item'), body: `${inp('name', 'Name', tool ? 'e.g. Impact driver' : 'e.g. Zip ties, 8 in')}
+  return { title: (isNew ? 'New ' : '') + (tool ? 'tool' : gear ? 'gear' : 'item'), body: `${inp('name', 'Name', tool ? 'e.g. Impact driver' : gear ? 'e.g. Sony A7 IV, Rode VideoMic' : 'e.g. Zip ties, 8 in')}
+    ${gear ? `${sel('group', 'Group', [...new Set([...GEAR_GROUPS, d.group || GEAR_GROUPS[0]])])}<div class="frow">${inp('brand', 'Brand', 'e.g. Sony')}${inp('model', 'Model', 'e.g. ILCE-7M4')}</div>${inp('serial', 'Serial number', '')}` : ''}
     ${tool ? `<div class="frow">${sel('type', 'Type', ['', ...TOOL_TYPES])}${inp('brand', 'Brand', 'e.g. Milwaukee')}</div><div class="frow">${inp('model', 'Model', 'e.g. 2953-20')}${inp('serial', 'Serial number', '')}</div><div class="frow">${sel('voltage', 'Voltage', VOLTS)}${inp('platform', 'Battery platform', 'e.g. M18, 20V MAX')}</div>` : ''}
-    ${inp('notes', 'Notes', tool ? 'Accessories, condition, manual link…' : 'Size, colour, how many…')}
+    ${keep}${inp('notes', 'Notes', tool || gear ? 'Condition, manual link…' : 'Size, colour, how many…')}
     <div class="fld"><span>Where it lives</span></div>${where}
     <p class="note danger" id="tErr"></p>
     <div class="btns"><button type="button" class="pbtn2" data-act="savething">${isNew ? 'Save' : 'Save changes'}</button>${isNew ? '' : '<button type="button" class="gbtn danger" data-act="delthing">Delete</button>'}</div>`,
-    after: () => { shBody.querySelectorAll('[data-tf]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { d[el.dataset.tf] = el.value; })); const n = shBody.querySelector('[data-tf="name"]'); if (n && isNew && matchMedia('(hover:hover)').matches) setTimeout(() => n.focus(), 60); } };
+    after: () => { shBody.querySelectorAll('[data-tf]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { d[el.dataset.tf] = el.value; })); const n = shBody.querySelector('[data-tf="name"]'); if (n && isNew && !d.name && matchMedia('(hover:hover)').matches) setTimeout(() => n.focus(), 60); } };
+}
+function newItemId(prefix) { const d = doc(), ids = [...d.items.map(x => x.id), ...Object.keys(d.del || {}).filter(k => k.startsWith('items:')).map(k => k.slice(6))].filter(id => String(id || '').startsWith(prefix)); return prefix + String(Math.max(0, ...ids.map(id => Number(String(id).slice(prefix.length)) || 0)) + 1).padStart(4, '0'); }
+function supplySheet(t) {
+  if (!t.draft) { const ex = t.a ? itemById(t.a) : null; if (t.a && !ex) return null;
+    t.draft = ex ? JSON.parse(JSON.stringify(ex)) : { kind: 'supply', name: '', category: t.group || SUP_GROUPS[0], unit: GROUP_UNIT[t.group || SUP_GROUPS[0]] || 'pieces', qty: '', stock: 'plenty', location: t.slot || '' };
+    delete t.draft.u; t.draft.mode = ex ? (qtyNum(ex) != null ? 'count' : 'level') : 'level'; if (!t.draft.stock || !STOCK_LABEL[t.draft.stock]) t.draft.stock = stockLevel(t.draft) || 'plenty'; if (!t.draft.unit) t.draft.unit = 'pieces'; }
+  const d = t.draft, isNew = !t.a, f = S.find(doc(), locList(d)[0] || ''), x = t.a ? itemById(t.a) : null;
+  const inp = (k, label, ph, type, extra) => `<label class="fld"><span>${label}</span><input data-sf="${k}" value="${esc(d[k] == null ? '' : d[k])}" placeholder="${ph || ''}" autocomplete="off"${type ? ` type="${type}"` : ''}${extra || ''}></label>`;
+  const sel = (k, label, opts) => `<label class="fld"><span>${label}</span><select data-sf="${k}">${opts.map(o => `<option value="${esc(o)}"${(d[k] || '') === o ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
+  const where = `<div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0">${f ? `<span class="loc">${esc(f.slot.code)}</span> <span class="note">${esc(f.unit.name)} · ${esc(f.slot.where)}</span>` : '<span class="note" style="margin:0">No home yet</span>'}</div><button type="button" class="gbtn" data-act="pickthing">${f ? 'Change' : 'Pick a spot'}</button></div>`;
+  const amount = d.mode === 'count'
+    ? `<div class="frow">${inp('qty', 'How many', '0', 'number', ' inputmode="numeric" min="0"')}${sel('unit', 'Unit', [...new Set([...SUP_UNITS, d.unit])])}</div>${inp('lowAt', 'Low at', '1', 'number', ' inputmode="numeric" min="0"')}`
+    : `<div class="lvl3">${['plenty', 'low', 'out'].map(k => `<button type="button" class="${k}${d.stock === k ? ' on' : ''}" data-act="suplevel" data-lv="${k}">${STOCK_LABEL[k]}</button>`).join('')}</div>`;
+  return { title: isNew ? 'New supply' : 'Supply', body: `${inp('name', 'Name', 'e.g. Blue painter’s tape 1.5″, Clear silicone')}
+    ${sel('category', 'Group', [...new Set([...SUP_GROUPS, d.category || SUP_GROUPS[0]])])}
+    <div class="fld"><span>How much is left</span></div><div class="seg2" style="margin-bottom:10px"><button type="button" class="${d.mode === 'level' ? 'on' : ''}" data-act="supmode" data-mode="level">Plenty · Low · Out</button><button type="button" class="${d.mode === 'count' ? 'on' : ''}" data-act="supmode" data-mode="count">Count them</button></div>
+    ${amount}<p class="note" style="margin-top:-4px">Low or Out shows under Running low. Out also puts it on the Checklist to buy.</p>
+    <div class="frow">${inp('expires', 'Expires (optional)', '', 'date')}${inp('notes', 'Notes', 'Colour, size, brand…')}</div>
+    <div class="fld"><span>Where it lives</span></div>${where}
+    <p class="note danger" id="sErr"></p>
+    <div class="btns"><button type="button" class="pbtn2" data-act="savesupply">${isNew ? 'Save' : 'Save changes'}</button>${x ? `<button type="button" class="gbtn" data-act="supneed">${x.need ? 'Remove from Checklist' : 'Add to Checklist'}</button><button type="button" class="gbtn plbl" data-act="plabel" data-part="${esc(x.id)}">Print label</button><button type="button" class="gbtn danger" data-act="delsupply">Delete</button>` : ''}</div>`,
+    after: () => { shBody.querySelectorAll('[data-sf]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { d[el.dataset.sf] = el.value; if (el.dataset.sf === 'unit') t.unitSet = true; if (el.dataset.sf === 'category' && !t.unitSet && GROUP_UNIT[el.value]) { d.unit = GROUP_UNIT[el.value]; const u = shBody.querySelector('[data-sf="unit"]'); if (u) u.value = d.unit; } })); const n = shBody.querySelector('[data-sf="name"]'); if (n && isNew && !d.name && matchMedia('(hover:hover)').matches) setTimeout(() => n.focus(), 60); } };
+}
+// + → Add item: what are you adding?
+function addItemSheet() {
+  const opt = (act, kind, title, sub, icon) => `<button type="button" class="row" data-act="${act}"${kind ? ` data-kind="${kind}"` : ''}>${icon}<div class="t"><b>${title}</b><span>${sub}</span></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>`;
+  return { title: 'Add item', body: `<div class="rows" style="box-shadow:none;border:1px solid var(--line)">
+    ${opt('addpart', '', 'A part', 'Screws, bolts, nuts, washers, anchors…', `<span class="pthumb">${WNParts.thumb({ name: 'hex bolt', category: 'SAE Hex Bolts' }).replace(/^<span class="pthumb[^"]*">|<\/span>$/g, '')}</span>`)}
+    ${opt('newsupply', '', 'A supply', 'Things you use up: tape, glue, caulk, paint, paper, ink', supIc({ category: 'Tape' }))}
+    ${opt('newthing', 'tool', 'A tool', 'Drill, saw, wrench set… brand, model, serial', toolIc)}
+    ${opt('newthing', 'gear', 'Gear', 'Camera, tripod, audio, computer parts, printers', gearIc)}
+    ${opt('newthing', 'item', 'Something else', 'Anything else — just a name and a note', itemIc)}</div>` };
 }
 function purposeSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null; const cur = (f.unit.spots || {})[f.slot.code] || '';
@@ -1054,13 +1157,17 @@ function addSheet(t) {
     after: () => { const i = $('addQ'); i.oninput = () => { t.q = i.value; const pos = i.selectionStart; paintSheet(); const j = $('addQ'); j.focus(); try { j.setSelectionRange(pos, pos); } catch (e) { } }; } };
 }
 function unitSheet(t) {
-  const isNew = !t.a, u0 = isNew ? (t.draft || (t.draft = { id: nextUnitId(), type: 'grid', rows: 8, cols: 8, count: 12, cols2: 6, name: '', model: '', modules: [{ name: 'Organizer', bins: 12, cols: 6 }] })) : (t.draft || (t.draft = JSON.parse(JSON.stringify(S.units(doc()).find(x => x.id === t.a) || {}))));
+  const isNew = !t.a, u0 = isNew ? (t.draft || (t.draft = { id: nextUnitId("grid"), type: "grid", rows: 8, cols: 8, count: 12, cols2: 6, name: '', model: '', modules: [{ name: 'Organizer', bins: 12, cols: 6 }] })) : (t.draft || (t.draft = JSON.parse(JSON.stringify(S.units(doc()).find(x => x.id === t.a) || {}))));
   const u = u0, used = isNew ? 0 : S.slots(S.units(doc()).find(x => x.id === t.a) || {}).filter(s => occupied(s.code)).length;
   const sizes = u.type === 'sections' ? `<p class="note">${esc(previewCodes(u))}. This layout was drawn from your photo; to change its drawers, ask for a new layout.</p>` : u.type === 'grid' ? `<div class="frow"><label class="fld"><span>Rows</span><input data-f="rows" type="number" inputmode="numeric" min="1" max="24" value="${u.rows || 1}"></label><label class="fld"><span>Drawers per row</span><input data-f="cols" type="number" inputmode="numeric" min="1" max="30" value="${u.cols || 1}"></label></div>`
     : u.type === 'modules' ? `<div class="fld"><span>Modules, top to bottom (0 bins = one big space)</span></div>${(u.modules || []).map((m, i) => `<div class="mrow"><input data-m="${i}" data-mf="name" value="${esc(m.name || '')}" placeholder="Module name"><input data-m="${i}" data-mf="bins" type="number" inputmode="numeric" min="0" max="60" value="${m.bins || 0}" aria-label="Bins"><button type="button" class="xbtn" data-act="delmod" data-m="${i}" aria-label="Remove module">×</button></div>`).join('')}<div class="btns" style="margin:0 0 12px"><button type="button" class="gbtn" data-act="addmod">Add module</button></div>`
+    : u.type === 'shelves' ? `<div class="frow"><label class="fld"><span>Shelves</span><input data-f="count" type="number" inputmode="numeric" min="1" max="24" value="${u.count || 1}"></label><label class="fld"><span>Spots on each shelf</span><input data-f="per" type="number" inputmode="numeric" min="1" max="30" value="${u.per || 1}"></label></div><p class="note" style="margin-top:-4px">1 spot = the whole shelf. More spots = places side by side on each shelf (left → right).</p>`
+    : u.type === 'box' ? `<label class="fld"><span>What is it</span><select data-f="box">${S.BOXES.map(b => `<option${(u.box || 'Tote') === b ? ' selected' : ''}>${b}</option>`).join('')}</select></label><p class="note" style="margin-top:-4px">One spot: everything inside it. Its QR label shows what's in it.</p>`
     : `<label class="fld"><span>${u.type === 'bins' ? 'How many bins' : 'How many drawers'}</span><input data-f="count" type="number" inputmode="numeric" min="1" max="300" value="${u.count || 1}"></label>`;
-  return { title: isNew ? 'Add a storage unit' : 'Edit ' + u.id, body: `<label class="fld"><span>Name</span><input data-f="name" value="${esc(u.name || '')}" placeholder="e.g. Akro-Mils 64-drawer #5"></label><div class="frow"><label class="fld"><span>Code</span><input data-f="id" value="${esc(u.id || '')}" maxlength="2" ${isNew ? '' : 'readonly'} style="text-transform:uppercase;font-family:ui-monospace,Menlo,monospace"></label><label class="fld"><span>Type</span><select data-f="type"${u.type === 'sections' ? ' disabled' : ''}>${Object.entries(S.TYPES).filter(([k]) => k !== 'sections' || u.type === 'sections').map(([k, v]) => `<option value="${k}"${u.type === k ? ' selected' : ''}>${v}</option>`).join('')}</select></label></div><label class="fld"><span>Model / note</span><input data-f="model" value="${esc(u.model || '')}" placeholder="optional"></label>${sizes}<p class="note" id="uPrev">${esc(previewCodes(u))}</p><p class="note danger" id="uErr"></p><div class="btns"><button type="button" class="pbtn2" data-act="saveunit">${isNew ? 'Add unit' : 'Save'}</button>${!isNew ? (used ? `<span class="note" style="margin:8px 0 0">${used} spots hold parts, so it can't be removed.</span>` : `<button type="button" class="gbtn danger" data-act="delunit" data-unit="${esc(u.id)}">Remove unit</button>`) : ''}</div>`,
-    after: () => { shBody.querySelectorAll('[data-f],[data-mf]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { readUnit(t.draft); if (el.dataset.f === 'type') paintSheet(); else $('uPrev').textContent = previewCodes(t.draft); })); } };
+  const roomList = [...new Set([...S.ROOMS, ...S.units(doc()).map(S.roomOf)])], room = u.room || (isNew ? '' : S.roomOf(u));
+  const roomFld = `<label class="fld"><span>Room</span><input data-f="room" list="roomList" value="${esc(room)}" placeholder="e.g. Garage, Office closet" autocomplete="off"><datalist id="roomList">${roomList.map(r => `<option value="${esc(r)}">`).join('')}</datalist></label>`;
+  return { title: isNew ? 'Add storage' : 'Edit ' + u.id, body: `<label class="fld"><span>Name</span><input data-f="name" value="${esc(u.name || '')}" placeholder="e.g. Akro-Mils #5, Camera case, Office closet"></label><div class="frow"><label class="fld"><span>Code</span><input data-f="id" value="${esc(u.id || '')}" maxlength="2" ${isNew ? '' : 'readonly'} style="text-transform:uppercase;font-family:ui-monospace,Menlo,monospace"></label><label class="fld"><span>Type</span><select data-f="type"${u.type === 'sections' ? ' disabled' : ''}>${Object.entries(S.TYPES).filter(([k]) => k !== 'sections' || u.type === 'sections').map(([k, v]) => `<option value="${k}"${u.type === k ? ' selected' : ''}>${v}</option>`).join('')}</select></label></div><label class="fld"><span>Model / note</span><input data-f="model" value="${esc(u.model || '')}" placeholder="optional"></label>${roomFld}${sizes}<p class="note" id="uPrev">${esc(previewCodes(u))}</p><p class="note danger" id="uErr"></p><div class="btns"><button type="button" class="pbtn2" data-act="saveunit">${isNew ? 'Add unit' : 'Save'}</button>${!isNew ? (used ? `<span class="note" style="margin:8px 0 0">${used} spots hold parts, so it can't be removed.</span>` : `<button type="button" class="gbtn danger" data-act="delunit" data-unit="${esc(u.id)}">Remove unit</button>`) : ''}</div>`,
+    after: () => { shBody.querySelectorAll('[data-f],[data-mf]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { readUnit(t.draft); if (el.dataset.f === 'type') { if (t.draft.type === 'shelves' && !(t.draft.count > 0 && t.draft.count <= 24)) t.draft.count = 5; if (!t.a && !t.idTyped) t.draft.id = nextUnitId(t.draft.type); paintSheet(); } else if (el.dataset.f === 'id') t.idTyped = true; else $('uPrev').textContent = previewCodes(t.draft); })); } };
 }
 // ---------------------------------------------------------------- organize the Akro-Mils by size (the rules live in js/organize.js)
 const okColor = (c) => /^#[0-9a-f]{6}$/i.test(String(c || ''));
@@ -1070,7 +1177,7 @@ const orgName = (x) => shortName(x).replace(/\s*nylon pan-head machine screw/i, 
 const inAkro = (code) => O.CABS.includes(String(code || '').split('-')[0]);
 const fmtDay = (s) => { const d = new Date(String(s) + 'T12:00:00'); return isNaN(d) ? String(s) : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
 function orgInfo(t) {
-  const P = O.plan(items(), 8), us = S.units(doc());
+  const P = O.plan(fasteners(), 8), us = S.units(doc());
   const cabs = P.cabs.map(C => { const u = us.find(x => x.id === C.id), ok = !!u && u.type === 'grid' && u.rows === 8 && u.cols === 8; return { ...C, u, ok, done: ok && !!u.organized && !((t && t.fresh) || {})[C.id] }; });
   return { P, cabs };
 }
@@ -1249,7 +1356,7 @@ function customInfo(t) { const ck = L.check(t.data), st = L.style(t.roll), symOk
   return ck.ok ? `${st === 'text' ? 'Prints as text, as big as it fits' : symOk ? 'Prints a ' + STYLE_NAMES[st] + ' that holds this text' : '<span class="danger">Too long for a ' + STYLE_NAMES[st] + ' — this prints as text</span>'} · ${ck.chars} character${ck.chars === 1 ? '' : 's'}` : `<span class="danger">${esc(ck.why)}</span>`; }
 function customPrev(t) { const ck = L.check(t.data); if (!ck.ok) return '<div class="empty">Your label appears here as you type.</div>'; return L.preview(t.roll, L.custom(t.data, '', t.line2), t.roll === 'side' ? 260 : 220); }
 function customSheet(t) {
-  if (t.data == null) { t.data = ''; t.caption = ''; t.line2 = ''; t.roll = loadedRoll(); t.copies = 1; }
+  if (t.data == null) { const a = t.a && typeof t.a === 'object' ? t.a : {}; t.data = a.data || ''; t.caption = a.caption || ''; t.line2 = a.line2 || ''; t.roll = loadedRoll(); t.copies = 1; }
   const ck = L.check(t.data);
   return { title: 'Custom label', body: `<label class="fld"><span>Label text</span><textarea id="cData" rows="2" maxlength="60" placeholder="e.g. Drill bits, Spare fuses, A2-C05" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:16px system-ui,sans-serif;background:#fafafb;resize:vertical">${esc(t.data)}</textarea></label>
     <p class="note" id="cInfo" style="margin-top:-4px">${customInfo(t)}</p>
@@ -1327,13 +1434,13 @@ async function drain() {
 }
 setInterval(() => { if (document.visibilityState === 'visible') drain(); }, 30000);
 function readUnit(u) {
-  shBody.querySelectorAll('[data-f]').forEach(el => { const k = el.dataset.f; let v = el.value; if (['rows', 'cols', 'count'].includes(k)) v = Math.max(1, Math.min(+el.max || 300, Math.floor(+v || 1))); if (k === 'id') v = v.toUpperCase().trim(); u[k] = v; });
+  shBody.querySelectorAll('[data-f]').forEach(el => { const k = el.dataset.f; let v = el.value; if (['rows', 'cols', 'count', 'per'].includes(k)) v = Math.max(1, Math.min(+el.max || 300, Math.floor(+v || 1))); if (k === 'id') v = v.toUpperCase().trim(); u[k] = v; });
   shBody.querySelectorAll('[data-mf]').forEach(el => { const m = u.modules[+el.dataset.m]; if (!m) return; m[el.dataset.mf] = el.dataset.mf === 'bins' ? Math.max(0, Math.min(60, Math.floor(+el.value || 0))) : el.value; m.cols = 6; });
   if (u.type === 'bins') u.cols = 6; return u;
 }
 function previewCodes(u) { const s = S.slots(u); return s.length ? `${s.length} spots · codes ${s[0].code} … ${s[s.length - 1].code}` : 'No spots yet'; }
-function nextUnitId() { const have = new Set(S.units(doc()).map(u => u.id)); for (const L of 'ABCDEFGHJKLMNPQRSTUVWXYZ') for (let n = 1; n <= 9; n++) if (!have.has(L + n)) return L + n; return ''; }
-function cleanUnit(u) { const o = { id: u.id, kind: 'unit', type: u.type, name: (u.name || '').trim() || u.id, model: (u.model || '').trim() }; if (u.spots && Object.keys(u.spots).length) o.spots = { ...u.spots }; if (u.organized) o.organized = String(u.organized); if (u.rowTags && typeof u.rowTags === 'object') o.rowTags = JSON.parse(JSON.stringify(u.rowTags)); if (u.type === 'sections') { o.sections = JSON.parse(JSON.stringify(u.sections || [])); o.extras = JSON.parse(JSON.stringify(u.extras || [])); } else if (u.type === 'grid') { o.rows = u.rows; o.cols = u.cols; } else if (u.type === 'modules') o.modules = (u.modules || []).map(m => ({ name: (m.name || '').trim(), bins: m.bins || 0, cols: 6 })); else { o.count = u.count; if (u.type === 'bins') o.cols = 6; } return o; }
+function nextUnitId(type) { const have = new Set(S.units(doc()).map(u => u.id)), pref = { box: 'B', shelves: 'R', grid: 'A', stack: 'C', bins: 'S', modules: 'M' }[type]; if (pref) for (let n = 1; n <= 9; n++) if (!have.has(pref + n)) return pref + n; for (const L of 'ABCDEFGHJKLMNPQRSTUVWXYZ') for (let n = 1; n <= 9; n++) if (!have.has(L + n)) return L + n; return ''; }
+function cleanUnit(u) { const o = { id: u.id, kind: 'unit', type: u.type, name: (u.name || '').trim() || u.id, model: (u.model || '').trim() }; if (u.spots && Object.keys(u.spots).length) o.spots = { ...u.spots }; if (u.organized) o.organized = String(u.organized); if (u.rowTags && typeof u.rowTags === 'object') o.rowTags = JSON.parse(JSON.stringify(u.rowTags)); if (u.type === 'sections') { o.sections = JSON.parse(JSON.stringify(u.sections || [])); o.extras = JSON.parse(JSON.stringify(u.extras || [])); } else if (u.type === 'grid') { o.rows = u.rows; o.cols = u.cols; } else if (u.type === 'modules') o.modules = (u.modules || []).map(m => ({ name: (m.name || '').trim(), bins: m.bins || 0, cols: 6 })); else if (u.type === 'shelves') { o.count = u.count; o.per = u.per || 1; } else if (u.type === 'box') o.box = u.box || 'Tote'; else { o.count = u.count; if (u.type === 'bins') o.cols = 6; } if (String(u.room || '').trim()) o.room = String(u.room).trim(); return o; }
 
 // ---------------------------------------------------------------- taps
 document.addEventListener('click', (e) => {
@@ -1353,11 +1460,11 @@ document.addEventListener('click', (e) => {
   if (act === 'saveunit') { const top = stack[stack.length - 1], d = readUnit(top.draft), isNew = !top.a, err = $('uErr');
     if (!S.validId(d.id)) { err.textContent = 'Code: one letter (not I or O) and one digit, e.g. A5 or T2.'; return; }
     if (isNew && S.units(doc()).some(u => u.id === d.id)) { err.textContent = d.id + ' is already used.'; return; }
-    const o = cleanUnit(d), keep = new Set(S.slots(o).map(s => s.code)), lost = isNew ? [] : heldCodes().filter(c => c.startsWith(o.id + '-') && !keep.has(c));
+    const o = cleanUnit(d), keep = new Set(S.slots(o).map(s => s.code)), lost = isNew ? [] : heldCodes().filter(c => (c === o.id || c.startsWith(o.id + '-')) && !keep.has(c));
     if (!S.slots(o).length) { err.textContent = 'Give it at least one spot.'; return; }
     if (lost.length) { err.textContent = `Spots ${lost.slice(0, 6).join(', ')}${lost.length > 6 ? '…' : ''} still hold parts. Move them first.`; return; }
     saveUnit(o); closeSheet(); render(); toast(isNew ? 'Added ' + o.id : 'Saved ' + o.id); if (isNew) go('#/storage/' + o.id); return; }
-  if (act === 'delunit') { const id = t.dataset.unit, list = doc().locations, i = list.findIndex(l => l && l.kind === 'unit' && l.id === id); if (i < 0 || heldCodes().some(c => c.startsWith(id + '-'))) return; const was = list[i]; list.splice(i, 1); commit(); closeSheet(); go('#/storage'); toast('Removed ' + id, 'Undo', () => { doc().locations.splice(Math.min(i, doc().locations.length), 0, was); commit(); render(); }); return; }
+  if (act === 'delunit') { const id = t.dataset.unit, list = doc().locations, i = list.findIndex(l => l && l.kind === 'unit' && l.id === id); if (i < 0 || heldCodes().some(c => c === id || c.startsWith(id + '-'))) return; const was = list[i]; list.splice(i, 1); commit(); closeSheet(); go('#/storage'); toast('Removed ' + id, 'Undo', () => { doc().locations.splice(Math.min(i, doc().locations.length), 0, was); commit(); render(); }); return; }
   if (act === 'applyupd') { const x = S.pendingUpdates(doc()).find(v => v.id === t.dataset.unit); if (!x) return; const nu = cleanUnit(x.to(JSON.parse(JSON.stringify(x.unit)))), keep = new Set(S.slots(nu).map(s => s.code)), lost = heldCodes().filter(c => c.startsWith(nu.id + '-') && !keep.has(c));
     if (lost.length) { toast(`${lost.join(', ')} still hold${lost.length > 1 ? '' : 's'} parts — move them first`); return; }
     const before = JSON.parse(JSON.stringify(x.unit)); saveUnit(nu); render(); toast('Updated ' + nu.id, 'Undo', () => { saveUnit(before); render(); }); return; }
@@ -1373,6 +1480,8 @@ document.addEventListener('click', (e) => {
     return; }
   if (act === 'orgundo') { orgUndo(); return; }
   if (act === 'print') { openSheet('print', t.dataset.unit ? { unit: t.dataset.unit } : { codes: [t.dataset.codes] }, sheet.open && !!t.closest('#shBody')); return; }
+  // a part's label: the label of the drawer spot(s) it's in; not in a drawer yet → a label with its name
+  if (act === 'plabel') { const x = itemById(t.dataset.part); if (!x) return; const cs = codesOf(x).filter(c => S.find(doc(), c)); if (cs.length) openSheet('print', { codes: cs }, sheet.open && !!t.closest('#shBody')); else openSheet('custom', { data: x.name, line2: x.category || '' }, sheet.open && !!t.closest('#shBody')); return; }
   if (act === 'printer') { dest.checked = false; openSheet('printer', '', sheet.open && !!t.closest('#shBody')); return; }
   if (act === 'lstyle') { const top = stack[stack.length - 1]; LS.set('wn-style-' + top.roll, t.dataset.v); L.setStyle(top.roll, t.dataset.v); paintSheet(); return; }
   if (act === 'roll' || act === 'only') { const top = stack[stack.length - 1]; if (act === 'roll') { top.roll = t.dataset.v; LS.set('wn-roll', top.roll); top.only = top.a.unit ? t.dataset.v === 'front' : false; } else top.only = t.dataset.v === '1'; paintSheet(); return; }
@@ -1424,15 +1533,34 @@ document.addEventListener('click', (e) => {
   if (act === 'loaded') { LS.set('wn-roll', t.dataset.v); paintSheet(); drain(); return; }
   if (act === 'canceljob') { removeJob(t.dataset.id); paintBadge(); paintSheet(); return; }
   if (act === 'addwhat') { openSheet('addwhat', t.dataset.slot, true); return; }
-  const fromChooser = () => { if (stack.length > 1 && stack[stack.length - 1].k === 'addwhat') stack.pop(); };
-  if (act === 'newthing') { fromChooser(); openSheet('thing', '', sheet.open && !!t.closest('#shBody'), { kind: t.dataset.kind, slot: t.dataset.slot || '' }); return; }
+  const fromChooser = () => { const top = stack[stack.length - 1]; if (top && top.k === 'additem') { stack.pop(); return; } if (stack.length > 1 && top && top.k === 'addwhat') stack.pop(); };
+  const popSaved = () => { if (stack.length > 1) { stack.pop(); paintSheet(true); if (stack[stack.length - 1].k === 'addwhat') { stack.pop(); paintSheet(true); } } else closeSheet(); };
+  if (act === 'additem') { openSheet('additem', '', false); return; }
+  if (act === 'addpart') { closeSheet(); if (window.WNShell) WNShell.show('#add'); else location.href = 'index.html?checklist#add'; return; }
+  if (act === 'newsupply') { fromChooser(); openSheet('supply', '', sheet.open && !!t.closest('#shBody') && stack.length > 0, { group: t.dataset.group || '', slot: t.dataset.slot || '' }); return; }
+  if (act === 'supply') { openSheet('supply', t.dataset.id, sheet.open && !!t.closest('#shBody')); return; }
+  if (act === 'supmode' || act === 'suplevel') { const top = stack[stack.length - 1], d = top && top.draft; if (!d) return; shBody.querySelectorAll('[data-sf]').forEach(el => { d[el.dataset.sf] = el.value; });
+    if (act === 'supmode') { d.mode = t.dataset.mode; if (d.mode === 'count' && String(d.qty ?? '').trim() === '') d.qty = d.stock === 'out' ? 0 : d.stock === 'low' ? 1 : ''; } else d.stock = t.dataset.lv; paintSheet(); return; }
+  if (act === 'savesupply') { const top = stack[stack.length - 1], d = top.draft; shBody.querySelectorAll('[data-sf]').forEach(el => { d[el.dataset.sf] = el.value; });
+    const name = String(d.name || '').trim(); if (!name) { $('sErr').textContent = 'Give it a name.'; return; }
+    const ex = top.a ? itemById(top.a) : null, wasOut = ex ? lvlOf(ex) === 'out' : false, o = { ...d, kind: 'supply', name, category: d.category || 'Other supplies' }; delete o.mode;
+    if (d.mode === 'count') { const q = String(d.qty ?? '').trim() === '' ? '' : Math.max(0, Math.floor(Number(d.qty) || 0)); o.qty = q; if (String(d.lowAt ?? '').trim() === '') delete o.lowAt; else o.lowAt = Math.max(0, Math.floor(Number(d.lowAt) || 0)); o.full = Math.max(Number(ex && ex.full) || 0, q || 0); delete o.stock; o.stock = countLevel(o) || 'plenty'; }
+    else { o.qty = ''; delete o.full; delete o.lowAt; o.stock = STOCK_LABEL[d.stock] ? d.stock : 'plenty'; }
+    ['expires', 'notes'].forEach(k => { o[k] = String(o[k] || '').trim(); if (!o[k]) delete o[k]; }); o.location = String(o.location || '').trim();
+    o.store = true; if (!ex) { o.buy = true; o.need = false; } if (o.stock === 'out' && !wasOut) o.need = true;
+    if (ex) { for (const k of Object.keys(ex)) if (k !== 'u' && k !== 'id' && !(k in o)) delete ex[k]; Object.assign(ex, o); ex.id = top.a; } else { o.id = newItemId('SP-'); doc().items.push(o); }
+    commit(); toast((ex ? 'Saved ' : 'Added ') + name + (o.need && o.stock === 'out' && !wasOut ? ' · on the Checklist' : canon(o.location) ? ' · ' + canon(o.location) : '')); popSaved(); render(); return; }
+  if (act === 'supneed') { const top = stack[stack.length - 1], x = itemById(top.a); if (!x) return; x.need = !x.need; if (top.draft) top.draft.need = x.need; commit(); paintSheet(); render(); toast(x.need ? x.name + ' is on the Checklist' : x.name + ' taken off the Checklist'); return; }
+  if (act === 'delsupply') { const top = stack[stack.length - 1], x = itemById(top.a); if (!x) return; x.archived = true; commit(); closeSheet(); render(); toast('Deleted ' + x.name, 'Undo', () => { delete x.archived; commit(); refresh(); }); return; }
+  if (act === 'gotback') { const top = stack[stack.length - 1], x = thingById(top.a); if (top.draft) { delete top.draft.lent; delete top.draft.lentOn; } if (x) { delete x.lent; delete x.lentOn; commit(); render(); toast(x.name + ' is back'); } paintSheet(); return; }
+  if (act === 'newthing') { fromChooser(); openSheet('thing', '', sheet.open && !!t.closest('#shBody') && stack.length > 0, { kind: t.dataset.kind, slot: t.dataset.slot || '' }); return; }
   if (act === 'thing') { openSheet('thing', t.dataset.id, sheet.open && !!t.closest('#shBody')); return; }
   if (act === 'pickthing') { const top = stack[stack.length - 1]; openSheet('pick', '', true, { ref: top.draft }); return; }
   if (act === 'savething') { const top = stack[stack.length - 1], d = top.draft; shBody.querySelectorAll('[data-tf]').forEach(el => { d[el.dataset.tf] = el.value; }); d.name = (d.name || '').trim();
     if (!d.name) { $('tErr').textContent = 'Give it a name.'; return; }
     const inv = doc().app.inventory; Object.keys(d).forEach(k => { if (typeof d[k] === 'string') d[k] = d[k].trim(); if (d[k] === '') delete d[k]; }); d.name = d.name || 'Unnamed';
-    if (top.a) { const i = inv.findIndex(x => x && x.id === top.a); if (i >= 0) inv[i] = { ...d, id: top.a, u: inv[i].u }; } else { d.id = nextThingId(d.kind === 'tool' ? 'TL-' : 'IT-'); d.created = new Date().toISOString(); inv.push(d); }
-    commit(); toast((top.a ? 'Saved ' : 'Added ') + d.name + (canon(d.location) ? ' · ' + canon(d.location) : '')); if (stack.length > 1) { stack.pop(); paintSheet(true); if (stack[stack.length - 1].k === 'addwhat') { stack.pop(); paintSheet(true); } } else closeSheet(); render(); return; }
+    if (top.a) { const i = inv.findIndex(x => x && x.id === top.a); if (i >= 0) inv[i] = { ...d, id: top.a, u: inv[i].u }; } else { d.id = nextThingId(d.kind === 'tool' ? 'TL-' : d.kind === 'gear' ? 'GR-' : 'IT-'); d.created = new Date().toISOString(); inv.push(d); }
+    commit(); toast((top.a ? 'Saved ' : 'Added ') + d.name + (canon(d.location) ? ' · ' + canon(d.location) : '')); popSaved(); render(); return; }
   if (act === 'delthing') { const top = stack[stack.length - 1], inv = doc().app.inventory, i = inv.findIndex(x => x && x.id === top.a); if (i < 0) return; const was = inv[i]; inv.splice(i, 1); commit(); if (stack.length > 1) { stack.pop(); paintSheet(true); } else closeSheet(); render(); toast('Deleted ' + was.name, 'Undo', () => { doc().app.inventory.push(was); commit(); refresh(); }); return; }
   if (act === 'unplacething') { const x = thingById(t.dataset.id); if (!x) return; const prev = x.location; x.location = ''; commit(); refresh(); toast(`${x.name} taken out of ${canon(prev) || prev}`, 'Undo', () => { const y = thingById(x.id); if (y) { y.location = prev; commit(); refresh(); } }); return; }
   if (act === 'purpose') { fromChooser(); openSheet('purpose', t.dataset.slot, true); return; }
@@ -1551,7 +1679,7 @@ WNBar.mount({ page: 'workshop', run: (k) => {
   const act = (a) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = a; b.hidden = true; document.body.appendChild(b); b.click(); b.remove(); };
   switch (k) {
     case 'scan': WNShell.hide(); return act('scancode');
-    case 'add': return WNShell.show('#add');
+    case 'add': if (WNShell.on()) WNShell.hide(); return act('additem');
     case 'alerts': return WNBell.open();
     case 'low': return WNShell.goW('#/attention');
     case 'labels': if (WNShell.on()) { WNShell.goW('#/storage'); setTimeout(() => act('printer'), 60); return; } return act('printer');

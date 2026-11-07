@@ -34,6 +34,7 @@
 
   let nav, bub, menu, plus, page;
   const CSS = `
+.wnbar,.wnbar *,.wnbub,.wnplus{touch-action:none}
 /* motion — measured from the reference videos: the bubble glides ~0.34s (fast start, smooth stop, no bounce);
    the + panel springs up fast with a tiny settle (~3%) and drops back quickly. Everything runs as CSS transitions on transform/opacity,
    which the phone animates on its own (GPU) — so it stays smooth even while the page underneath is busy redrawing.
@@ -171,7 +172,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     plus = document.createElement('button'); plus.type = 'button'; plus.className = 'wnplus'; plus.setAttribute('aria-label', 'More'); plus.setAttribute('aria-haspopup', 'true'); plus.setAttribute('aria-expanded', 'false'); plus.innerHTML = ic('plus'); document.body.appendChild(plus);
     menu = document.createElement('div'); menu.className = 'wnmenu'; menu.setAttribute('role', 'menu');
     // the same actions on every tab and both pages; each page says how to do them (opts.run)
-    const ITEMS = [['scan', 'Scan', 'scan', 'app-only'], ['add', 'Add part', 'add'], ['alerts', 'Alerts', 'bell'], ['low', 'Running low', 'low'],
+    const ITEMS = [['scan', 'Scan', 'scan', 'app-only'], ['add', 'Add item', 'add'], ['alerts', 'Alerts', 'bell'], ['low', 'Running low', 'low'],
       ['labels', 'Labels', 'print'], ['custom', 'Custom label', 'pen'], ['organize', 'Organize', 'sort'], ['settings', 'Settings', 'gear'],
       ['logout', 'Log out', 'logout'], ['viewer', '3D viewer', 'cube', 'web-only']];
     let n = 0;
@@ -239,15 +240,31 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     // tapping the tab you're already on: the icon in the bubble blinks, so the tap is felt even though nothing changes
     const blink = () => { const svg = bub.querySelector('svg'); if (!svg) return; svg.classList.remove('wnblink'); void svg.getBoundingClientRect(); svg.classList.add('wnblink'); };
     nav.addEventListener('dragstart', (e) => e.preventDefault());
-    nav.addEventListener('pointerdown', (e) => { const a = e.target.closest('a'); if (!a || e.button > 0) return; prev = nav.querySelector('a.on'); mark(a); });
-    nav.addEventListener('pointercancel', () => { if (prev) mark(prev); prev = null; });
+    // a tab lights up only on a real tap (a swipe that brushes over the bar doesn't flash it)
+    // finger held still on a tab for a moment: switch right then (no waiting for you to let go);
+    // a quick tap switches on release as usual; a finger that moves (a swipe) switches nothing
+    let pend = null, eatNext = false;
+    const drop = () => { if (pend) { clearTimeout(pend.t); pend = null; } };
+    nav.addEventListener('pointerdown', (e) => {
+      const a = e.target.closest('a'); if (!a || e.button > 0) return;
+      prev = nav.querySelector('a.on'); eatNext = false; drop();
+      const p = pend = { a, x: e.clientX, y: e.clientY, id: e.pointerId };
+      p.t = setTimeout(() => { if (pend !== p) return; pend = null; eatNext = true; a.click(); }, 5);
+    });
+    nav.addEventListener('pointermove', (e) => { if (pend && e.pointerId === pend.id && Math.hypot(e.clientX - pend.x, e.clientY - pend.y) > 8) drop(); });
+    // lifting the finger switches at once (doesn't wait for the browser's click)
+    nav.addEventListener('pointerup', (e) => { const p = pend; if (!p || e.pointerId !== p.id) return drop(); drop(); eatNext = true; p.a.click(); });
+    // a touch that starts on the bar never scrolls the page, even if the finger slides up over it
+    [nav, bub, plus].forEach(el => el.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false }));
+    nav.addEventListener('pointercancel', () => { drop(); prev = null; });
     // tapping the tab you're already on does nothing (no reload, no flicker) — unless you're deeper inside it
     // (e.g. a storage unit), then it takes you back to that tab's main page. Rapid repeat taps are ignored too.
     const here = (a) => { const h = a.getAttribute('href') || ''; if (a.dataset.tab === 'checklist') return page === 'checklist';
       if (page !== 'workshop') return false; const cur = (location.hash || '#/').replace(/\/+$/, '') || '#'; const want = h.replace(/^workshop\.html/, '').replace(/\/+$/, '') || '#';
       return cur === want || (want === '#' && (cur === '#' || cur === '')); };
     nav.addEventListener('click', (e) => {
-      const a = e.target.closest('a'), before = prev, wasOn = before === a || (!before && a && a.classList.contains('on')); prev = null;
+      if (e.isTrusted && eatNext) { eatNext = false; e.preventDefault(); e.stopImmediatePropagation(); return; }   // the hold already switched
+      const a = e.target.closest('a'), before = prev || nav.querySelector('a.on'), wasOn = before === a || (!before && a && a.classList.contains('on')); prev = null;
       if (!a) return;
       const now = Date.now();
       // the Checklist lives inside the Workshop screen (WNShell): show / hide it — no page load
@@ -264,17 +281,87 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
       }
       if (wasOn && here(a)) { e.preventDefault(); e.stopImmediatePropagation(); mark(a); blink(); return; }
       if (now - lastNav < 280) { e.preventDefault(); e.stopImmediatePropagation(); if (before) mark(before); return; }
-      lastNav = now;
+      lastNav = now; mark(a);
     }, true);
     // whatever marks a tab "on" (the Workshop's router, a tap) moves the bubble
     new MutationObserver(() => sync()).observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
     window.addEventListener('resize', () => { half = 0; sync(true); if (isOpen()) { sh.H = menu.offsetHeight; shSet(0, 'none'); } });
+    rubber();
     // first placement: no movement, before the first paint (so a page change can glide it)
     sync(true);
     requestAnimationFrame(() => sync(true));
     return { nav, plus, menu };
   }
   const EMBED = window.parent !== window && /[?&]embed/.test(location.search);
+  // ---- rubber band (iPhone app): the page stretches at the top and bottom and springs back, like iOS —
+  // but only the page content moves; the bar, the + and the panel never do. (The iPhone's own bounce is off in the
+  // app: it dragged the fixed bar along and made it vanish.) Pull past an edge = stretch; a fast scroll that hits an
+  // edge = a small bounce.
+  function rubber() {
+    if (!window.WNNative || !('ontouchstart' in window) || rubber.on) return; rubber.on = true;
+    const css = document.createElement('style'); css.textContent = 'html,body{overscroll-behavior-y:none}'; document.head.appendChild(css);
+    const SKIP = 'script,style,link,dialog,.wnbar,.wnbub,.wnplus,.wnmenu,.wnscrim,#wnCL,.wl,.pzoom,#toast';
+    const de = document.documentElement, se = () => document.scrollingElement || de;
+    let els = [], g = null, anim = [], clearT = 0;
+    const busy = () => !!(document.querySelector('dialog[open]') || de.classList.contains('wl-open') || de.classList.contains('wn-cl') || document.body.classList.contains('dragging-on') || document.querySelector('.pdragging,.pdrag') || (plus && plus.classList.contains('open')));
+    const targets = () => [...document.body.children].filter(el => { if (el.matches(SKIP)) return false; const cs = getComputedStyle(el); return cs.position !== 'fixed' && cs.display !== 'none'; });
+    const max = () => Math.max(0, se().scrollHeight - innerHeight);
+    const R = (d) => { const H = innerHeight; return (1 - 1 / (d * 0.55 / H + 1)) * H; };   // iOS's stretch curve
+    // the gap a top stretch opens above the page takes the header's colour (like the header stretching)
+    let topBg = '';
+    const fillTop = (y) => { const want = y > 0 && els[0] ? getComputedStyle(els[0]).backgroundColor : ''; const c = want && !/rgba\(0, 0, 0, 0\)|transparent/.test(want) ? want : ''; if (c !== topBg) { topBg = c; de.style.backgroundColor = c; } };
+    const set = (y, how) => { if (y > 0 || !how) fillTop(y); els.forEach(el => { el.style.transition = how || 'none'; el.style.transform = y ? `translate3d(0,${y.toFixed(2)}px,0)` : ''; }); };
+    const prep = () => { clearTimeout(clearT); anim.forEach(a => a.cancel()); anim = []; els = targets(); els.forEach(el => { el.style.willChange = 'transform'; }); };
+    const tidy = (ms) => { clearTimeout(clearT); clearT = setTimeout(() => { els.forEach(el => { el.style.transition = ''; el.style.willChange = ''; if (!g) el.style.transform = ''; }); if (!g) fillTop(0); }, ms); };
+    const inScroller = (t) => { for (let el = t; el && el !== document.body && el !== de; el = el.parentElement) { const cs = getComputedStyle(el); if (/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1) return true; } return false; };
+    document.addEventListener('touchstart', (e) => {
+      g = null;
+      if (e.touches.length !== 1 || busy() || !e.target.closest || e.target.closest(SKIP) || inScroller(e.target)) return;
+      const t = e.touches[0]; g = { x: t.clientX, y: t.clientY, ly: t.clientY, first: true, own: false, off: 0, p: 0, on: false };
+    }, { passive: true });
+    document.addEventListener('touchmove', (e) => {
+      if (!g) return;
+      if (e.touches.length !== 1 || busy()) { end(); return; }
+      const t = e.touches[0], dy = t.clientY - g.ly; g.ly = t.clientY;
+      if (!g.on && Math.abs(t.clientX - g.x) > 10 && Math.abs(t.clientX - g.x) > Math.abs(t.clientY - g.y)) { g = null; return; }   // sideways swipe
+      const y = se().scrollTop, m = max();
+      if (g.first) {
+        g.first = false;
+        // the drag starts by pulling past an edge: this drag is ours (we scroll and stretch the page ourselves)
+        if (e.cancelable && ((dy > 0 && y <= 0) || (dy < 0 && y >= m - 1))) { g.own = true; g.p = y; prep(); g.on = true; }
+      }
+      if (g.own) {
+        e.preventDefault();
+        g.p -= dy;
+        if (g.p < 0) { if (y !== 0) se().scrollTop = 0; set(R(-g.p)); }
+        else if (g.p > m) { if (y < m) se().scrollTop = m; set(-R(g.p - m)); }
+        else { se().scrollTop = g.p; set(0); }
+        return;
+      }
+      // a normal scroll that runs into an edge while your finger is still down: stretch from there
+      if (!g.on) { if ((dy > 0 && y <= 0) || (dy < 0 && y >= m - 1)) { g.on = true; g.off = 0; g.dir = dy > 0 ? 1 : -1; prep(); } else return; }
+      g.off = g.dir > 0 ? Math.max(0, g.off + dy) : Math.min(0, g.off + dy);
+      if (g.off && e.cancelable) e.preventDefault();
+      set(g.dir * R(Math.abs(g.off)));
+      if (!g.off) { g.on = false; tidy(0); }
+    }, { passive: false });
+    function end() { if (!g) return; const was = g.on; g = null; if (!was) return; set(0, 'transform .52s cubic-bezier(.22,.9,.28,1)'); tidy(560); }
+    document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
+    // a flick that reaches the top or bottom bounces a little, like the iPhone
+    let ly = se().scrollTop, lt = performance.now(), v = 0;
+    window.addEventListener('scroll', () => {
+      const now = performance.now(), y = se().scrollTop, dt = now - lt, py = ly;
+      if (dt > 0 && dt < 120) v = v * 0.4 + ((y - py) / dt) * 0.6; else v = 0;
+      ly = y; lt = now;
+      if (g || busy()) return;
+      const m = max();
+      if ((y <= 0 && py > 0 && v < -0.3) || (m > 0 && y >= m - 1 && py < m - 1 && v > 0.3)) {
+        const A = Math.max(-56, Math.min(56, -v * 20)); prep(); if (A > 0) fillTop(A);
+        anim = els.map(el => el.animate([{ transform: 'translate3d(0,0,0)', easing: 'cubic-bezier(.15,.75,.3,1)' }, { transform: `translate3d(0,${A.toFixed(1)}px,0)`, offset: 0.32, easing: 'cubic-bezier(.45,0,.25,1)' }, { transform: 'translate3d(0,0,0)' }], { duration: 560 }));
+        tidy(600);
+      }
+    }, { passive: true });
+  }
   function markTab(k) { if (EMBED) { try { if (window.parent.WNShell && window.parent.WNShell.on()) window.parent.WNBar.mark(k); } catch (e) { } return; } if (!nav) return; nav.querySelectorAll('a').forEach(a => { const on = !!k && a.dataset.tab === k; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
   window.WNBar = { mount, sync, setTheme, getTheme, applyTheme, open: openMenu, mark: markTab };
 })();
