@@ -28,6 +28,8 @@
 	<string>Workshop connects to your Zebra label printer over Bluetooth to print drawer labels.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Workshop uses the camera to scan drawer labels and to take photos of your parts.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Workshop uses Face ID to unlock the app so only you can open your inventory.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Workshop finds your Zebra label printer on your network and sends labels to it.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -49,9 +51,9 @@
 		<false/>
 	</dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<true/>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
+	<string>UIStatusBarStyleDarkContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

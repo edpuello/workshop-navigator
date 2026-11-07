@@ -1,6 +1,7 @@
 // The web view that shows the bundled Workshop pages, plus the bridge the pages use for native features.
 import UIKit
 import WebKit
+import UserNotifications
 
 final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
     private var webView: WKWebView!
@@ -11,6 +12,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         let config = WKWebViewConfiguration()
         config.setURLSchemeHandler(AppSchemeHandler(), forURLScheme: AppSchemeHandler.scheme)
         config.websiteDataStore = .default()
+        config.suppressesIncrementalRendering = true   // 10.21: no flash between Workshop and Checklist — the next page shows only when ready
         config.allowsInlineMediaPlayback = true
 
         let content = config.userContentController
@@ -25,8 +27,15 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         web.uiDelegate = self
         web.allowsBackForwardNavigationGestures = true
         web.scrollView.contentInsetAdjustmentBehavior = .never   // the pages place themselves around the notch
+        // 10.21: no pinch-to-zoom (it's an app, not a web page)
+        web.scrollView.minimumZoomScale = 1
+        web.scrollView.maximumZoomScale = 1
+        web.scrollView.bouncesZoom = false
+        UNUserNotificationCenter.current().delegate = NotificationPresenter.shared   // 10.21: banners while open
+        web.scrollView.bounces = true             // 10.21: the iPhone's rubber-band at the top/bottom (the bar is on its own layer, so it doesn't dim)
+        content.addUserScript(WKUserScript(source: "(function(){var m=document.querySelector('meta[name=viewport]');var v='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';if(m)m.setAttribute('content',v);else{m=document.createElement('meta');m.name='viewport';m.content=v;document.head.appendChild(m);}document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});})();", injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         web.isOpaque = false
-        web.backgroundColor = UIColor(red: 0.09, green: 0.227, blue: 0.361, alpha: 1)
+        web.backgroundColor = .white   // 10.21: white headers (the page tells us when Dark is on — see darkChrome)
         #if DEBUG
         if #available(iOS 16.4, *) { web.isInspectable = true }  // Safari → Develop menu on the Mac
         #endif
@@ -35,6 +44,17 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         bridge.presenter = self
         view = web
     }
+
+    // 10.21: Light / Dark theme from the page (Menu + → Theme): status bar text and the colour behind the page follow it
+    var darkChrome = false {
+        didSet {
+            guard darkChrome != oldValue else { return }
+            overrideUserInterfaceStyle = darkChrome ? .dark : .light
+            webView?.backgroundColor = darkChrome ? UIColor(red: 0.05, green: 0.06, blue: 0.07, alpha: 1) : .white
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+    override var preferredStatusBarStyle: UIStatusBarStyle { darkChrome ? .lightContent : .darkContent }
 
     private var pageReady = false
 
@@ -45,13 +65,22 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        webView.scrollView.pinchGestureRecognizer?.isEnabled = false   // 10.21: no pinch-to-zoom
         pageReady = true
         runPendingScan()
     }
 
     // The home-screen shortcut: open the scanner on the Workshop page (from the Checklist it switches pages first).
     private func runPendingScan() {
-        guard Shortcuts.pendingScan, pageReady else { return }
+        guard pageReady else { return }
+        if let hash = Shortcuts.pendingHash {                 // NFC tag / link: go to the scanner, a drawer, or home
+            Shortcuts.pendingHash = nil
+            Shortcuts.pendingScan = false
+            let h = hash.replacingOccurrences(of: "'", with: "")
+            webView.evaluateJavaScript("(function(h){ if (/workshop\\.html$/.test(location.pathname)) { if (location.hash === h) location.hash = '#/'; location.hash = h; } else location.href = 'workshop.html' + h; })('\(h)')", completionHandler: nil)
+            return
+        }
+        guard Shortcuts.pendingScan else { return }
         Shortcuts.pendingScan = false
         webView.evaluateJavaScript("window.WNScan ? window.WNScan() : (location.href = 'workshop.html#scan')", completionHandler: nil)
     }

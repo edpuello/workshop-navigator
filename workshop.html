@@ -1,8 +1,9 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#173a5c"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
-<title>Workshop Navigator — Workshop</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#ffffff">
+<script>try{var t=localStorage.getItem("wn-theme")||"light";if(t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}</script><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
+<title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261103d"></script><script src="js/sync.js?v=20261105s"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261106a"></script><script src="js/sync.js?v=20261106b"></script><script src="js/model.js?v=20261103d"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261104b"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261104x"></script><script src="js/printers.js?v=20261106a"></script><script src="js/webscan.js?v=20261106a"></script><script src="js/tabbar.js?v=20261107a"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -108,7 +109,7 @@ html.native .wgrid{grid-template-columns:minmax(0,1fr)}html.native .wcab:not(.se
 @media (min-width:900px){main,.dock{padding-left:max(24px,calc((100vw - 1240px)/2));padding-right:max(24px,calc((100vw - 1240px)/2))}header{padding-left:max(24px,calc((100vw - 1240px)/2));padding-right:max(24px,calc((100vw - 1240px)/2))}}
 /* menu */
 .menu{position:fixed;z-index:60;min-width:240px;background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:6px;display:none}.menu.on{display:block;animation:pop .14s ease-out}
-.menu a,.menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:11px 12px;border-radius:10px;font-size:15px;text-align:left;color:var(--ink)}.menu a:hover,.menu button:hover{background:var(--pill)}
+.menu a,.menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:11px 12px;border-radius:10px;font-size:15px;text-align:left;color:var(--ink)}@media (hover:hover){.menu a:hover,.menu button:hover{background:var(--pill)}}
 .menu small{margin-left:auto;font-size:11.5px;color:var(--accent);font-weight:700}.menu hr{border:0;border-top:1px solid var(--line);margin:4px 6px}
 @keyframes pop{from{opacity:0;transform:translateY(-4px)}}
 /* sheet (same as the Checklist's edit sheet, incl. the iPhone fix) */
@@ -242,6 +243,7 @@ main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)
 .tk-step{display:flex;align-items:center;justify-content:center;gap:20px}.tk-pm{width:64px;height:64px;border-radius:999px;border:0;background:#e7f0fa;color:var(--brand);font-size:34px;font-weight:600;line-height:1;display:grid;place-items:center;padding:0}
 .tk-num{display:flex;flex-direction:column;align-items:center;width:132px}.tk-num input{width:132px;border:0;text-align:center;font:inherit;font-size:64px;font-weight:800;letter-spacing:-2px;background:transparent;padding:0;line-height:1.05;color:var(--ink)}.tk-num span{font-size:14px;color:var(--ink2);font-weight:650}
 .tk-chips{display:flex;gap:8px;justify-content:center;margin:12px 0}.tk-chips button{min-width:54px;height:44px;border-radius:999px;border:1px solid #d3d9e0;background:#fff;font:inherit;font-size:16px;font-weight:700;color:var(--ink)}.tk-chips button.on{border:2px solid var(--brand);background:#e7f0fa;color:var(--brand);font-weight:800}
+.tk-chips{flex-wrap:wrap}.tk-chips button{min-width:0;flex:1 1 0;padding:0 4px;max-width:64px}.tk-chips button.neg{color:#b42318;border-color:#f1c7c3;background:#fff7f6}.tk-chips button.pos{color:#17663a;border-color:#bfe3cc;background:#f4fbf6}
 .tk-after{text-align:center;font-size:16px;color:#3d4652;margin:2px 0 12px}.tk-after b{font-size:18px;color:var(--good)}.tk-after .warn{color:#8a5f00;font-weight:700}
 .tk-gw{border-radius:16px;border:1px solid var(--line);overflow:hidden;margin:4px 0 12px}.tk-gwh{display:flex;justify-content:space-between;align-items:baseline;margin:8px 2px 8px}.tk-gwh b{font-size:17px}.tk-gwh span{font-size:13px;color:var(--ink2)}
 .tk-gr{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}.tk-gr:last-child{border-bottom:0}.tk-gr input{width:24px;height:24px;accent-color:var(--brand);margin:0;flex:none}.tk-gr .t{flex:1;min-width:0}.tk-gr .t b{display:block;font-size:15px}.tk-gr .t span{display:block;font-size:12.5px;color:var(--ink2)}.tk-gr .t span.r{color:var(--bad);font-weight:700}.tk-gr .x{font-size:17px;font-weight:800;color:var(--brand)}.tk-gr.alt{background:#fafbfc}
@@ -265,15 +267,30 @@ main,.dock{padding-left:max(14px,env(safe-area-inset-left),calc((100vw - 1100px)
 .tk-gr{cursor:default}.tk-gl{display:flex;align-items:center;gap:12px;flex:1;min-width:0;cursor:pointer}.tk-gr .t .tk-pl{color:var(--accent);font-weight:700}.tk-gr .t .tk-pl:empty{display:none}.tk-gr.off .t b{color:var(--ink2)}
 .tk-pc{display:flex;align-items:center;gap:6px;flex:none}.tk-pc button{width:36px;height:36px;border-radius:999px;border:0;background:#e7f0fa;color:var(--brand);font-size:20px;font-weight:700;line-height:1;padding:0}.tk-pc b{min-width:26px;text-align:center;font-size:17px;font-weight:800;color:var(--brand)}.tk-gr.off .tk-pc b{color:var(--ink3)}
 
+/* ---- 10.21: header — Welcome, Ed */
+header.hw{background:var(--card);color:var(--ink);padding-top:max(16px,calc(env(safe-area-inset-top) + 6px));padding-bottom:6px}
+header.hw .htop{align-items:flex-start;gap:8px}#menuBtn{display:none!important}header.hw .htop{gap:2px}.hw-t{flex:1;min-width:0}
+.hw-h{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",system-ui,"Segoe UI",Inter,sans-serif;font-size:30px;line-height:1.12;font-weight:600;letter-spacing:.2px}
+.hw-v{margin:4px 0 0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",system-ui,"Segoe UI",Inter,sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.9px;text-transform:uppercase;color:var(--ink2)}
+header.hw .chip{width:40px;height:40px;border:0;background:transparent;color:var(--ink);position:relative;margin-top:2px}header.hw .chip svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hw-bell .bdot{position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 2px var(--card)}.hw-bell .bdot[hidden]{display:none}
+@media (min-width:640px){.scanfab{right:calc(50% - 297px)!important}}
+main{padding-bottom:calc(150px + env(safe-area-inset-bottom))!important}
+/* ---- 10.21: stock colours — green in stock, yellow low, red out (also never bought) */
+:root{--ok:#2e9e5b}
+.hmini i.g,.hk i.g,.wc.g,.whd .k i.g,.lv i.g{background:#7cc79a}.d.g{background:var(--ok)}
+.lvs,.row .t .lvs{display:flex;flex-wrap:wrap;gap:2px 12px}.lv,.row .t .lvs .lv{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.lv i{width:9px;height:9px;border-radius:3px;display:inline-block}.lv i.w{background:#f6c76a}.lv i.r{background:#e2574c}
+.row .t .hbar{margin-top:7px;max-width:260px}.lvsum{background:#fff;border-radius:20px;padding:12px 14px;margin:0 0 12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}.lvsum .lvs{margin-top:8px;font-size:13.5px;color:var(--ink2)}
+/* ---- 10.21: a part in several places */
+.lhd{font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink2);margin:0 0 6px}
+.lrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line)}.lrow:last-of-type{border-bottom:0}
+.lcode{font:800 18px ui-monospace,Menlo,monospace;color:var(--brand);background:#e7f0fa;border:0;border-radius:9px;padding:5px 9px}.lcode.old{color:#8a5f00;background:#fdf3dc;font-size:15px}
+.lwh{flex:1 1 140px;min-width:0;font-size:13px;color:var(--ink2)}.lbt,.abt{display:flex;gap:6px;flex:none}.lbt .gbtn,.lbt .pbtn2,.abt .gbtn,.abt .pbtn2{padding:7px 12px;font-size:13.5px}
 /* ---- 10.17: bottom tab bar on every screen + one Scan button bottom right (same spot as the Checklist's +) */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;gap:4px;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid rgba(20,24,31,.08);padding:6px max(10px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
-.tabbar a{flex:1;max-width:140px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 0 3px;border-radius:12px;color:#6b7684;text-decoration:none;font-size:11.5px;font-weight:650;letter-spacing:.1px}
-.tabbar a svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.tabbar a.on{color:var(--brand)}.tabbar a.on svg{stroke-width:2.3}
-.scanfab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(80px + env(safe-area-inset-bottom));z-index:31;width:62px;height:62px;border-radius:50%;border:0;background:var(--brand);color:#fff;place-items:center;padding:0;box-shadow:0 14px 30px -8px rgba(0,0,0,.45);transition:transform .12s}
+.scanfab{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(86px + env(safe-area-inset-bottom));z-index:31;width:62px;height:62px;border-radius:50%;border:0;background:var(--brand);color:#fff;place-items:center;padding:0;box-shadow:0 14px 30px -8px rgba(0,0,0,.45);transition:transform .12s}
 .scanfab:active{transform:scale(.94)}.scanfab svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}.native main,.webcam main{padding-bottom:calc(160px + env(safe-area-inset-bottom))!important}
-#toast{bottom:calc(86px + env(safe-area-inset-bottom))}.native #toast,.webcam #toast{bottom:calc(154px + env(safe-area-inset-bottom))}
+main{padding-bottom:calc(150px + env(safe-area-inset-bottom))!important}
+#toast{bottom:calc(146px + env(safe-area-inset-bottom))}
 @media print{.tabbar,.scanfab{display:none!important}}
 
 /* ---- 10.20: the website's camera scanner (js/webscan.js) */
@@ -282,15 +299,40 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}.native m
 .wscan-x{width:44px;height:44px;border-radius:999px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:28px;line-height:1;padding:0}
 .wscan-view{width:100%;max-width:560px;border-radius:18px;overflow:hidden;background:#000}.wscan-view video{display:block;width:100%!important;height:auto!important}
 .wscan-hint{margin:16px 0 0;font-size:15px;color:#c7d0da;text-align:center}.wscan-err{margin:10px 0 0;padding:10px 14px;border-radius:12px;background:#5c1d1f;color:#ffd9da;font-size:14.5px;text-align:center;max-width:520px}
-</style></head>
-<body>
-<header><div class="wrap"><div class="htop"><p class="eyebrow">Workshop Navigator · <span id="today"></span></p>
-<button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button>
-<button type="button" class="chip" id="menuBtn" aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
-<h1 class="big">Workshop</h1>
-<nav class="pageswitch" aria-label="Switch page"><a class="on" href="workshop.html" aria-current="page">Workshop App</a><a href="index.html?checklist">Checklist</a></nav></div></header>
+
+/* 10.21 speed: no live blur behind sticky bars */.dock,.cathead{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}.dock{background:rgba(242,242,245,.98)!important}.cathead{background:#f2f2f5!important}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<style id="wn-dark">/* generated by ios/darkgen.py — dark theme (Menu + → Theme) */html.dark{--bg:#0d0f12;--card:#1a1d22;--pill:#262a31;--line:#2e333b;--ink:#eceef2;--ink2:#a3a9b4;--ink3:#6f7681;--accent:#6aaef0;--hit:#6aaef0}html.dark{color-scheme:dark}
+html.dark .pthumb,html.dark .pphoto,html.dark .tk-p .pthumb{background:#e9ecf0!important}
+html.dark img{color-scheme:light}
+html.dark input,html.dark select,html.dark textarea{background-color:#14171b;color:var(--ink);border-color:var(--line)}
+html.dark .nf-att{background:#3a2e10;color:#f3d48b}html.dark .nf-ok{background:#12301f;color:#7fd3a0}
+html.dark .wnbub{background:var(--brand)}
+html.dark .faith,html.dark .faith .fr{background:#000!important}html.dark .faith figcaption{color:#f2f2f2!important}html.dark .faith{box-shadow:0 0 0 1px rgba(255,255,255,.09)}
+html.dark .wmini .wc.g,html.dark .wc.g,html.dark .hmini i.g,html.dark .hk i.g,html.dark .whd .k i.g,html.dark .lv i.g{background:#3f9e66}
+html.dark .wmini .wc.w,html.dark .wc.w,html.dark .hmini i.w,html.dark .hk i.w,html.dark .whd .k i.w,html.dark .lv i.w{background:#d9a640}
+html.dark .wmini .wc.r,html.dark .wc.r,html.dark .hmini i.r,html.dark .hk i.r,html.dark .whd .k i.r,html.dark .lv i.r{background:#d2483e}
+html.dark .wmini .wc.g,html.dark .wmini .wc.w,html.dark .wmini .wc.r{color:#fff}
+html.dark .wnplus:not(.open),html.dark #ckScan,html.dark .scanfab{background:var(--brand)!important;color:#fff!important}html.dark .wnplus.open{color:#fff!important}
+html.dark .wnmenu .mi,html.dark .wnmenu .seg button{background:none!important}html.dark .wnmenu .seg button.on{background:#fff!important;color:var(--brand)!important}html.dark .wnmenu{background:var(--brand)!important;color:#fff!important}
+html.dark .wnbar .tabbar a{background:none!important}
+html.dark header.hw,html.dark body.hdr-a header{background:var(--card)!important}html.dark{background:#121214}html.dark .chip{border:1px solid rgba(56,56,56,0.22)}html.dark .chip .dot{background:#4b5865}html.dark .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .dock{background:rgba(18,18,20,0.92)}html.dark .sbar{background:#1c1c1c}html.dark .ic{background:#1b242c;color:#9cc3ea}html.dark .att .w{color:#fec767}html.dark .soon{background:#19232e}html.dark .back{background:#1c1c1c}html.dark .rows{background:#1c1c1c}html.dark .row:active{background:#121214}html.dark .st-instock{background:#273f30;color:#83ebb1}html.dark .st-tobuy{background:#311717;color:#dd888a}html.dark .st-putaway{background:#4d3e1a;color:#ffd475}html.dark .loc{background:#19232e;color:#9cc3ea}html.dark .loc.old{background:#4d3e1a;color:#ffd475}html.dark .q-half{color:#fecd67}html.dark mark{background:#5b511e}html.dark .ucard .code{color:#9cc3ea;background:#19232e}html.dark .map{background:#1c1c1c}html.dark .cell.pur{border-color:#34373c}html.dark .cell.has{background:#233241;border-color:#2c3744;color:#9cc3ea}html.dark .cell .k2{color:#9cc3ea}html.dark .cell.hit{background:#203349}html.dark .wall{background:#1c1c1c}html.dark .whd .k i{background:#303339}html.dark .wseg button.on{background:#1c1c1c;color:#9cc3ea}html.dark .wcab .wt b{color:#9cc3ea}html.dark .wmini .wc{background:#303339}html.dark .wc.has,html.dark .whd .k i.has{background:#283747}html.dark.native .wmini .wc{color:#caced4}@media (max-width:700px){html.dark .wmini .wc{color:#caced4}}html.dark .pmap .cell{background:rgba(28,28,28,0.42);border:1px solid rgba(56,56,56,0.55);color:#caced4}html.dark .pmap .cell.has{background:#1c1c1c;border-color:#383838;color:#9cc3ea}html.dark .pmap .cell.pur{background:rgba(28,28,28,0.72)}html.dark .pmap .cell.hit{background:#1c1c1c}html.dark .where{background:#1c1c1c}html.dark .where .wc{color:#9cc3ea}html.dark .menu{background:#1c1c1c}html.dark .sh-grab span{background:#38383d}html.dark .fld input,html.dark .fld select{background:#121214}html.dark .ubtn{background:#1c1c1c}html.dark .ubtn b{color:#9cc3ea}html.dark .ubtn.on{background:#19232e}html.dark .rtag{color:#ced2d8}html.dark .oc{background:#131313}html.dark .oc b{color:#b2b2b2}html.dark .oc i{color:#fec767}html.dark .lprev{background:#2d3138}html.dark header .chip{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .att .b{color:#9cc3ea}html.dark .hcta{color:#9cc3ea;background:#1b242c}html.dark .hk i{background:#283747}html.dark .hct b{color:#9cc3ea}html.dark .hmini i{background:#303339}html.dark .hmini i.h{background:#283747}html.dark .hchip b{color:#9cc3ea}html.dark .hrow b.b{color:#9cc3ea}html.dark .hrow b.w{color:#fec767}html.dark .hmore{color:#9cc3ea}html.dark .hline em.w{color:#fec767}html.dark .hline em.b{color:#9cc3ea}html.dark .hpc{background:#1c1c1c}html.dark .hpc em{color:#9cc3ea}html.dark .utr b{color:#9cc3ea}html.dark .prow em.w{color:#fec767}html.dark .prow em.b{color:#9cc3ea}html.dark .tk-code{background:#19232e;color:#9cc3ea}html.dark .tk-stats b.q-low{color:#ffd475}html.dark .tk-seg button{color:#b5bdc8}html.dark .tk-pm{background:#19232e;color:#9cc3ea}html.dark .tk-chips button{border:1px solid #34383c;background:#1c1c1c}html.dark .tk-chips button.on{background:#19232e;color:#9cc3ea}html.dark .tk-chips button.neg{color:#f07e75;border-color:#462d2a;background:#341714}html.dark .tk-chips button.pos{color:#97eabc;border-color:#2f4136;background:#1c2b20}html.dark .tk-after{color:#b5bdc8}html.dark .tk-after .warn{color:#ffd475}html.dark .tk-gr .x{color:#9cc3ea}html.dark .tk-gr.alt{background:#202428}html.dark .tk-ask{background:#19232e}html.dark .tk-ask b{color:#9cc3ea}html.dark .tk-ask span{color:#98b4d1}html.dark .tk-in{background:#1c1c1c}html.dark .tk-rough .r1{border:1px solid #314036;background:#273f30;color:#83ebb1}html.dark .tk-rough .r2{background:#4d3e1a;color:#ffd475}html.dark .tk-rough .r3{border:1px solid #462b2b;background:#311717;color:#dd888a}html.dark .tk-done i{background:#273f30;color:#83ebb1}html.dark .tk-low{background:#4d3e1a;color:#ffe2a3}html.dark .tk-low .bb button.n{color:#ffe2a3}html.dark .tk-ok{background:#273f30;color:#83ebb1}html.dark .dr-row .t span.w{color:#ffd475}html.dark .dr-pm{background:#19232e;color:#9cc3ea}html.dark .dr-n.on{color:#9cc3ea}html.dark .dr-seg button{color:#b5bdc8}html.dark .dr-bar{background:#1c1c1c}html.dark .dr-bar span{color:#b5bdc8}html.dark .gw-grid button.r{background:#311717}html.dark .gw-grid button.w small{color:#ffd475}html.dark .cell.hit2{background:#19232e}html.dark .pmap .cell.hit2{background:#293d56}html.dark .tk-pc button{background:#19232e;color:#9cc3ea}html.dark .tk-pc b{color:#9cc3ea}html.dark .lvsum{background:#1c1c1c}html.dark .lcode{color:#9cc3ea;background:#19232e}html.dark .lcode.old{color:#ffd475;background:#493c1c}html.dark .dock{background:rgba(18,18,20,0.98)!important}html.dark .cathead{background:#121214!important}</style>
+</head>
+<body><script src="js/login.js?v=20261107b"></script>
+<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Welcome, Ed</h1><p class="hw-v">Workshop Navigator v10.21 · Nov 6, 2026<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div></div></header>
 <div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label></div></div>
-<main><div class="wrap" id="view"></div></main><nav class="tabbar" aria-label="Sections"><a href="#/" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h5v-5h3v5h5V10"/></svg><span>Home</span></a><a href="#/parts" data-tab="parts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span>Parts</span></a><a href="#/storage" data-tab="storage"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/></svg><span>Storage</span></a><a href="#/tools" data-tab="tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3.5 17.3a1.8 1.8 0 0 0 2.5 2.5l5.8-5.8a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.6-.6-2.3z"/></svg><span>Tools</span></a></nav><button type="button" class="scanfab app-only" data-act="scancode" aria-label="Scan a drawer" title="Scan a drawer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg></button>
+<main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
  <a href="#/storage" role="menuitem">Storage map</a>
  <button type="button" role="menuitem" data-act="printer">Labels &amp; printer <small id="qBadge"></small></button>
@@ -325,6 +367,12 @@ const ST_LABEL = { instock: 'In stock', tobuy: 'To buy', putaway: 'Bought', unma
 // ---------------------------------------------------------------- where things are
 let IDX = null; // code → [parts], rebuilt when the data changes
 function canon(loc) { const f = S.find(doc(), loc); return f ? f.slot.code : ''; }
+// 10.21: a part can sit in several places, in any storage — x.location holds them comma-separated ("A1-B01, H1-D03"); the first is its main spot.
+const locList = (x) => String((x && x.location) || '').split(/\s*[,;]\s*/).map(v => v.trim()).filter(Boolean);
+const codesOf = (x) => [...new Set(locList(x).map(canon).filter(Boolean))];
+const loc1 = (x) => codesOf(x)[0] || '';
+const locKey = (v) => (canon(v) || String(v || '').trim()).toUpperCase();
+function writeLocs(x, list) { const seen = new Set(), out = []; list.forEach(v => { v = String(v || '').trim(); const k = locKey(v); if (v && !seen.has(k)) { seen.add(k); out.push(canon(v) || v); } }); x.location = out.join(', '); }
 const things = () => (doc().app.inventory || []).filter(t => t && (t.kind === 'tool' || t.kind === 'item'));
 const thingById = (id) => (doc().app.inventory || []).find(t => t && t.id === id);
 function nextThingId(prefix) { const ids = [...(doc().app.inventory || []).map(x => x && x.id), ...Object.keys(doc().del || {}).filter(k => k.startsWith('app.inventory:')).map(k => k.slice(14))]; const n = ids.filter(x => String(x || '').startsWith(prefix)).map(x => Number(String(x).slice(prefix.length)) || 0); return prefix + String(Math.max(0, ...n) + 1).padStart(4, '0'); }
@@ -336,22 +384,27 @@ function index() {
   if (IDX) return IDX;
   const by = new Map(), loose = new Map(), th = new Map();
   for (const t of things()) { const c = canon(t.location); if (c) { if (!th.has(c)) th.set(c, []); th.get(c).push(t); } }
-  for (const x of items()) {
-    const loc = String(x.location || '').trim(); if (!loc) continue;
+  for (const x of items()) for (const loc of locList(x)) {
     const c = canon(loc);
-    if (c) { if (!by.has(c)) by.set(c, []); by.get(c).push(x); }
+    if (c) { if (!by.has(c)) by.set(c, []); if (!by.get(c).includes(x)) by.get(c).push(x); }
     else { const k = loc.toUpperCase(); if (!loose.has(k)) loose.set(k, { text: loc, parts: [] }); loose.get(k).parts.push(x); }
   }
   return (IDX = { by, loose, th });
 }
-const flag = (arr) => arr.some(x => x.store && stockLevel(x) === 'out') ? 'r' : arr.some(isLow) ? 'w' : '';
+// 10.21: every part is in stock, low or out — a part you don't have (never bought, or 0 left) counts as out. Drawers show their worst part.
+const lvlOf = (x) => !x.store || qtyNum(x) === 0 || stockLevel(x) === 'out' ? 'out' : isLow(x) ? 'low' : 'ok';
+const flag = (arr) => !arr.length ? '' : arr.some(x => lvlOf(x) === 'out') ? 'r' : arr.some(x => lvlOf(x) === 'low') ? 'w' : 'g';
+const lvlCount = (list) => { const c = { ok: 0, low: 0, out: 0 }; list.forEach(x => c[lvlOf(x)]++); return c; };
+const lvlBar = (c, n) => hBar([[c.ok, 'var(--ok)'], [c.low, 'var(--warn)'], [c.out, 'var(--bad)']], n);
+const lvlLine = (c) => `<span class="lv"><i class="g"></i>${c.ok} in stock</span><span class="lv"><i class="w"></i>${c.low} low</span><span class="lv"><i class="r"></i>${c.out} out</span>`;
 
 // ---------------------------------------------------------------- small helpers
 function shortName(x) { return String(x.name || '').replace(/\s+in\b/g, '″').replace(/\s*×\s*/g, '×'); }
 function countHtml(x) { const q = qtyNum(x), lv = stockLevel(x); return q == null ? (lv ? `<span class="cnt" style="font-size:14px">${STOCK_LABEL[lv]}</span>` : '') : `<span class="cnt ${qtyClass(x)}">${q}</span>`; }
 function locChip(x) {
-  const loc = String(x.location || '').trim(); if (!loc) return x.store ? '<span class="loc no">No drawer</span>' : '';
-  const c = canon(loc); return c ? `<span class="loc">${esc(c)}</span>` : `<span class="loc old" title="Not on the map yet">${esc(loc)}</span>`;
+  const l = locList(x); if (!l.length) return x.store ? '<span class="loc no">No drawer</span>' : '';
+  const c = canon(l[0]), more = l.length > 1 ? ` +${l.length - 1}` : '', all = esc(l.map(v => canon(v) || v).join(', '));
+  return c ? `<span class="loc" title="${all}">${esc(c)}${more}</span>` : `<span class="loc old" title="Not on the map yet: ${all}">${esc(l[0])}${more}</span>`;
 }
 let terms = [];
 function hl(str) { const e = esc(str), ts = terms.filter(t => t.length > 1); if (!ts.length) return e; const re = new RegExp('(' + ts.map(t => esc(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi'); return e.split(/(&[#a-z0-9]+;)/i).map(p => /^&[#a-z0-9]+;$/i.test(p) ? p : p.replace(re, '<mark>$1</mark>')).join(''); }
@@ -379,10 +432,16 @@ function toast(msg, label, fn) {
 
 // ---------------------------------------------------------------- changes (the only writes this page makes: a part's drawer, storage units)
 function commit() { IDX = null; WN.commit(); }
-function setLocation(x, code, quiet) {
-  const prev = x.location || ''; if ((prev || '') === (code || '')) return;
-  x.location = code || ''; commit(); refresh();
-  if (!quiet) toast(code ? `${x.name} → ${code}` : `${x.name} removed from ${canon(prev) || prev}`, 'Undo', () => { const y = itemById(x.id); if (y) { y.location = prev; commit(); refresh(); } });
+// opts: { from } move that spot to code · { add: true } keep the others and add code · { remove } take it out of that spot · none: code becomes its only spot
+function setLocation(x, code, quiet, opts) {
+  const prev = x.location || '', o = opts || {}; let l = locList(x), msg;
+  if (o.add) { l.push(code); msg = `${x.name} also in ${canon(code) || code}`; }
+  else if ('remove' in o) { const k = locKey(o.remove), i = l.findIndex(v => locKey(v) === k); if (i < 0) return; l.splice(i, 1); msg = `${x.name} taken out of ${canon(o.remove) || o.remove}`; }
+  else if ('from' in o) { const k = locKey(o.from), i = o.from ? l.findIndex(v => locKey(v) === k) : -1; if (i >= 0) l[i] = code; else if (o.from || !l.length) l.push(code); else l[0] = code; msg = `${x.name} → ${canon(code) || code}`; }
+  else { l = code ? [code] : []; msg = code ? `${x.name} → ${canon(code) || code}` : `${x.name} taken out of ${canon(prev) || prev}`; }
+  writeLocs(x, l); if ((x.location || '') === prev) return;
+  commit(); refresh();
+  if (!quiet) toast(msg, 'Undo', () => { const y = itemById(x.id); if (y) { y.location = prev; commit(); refresh(); } });
 }
 function saveUnit(u) {
   const list = doc().locations, i = list.findIndex(l => l && l.id === u.id && l.kind === 'unit');
@@ -393,8 +452,11 @@ function saveUnit(u) {
 
 // ---------------------------------------------------------------- routes
 function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = h.split('/'); return { v: a || 'home', a: b ? decodeURIComponent(b) : '' }; }
-function go(h) { if (location.hash === h) render(); else location.hash = h; }
-window.addEventListener('hashchange', () => { deepLink(); render(); window.scrollTo(0, 0); });
+// 10.21: leaving a search (tab bar, Home, Back, any link) empties the search box, so Home is never stuck showing old results
+function clearQ() { const e = $('q'); if (!e || !e.value) return false; e.value = ''; $('qClear').hidden = true; if (document.activeElement === e) e.blur(); return true; }
+function go(h) { clearQ(); if (location.hash === h) render(); else location.hash = h; }
+window.addEventListener('hashchange', () => { clearQ(); deepLink(); render(); window.scrollTo(0, 0); });
+document.addEventListener('click', (e) => { const a = e.target.closest('.tabbar a'); if (a && clearQ()) setTimeout(render, 0); }, true);
 function deepLink() {
   const h = location.hash; if (h === '#scan') { history.replaceState(null, '', '#/'); render(); setTimeout(() => window.WNScan(), 300); return true; }
   const m = h.match(/^#(part|loc)=(.+)$/); if (!m) return false;
@@ -424,19 +486,19 @@ function HD() {
   const it = items(), n = it.length, c = { instock: 0, tobuy: 0, putaway: 0, unmarked: 0 }; it.forEach(x => c[itemStatus(x)]++);
   const tobuy = it.filter(x => x.need), low = it.filter(isLow), cats = new Set(it.map(x => x.category)).size;
   const us = S.units(doc()), spots = us.reduce((a, u) => a + S.slots(u).length, 0), ix = index(), placed = [...ix.by.values()].reduce((a, v) => a + v.length, 0);
-  const noDrawer = it.filter(x => x.store && !canon(x.location));
+  const noDrawer = it.filter(x => x.store && !loc1(x));
   const tools = (doc().app.inventory || []).filter(t => t && t.kind === 'tool').length;
-  const akro = us.filter(u => O.CABS.includes(u.id) && u.type === 'grid').map(u => { const sl = S.slots(u); let used = 0, lo = 0, out = 0; const cells = sl.map(s => { const ps = ix.by.get(s.code) || [], f = flag(ps); if (ps.length) used++; if (f === 'w') lo++; if (f === 'r') out++; return `<i class="${f ? f : ps.length ? 'h' : ''}"></i>`; }).join(''); return { u, used, n: sl.length, lo, out, cells }; });
+  const akro = us.filter(u => O.CABS.includes(u.id) && u.type === 'grid').map(u => { const sl = S.slots(u); let used = 0, lo = 0, out = 0; const cells = sl.map(s => { const ps = ix.by.get(s.code) || [], f = flag(ps); if (ps.length) used++; if (f === 'w') lo++; if (f === 'r') out++; return `<i class="${f}"></i>`; }).join(''); return { u, used, n: sl.length, lo, out, cells }; });
   const marked = c.instock + c.tobuy + c.putaway;
-  return { it, n, c, tobuy, low, cats, us, spots, placed, noDrawer, tools, akro, marked };
+  return { it, n, c, tobuy, low, cats, us, spots, placed, noDrawer, tools, akro, marked, lv: lvlCount(it) };
 }
 const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).map(p => `<i style="flex:${p[0]};background:${p[1]}"></i>`).join('')}${total - parts.reduce((a, p) => a + p[0], 0) > 0 ? `<i style="flex:${total - parts.reduce((a, p) => a + p[0], 0)}"></i>` : ''}</div>`;
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.20 · Nov 6</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.21 · Nov 6</span></p>`;
 const attRows = (D) => `<span>To buy</span><b class="${D.tobuy.length ? 'r' : ''}">${D.tobuy.length}</b><span>Running low</span><b class="${D.low.length ? 'w' : ''}">${D.low.length}</b><span>Need a drawer</span><b class="${D.noDrawer.length ? 'b' : ''}">${D.noDrawer.length}</b>${D.c.putaway ? `<span>Bought, not stocked</span><b>${D.c.putaway}</b>` : ''}`;
-const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.c.instock} in stock · ${D.cats} families</div>${hBar([[D.c.instock, 'var(--brand)'], [D.c.tobuy, 'var(--bad)']], D.n)}<div class="s xs">${D.n - D.marked} not marked yet</div></button>`;
+const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
 const storageCard = (D) => `<button type="button" class="card" data-go="#/storage">${chev}<div class="k">${ic('grid')}Storage</div><div class="n">${D.placed}<small> / ${D.spots}</small></div><div class="s">spots used · ${D.us.length} units</div>${hBar([[D.placed, 'var(--brand)']], D.spots)}<div class="s xs">${D.noDrawer.length ? `${D.noDrawer.length} in stock without a drawer` : 'Every in-stock part has a drawer'}</div></button>`;
 const toolsCard = (D, tw) => `<button type="button" class="card${tw ? ' tw' : ''}" data-go="#/tools">${chev}<div class="k">${ic('tool')}Tools</div><div class="n">${D.tools}</div><div class="s">${D.tools ? 'with brand, model, serial' : 'Add your tools — brand, model, serial, battery'}</div>${D.tools ? '' : '<span class="hcta">+ Add a tool</span>'}</button>`;
 const attCard = (D, pch) => `<button type="button" class="card${pch ? ' pch' : ''}" data-go="#/attention">${chev}<div class="k">${ic('alert')}Needs attention</div><div class="att">${attRows(D)}</div></button>`;
@@ -448,7 +510,7 @@ const sugg = (x) => esc(x.category.replace(/^(SAE |Metric )/, '').split(' ').sli
 // PC only: more detail under the cards (hidden on phones)
 function pcMore(D, skip) {
   skip = skip || '';
-  const fam = new Map(); D.it.forEach(x => { const k = x.category || 'Other'; const f = fam.get(k) || { k, n: 0, ins: 0, need: 0, dr: 0 }; f.n++; if (x.store) f.ins++; if (x.need) f.need++; if (canon(x.location)) f.dr++; fam.set(k, f); });
+  const fam = new Map(); D.it.forEach(x => { const k = x.category || 'Other'; const f = fam.get(k) || { k, n: 0, ins: 0, need: 0, dr: 0 }; f.n++; if (x.store) f.ins++; if (x.need) f.need++; if (loc1(x)) f.dr++; fam.set(k, f); });
   const famPic = new Map(); D.it.forEach(x => { const k = x.category || 'Other'; if (!famPic.has(k) || (!famPic.get(k).img && x.img)) famPic.set(k, x); });
   const fams = [...fam.values()].sort((a, b) => b.n - a.n);
   const famRows = fams.map(f => `<button type="button" class="ftr" data-go="#/parts"><span class="fn">${famPic.get(f.k) ? photo(famPic.get(f.k)) : ''}<span>${esc(f.k)}</span></span><span class="fb">${hBar([[f.ins, 'var(--brand)'], [f.need, 'var(--bad)'], [f.dr - f.ins > 0 ? f.dr - f.ins : 0, '#cfe0f2']], f.n)}</span><span class="fc">${f.n}</span><span class="fc">${f.ins || '–'}</span><span class="fc">${f.dr || '–'}</span><span class="fc ${f.need ? 'r' : ''}">${f.need || '–'}</span></button>`).join('');
@@ -465,7 +527,7 @@ function pcMore(D, skip) {
 }
 function home() {
   const D = HD();
-  return `<div class="cards p3">${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="h"></i>parts <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
+  return `<div class="cards p3">${freshCard()}${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="g"></i>in stock <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
 }
 function partRow(x) {
   const st = itemStatus(x);
@@ -474,12 +536,126 @@ function partRow(x) {
 function sortedParts(list) { const idx = orderIndex(doc().items), cats = [...new Set(list.map(x => x.category))]; return cats.flatMap(c => sortCat(list.filter(x => x.category === c), idx)); }
 function parts() {
   const it = items(), cats = [...new Set(sortCat(it, orderIndex(doc().items)).map(x => x.category))];
-  const fam = (cat) => { const l = it.filter(x => x.category === cat), s = l.filter(x => x.store).length, b = l.filter(x => x.need).length, w = l.filter(isLow).length; return `<button type="button" class="row" data-go="#/parts/${encodeURIComponent(cat)}"><div class="t"><b>${esc(cat || 'Other')}</b><span>${s} in stock${b ? ` · ${b} to buy` : ''}${w ? ` · ${w} low` : ''}</span></div><span class="cnt" style="color:var(--ink2)">${l.length}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>`; };
-  return head(`Parts <span style="color:var(--ink3);font-weight:700">${it.length}</span>`, '#/') + `<div class="rows">${cats.map(fam).join('') || '<div class="empty">No parts yet. Add them on the Checklist.</div>'}</div>`;
+  const fam = (cat) => { const l = it.filter(x => x.category === cat), c = lvlCount(l), b = l.filter(x => x.need).length; return `<button type="button" class="row" data-go="#/parts/${encodeURIComponent(cat)}"><div class="t"><b>${esc(cat || 'Other')}</b><span class="lvs">${lvlLine(c)}${b ? `<span class="lv">${b} to buy</span>` : ''}</span>${lvlBar(c, l.length)}</div><span class="cnt" style="color:var(--ink2)">${l.length}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>`; };
+  const all = lvlCount(it); return head(`Parts <span style="color:var(--ink3);font-weight:700">${it.length}</span>`, '#/') + `<div class="lvsum">${lvlBar(all, it.length)}<div class="lvs">${lvlLine(all)}</div></div><div class="rows">${cats.map(fam).join('') || '<div class="empty">No parts yet. Add them on the Checklist.</div>'}</div>`;
 }
 function family(cat) {
   const list = sortedParts(items().filter(x => x.category === cat));
   return head(esc(cat) + ` <span style="color:var(--ink3);font-weight:700">${list.length}</span>`, '#/parts') + `<div class="rows">${list.map(partRow).join('') || '<div class="empty">Nothing here.</div>'}</div>`;
+}
+// ---------------------------------------------------------------- 10.21: press and hold a part in a family list, then drag it to a new spot
+// The new order is the same one the Checklist uses (x.order), so both pages show it.
+(() => {
+  const HOLD = 380, css = document.createElement('style');
+  css.textContent = `#view .rows .row[data-part]{transition:transform .22s cubic-bezier(.2,.75,.3,1)}#view .rows .row.pdrag{transition:none;z-index:5;position:relative;box-shadow:0 18px 36px -12px rgba(0,0,0,.35);border-radius:16px;background:var(--card,#fff)}#view .rows.pdragging .row:not(.pdrag){pointer-events:none}body.pdrag-on{-webkit-user-select:none;user-select:none}`;
+  document.head.appendChild(css);
+  let st = null, timer = 0, skipClick = 0;
+  const famRows = (row) => { const box = row.closest('#view .rows'); return box ? [...box.querySelectorAll('.row[data-part]')] : []; };
+  document.addEventListener('pointerdown', (e) => {
+    const row = e.target.closest('#view .rows .row[data-part]'); if (!row || e.button > 0 || !/^#\/parts\/./.test(location.hash)) return;
+    clearTimeout(timer); st = { row, id: e.pointerId, x: e.clientX, y: e.clientY, on: false };
+    timer = setTimeout(() => {
+      if (!st || st.row !== row) return;
+      const rows = famRows(row); if (rows.length < 2) return;
+      st.on = true; st.rows = rows; st.from = rows.indexOf(row); st.to = st.from;
+      st.tops = rows.map(r => r.getBoundingClientRect()); st.h = st.tops[st.from].height + 1;
+      row.classList.add('pdrag'); row.style.transform = 'scale(1.03)'; row.parentNode.classList.add('pdragging'); document.body.classList.add('pdrag-on');
+      try { if (window.WNNative && window.webkit) { const r = window.webkit.messageHandlers.wn.postMessage({ cmd: 'haptic' }); if (r && r.catch) r.catch(() => { }); } } catch (x) { }
+    }, HOLD);
+  }, true);
+  document.addEventListener('pointermove', (e) => {
+    if (!st || e.pointerId !== st.id) return;
+    if (!st.on) { if (Math.hypot(e.clientX - st.x, e.clientY - st.y) > 8) { clearTimeout(timer); st = null; } return; }
+    const f = st.tops[st.from], minDy = st.tops[0].top - f.top, maxDy = st.tops[st.tops.length - 1].bottom - f.bottom;   // stays inside its own list
+    const dy = Math.max(minDy, Math.min(maxDy, e.clientY - st.y)); st.row.style.transform = `translate3d(0,${dy}px,0) scale(1.03)`;
+    const mid = st.tops[st.from].top + st.tops[st.from].height / 2 + dy;
+    let to = 0; st.tops.forEach((r, i) => { if (mid > r.top + r.height / 2) to = i; }); if (mid < st.tops[0].top + st.tops[0].height / 2) to = 0;
+    if (to !== st.to) { st.to = to; st.rows.forEach((r, i) => { if (r === st.row) return; let off = 0; if (st.from < to && i > st.from && i <= to) off = -st.h; if (st.from > to && i < st.from && i >= to) off = st.h; r.style.transform = off ? `translate3d(0,${off}px,0)` : ''; }); }
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => { if (st && st.on) e.preventDefault(); }, { passive: false });   // no scrolling while dragging
+  const end = (e) => {
+    clearTimeout(timer); if (!st) return; const s = st; st = null; if (!s.on) return;
+    skipClick = Date.now();
+    const top = s.tops[s.to], dy = (s.to - s.from) * s.h;
+    s.row.style.transition = 'transform .22s cubic-bezier(.2,.75,.3,1)'; s.row.style.transform = `translate3d(0,${dy}px,0)`;
+    setTimeout(() => {
+      s.row.parentNode.classList.remove('pdragging'); document.body.classList.remove('pdrag-on');
+      if (s.to !== s.from) {
+        const ids = s.rows.map(r => r.dataset.part); const [m] = ids.splice(s.from, 1); ids.splice(s.to, 0, m);
+        ids.forEach((id, k) => { const x = itemById(id); if (x) x.order = k * 10; });
+        commit();
+      }
+      render();
+    }, 230);
+  };
+  document.addEventListener('pointerup', end, true); document.addEventListener('pointercancel', end, true);
+  document.addEventListener('click', (e) => { if (skipClick && Date.now() - skipClick < 400 && e.target.closest('#view .rows .row[data-part]')) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+})();
+// ---------------------------------------------------------------- start fresh (10.21): wipe every count, then stock what came in the Bolt Depot orders
+// From the packing slips: order 2641612 (Oct 21) and order 2644310 shipment 1 of 2 (Oct 26). [part id, pieces, Bolt Depot product #]
+// #10-32 nylon hex nuts (21263) came in both orders: 50 + 100 = 150. The #12 flat washer isn't a part yet — it's added.
+const FRESH = { id: 'boltdepot-2026-10', title: 'Bolt Depot orders', bags: [
+  ['HW-0017', 25, '129'], ['HW-0013', 25, '130'], ['HW-0014', 25, '132'], ['HW-0015', 15, '133'], ['HW-0016', 15, '135'], ['HW-0020', 25, '144'],
+  ['HW-0021', 25, '146'], ['HW-0018', 25, '158'], ['HW-0019', 25, '160'], ['HW-0008', 25, '1336'], ['HW-0009', 25, '1338'], ['HW-0007', 25, '1339'],
+  ['HW-0011', 25, '1346'], ['HW-0012', 25, '1348'], ['HW-0010', 25, '1349'], ['HW-0002', 25, '1356'], ['HW-0003', 25, '1358'], ['HW-0001', 25, '1359'],
+  ['HW-0005', 25, '1366'], ['HW-0006', 25, '1368'], ['HW-0004', 25, '1369'], ['HW-0038', 150, '2563'], ['HW-0046', 50, '2564'], ['HW-0042', 25, '2565'],
+  ['HW-0122', 50, '21261'], ['HW-0123', 50, '21262'], ['HW-0125', 150, '21263'], ['HW-0031', 50, '2550'], ['HW-0035', 50, '2551'], ['HW-0039', 50, '2554'],
+  ['HW-0047', 25, '2555'], ['HW-0043', 25, '2556'], ['HW-0027', 25, '2553'], ['HW-0028', 100, '2942'], ['HW-0032', 100, '2943'], ['HW-0127', 25, '21385'],
+  ['HW-0128', 25, '21387'], ['HW-0129', 25, '21389'], ['HW-0130', 25, '21399'], ['HW-0131', 25, '21402'], ['HW-0132', 25, '21404'], ['HW-0133', 25, '21414'],
+  ['HW-0134', 25, '21416'], ['HW-0135', 25, '21418'], ['HW-0136', 25, '21425'], ['HW-0137', 25, '21427'], ['HW-0138', 25, '21428'], ['HW-0142', 25, '21634'],
+  ['HW-0143', 25, '21636'], ['HW-0144', 25, '21638'], ['HW-0139', 25, '21609'], ['HW-0140', 25, '21611'], ['HW-0141', 25, '21613'], ['HW-0121', 100, '21260'],
+  ['HW-0124', 100, '21264'], ['HW-0126', 100, '21265'], ['HW-0030', 100, '2558'], ['HW-0034', 100, '2559'], ['HW-0024', 100, '2560'], ['HW-0026', 100, '2561'],
+  ['HW-0022', 100, '2946'], ['HW-0036', 100, '2947'], ['HW-0044', 100, '2948'], ['HW-0040', 100, '2949'], ['HW-0145', 100, '15934'], ['HW-0146', 100, '15935'],
+  ['HW-0147', 100, '15936'], ['HW-0148', 100, '15937'], ['HW-0149', 100, '15939'], ['HW-0029', 100, '2953'], ['HW-0033', 100, '2954'], ['HW-0023', 100, '2955'],
+  ['HW-0037', 100, '2956'], ['HW-0045', 100, '2957'], ['HW-0041', 100, '2958'], ['HW-0051', 50, '6831'], ['HW-0150', 50, '6833'], ['HW-0151', 50, '6835'],
+  ['HW-0053', 50, '5166'], ['HW-0153', 50, '5168'], ['HW-0154', 50, '5169'], ['HW-0055', 50, '6407'], ['HW-0057', 50, '6416'], ['HW-0160', 50, '6418'],
+  ['HW-0161', 50, '6419'], ['HW-0059', 25, '6432'], ['HW-0164', 25, '6434'], ['HW-0165', 25, '6436'], ['HW-0052', 50, '4773'], ['HW-0054', 50, '4774'],
+  ['HW-0056', 50, '4775'], ['HW-0058', 50, '4776'], ['HW-0060', 50, '4778'], ['HW-0158', 50, '4794'], ['HW-0162', 50, '4795'], ['HW-0166', 50, '4797'],
+  ['HW-0152', 100, '4513'], ['HW-0155', 100, '4514'], ['HW-0159', 100, '4515'], ['HW-0163', 100, '4516'], ['HW-0167', 100, '4518']],
+  add: [{ key: /^#12 flat washers?\b/i, name: '#12 Flat Washers · 18-8 stainless', category: 'SAE Nuts & Washers', qty: 50, prod: '5566' }] };
+const FRESH_NOTE = { '1336': 'Phillips pan head', '1338': 'Phillips pan head', '1339': 'Phillips pan head', '1346': 'Phillips pan head', '1348': 'Phillips pan head', '1349': 'Phillips pan head', '1356': 'Phillips pan head', '1358': 'Phillips pan head', '1359': 'Phillips pan head', '1366': 'Phillips pan head', '1368': 'Phillips pan head', '1369': 'Phillips pan head' };
+const freshState = () => (doc().app.state && doc().app.state.fresh) || {};
+const freshAdds = () => FRESH.add.map(a => ({ a, x: items().find(x => a.key.test(x.name)) }));
+const freshBags = () => FRESH.bags.map(([id, n, prod]) => ({ x: itemById(id), id, n, prod })).filter(b => b.x);
+const freshPcs = () => FRESH.bags.reduce((a, b) => a + b[1], 0) + FRESH.add.reduce((a, b) => a + b.qty, 0);
+const freshCard = () => { if (freshState()[FRESH.id] || freshBags().every(o => o.x.store && qtyNum(o.x) != null)) return '';
+  return `<button type="button" class="card wide col fresh" data-go="#/fresh">${chev}<div class="k">${ic('box')}Stock your ${FRESH.title}</div><div class="s">${FRESH.bags.length + FRESH.add.length} parts · ${freshPcs().toLocaleString()} pieces · shows what differs before anything changes</div></button>`; };
+// The new name: SAE parts that don't name a material get "· 18-8 stainless" (metric already says A2 = 18-8); nylon screws are slotted round head per the slip.
+const fresh18 = (x) => { let n = x.name; if (/nylon/i.test(n + ' ' + (x.category || ''))) return n.replace(/nylon pan-head machine screw/i, 'nylon slotted round-head machine screw'); return /stainless|18-8|\bA2\b/i.test(n) ? n : n + ' · 18-8 stainless'; };
+const freshNote = (x, prod) => { const add = prod.split('/').map(p => (FRESH_NOTE[p] ? FRESH_NOTE[p] + ' · ' : '') + 'Bolt Depot #' + p).join(' · ').replace(/(Phillips pan head · )(.*)\1/, '$1$2'); const cur = String(x.notes || '').split(';').map(t => t.trim()).filter(t => t && !/starter|enter actual quantity|already received|verify|before purchase|purchase 1/i.test(t)).join('; '); return cur.includes('Bolt Depot #') ? cur : (cur ? cur + ' · ' : '') + add; };
+function freshCmp(x, n) { const q = qtyNum(x); return { q, same: q === n && !!x.store, none: q == null || !x.store }; }
+function freshView() {
+  const done = freshState()[FRESH.id] > 0 && freshState()[FRESH.id], b = freshBags(), adds = freshAdds(), miss = FRESH.bags.length - b.length;
+  const cmp = b.map(o => ({ ...o, ...freshCmp(o.x, o.n), nn: fresh18(o.x) }));
+  const same = cmp.filter(o => o.same), none = cmp.filter(o => o.none), diff = cmp.filter(o => !o.same && !o.none), ren = cmp.filter(o => o.nn !== o.x.name).length;
+  const newOnes = adds.filter(o => !o.x);
+  const row = (o) => { const x = o.x;
+    const now = o.none ? '<span style="color:var(--ink2)">not counted in the app</span>' : o.same ? '<span style="color:#1f8a4c;font-weight:700">app has ' + o.q + ' ✓ same</span>' : '<span style="color:#b26a00;font-weight:700">app has ' + o.q + ' · slip ' + (o.n > o.q ? '+' : '') + (o.n - o.q) + '</span>';
+    return `<button type="button" class="row" data-part="${esc(x.id)}">${photo(x)}<div class="t"><b>${esc(o.nn)}</b><div style="font-size:13px;margin-top:2px">${now} <span style="color:var(--ink2);white-space:nowrap">· #${esc(o.prod)}</span></div>${o.nn !== x.name ? '<div class="pills"><span class="pill">renamed</span></div>' : ''}</div><div class="rt"><span class="cnt">${o.n}</span>${locChip(x)}</div></button>`; };
+  const addRow = (o) => `<div class="row"><div class="t"><b>${esc(o.a.name)}</b><div style="font-size:13px;margin-top:2px;color:#1565a5;font-weight:700">new part · #${esc(o.a.prod)}</div></div><div class="rt"><span class="cnt">${o.a.qty}</span></div></div>`;
+  const sec = (t, l, f) => l.length ? `<div class="h3">${t} <span class="c">${l.length}</span></div><div class="rows">${l.map(f).join('')}</div>` : '';
+  const sum = `<p class="note"><b>Slips vs app:</b> ${same.length} same · ${diff.length} different · ${none.length} not counted${newOnes.length ? ` · ${newOnes.length} new part` : ''}${ren ? ` · ${ren} renamed (18-8, or slotted round head for the nylon screws)` : ''}.</p>`;
+  const top = done
+    ? `<div class="where"><div style="font-weight:800">Done ${esc(new Date(done).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }))}</div>${sum}<p class="note">Everything from these orders is in stock. Scan a drawer or open a part to change a count.</p></div>`
+    : `<div class="where"><div style="font-weight:800">${b.length + newOnes.length} parts · ${freshPcs().toLocaleString()} pieces</div>${sum}<p class="note">“Stock these” fills in the slip count on parts that have no count yet (counts you already have stay as they are), fixes the names and puts the Bolt Depot product # in each part’s notes. Nothing else changes: parts that aren’t on the slips, drawer spots, tools and photos stay. You can Undo right after.</p>${miss ? `<p class="note danger">${miss} line${miss > 1 ? 's' : ''} didn’t match a part and will be skipped.</p>` : ''}<div class="btns"><button type="button" class="pbtn2" data-act="fresh">Stock these ${b.length + newOnes.length}</button><button type="button" class="gbtn" data-act="freshhide">Not now · hide</button></div></div>`;
+  return head('Bolt Depot orders', '#/') + top + sec('Different from the slips', diff, row) + sec('New part', newOnes, addRow) + sec('Not counted in the app', none, row) + sec('Same ✓', same, row);
+}
+function freshNewId() { const d = doc(), nums = [...d.items.map(x => x.id), ...Object.keys(d.del || {}).filter(k => k.startsWith('items:')).map(k => k.slice(6))].map(id => Number((String(id || '').match(/(\d+)$/) || [0, 0])[1])); return 'HW-' + String(Math.max(0, ...nums) + 1).padStart(4, '0'); }
+function applyFresh() {
+  const all = doc().items, snaps = all.map(x => [x.id, snapOf(x)]), texts = [], added = [], bag = new Map(FRESH.bags.map(b => [b[0], b]));
+  const st = doc().app.state, prevFresh = st.fresh ? { ...st.fresh } : undefined;
+  for (const o of freshAdds()) if (!o.x) { const x = { id: freshNewId(), category: o.a.category, name: o.a.name, buy: false, store: false, qty: '', location: '', notes: 'Bolt Depot #' + o.a.prod }; all.push(x); added.push(x.id); bag.set(x.id, [x.id, o.a.qty, '']); }
+    else bag.set(o.x.id, [o.x.id, o.a.qty, '']);
+  let n = 0; for (const [id, q, prod] of bag.values()) { const x = itemById(id); if (!x) continue;
+    texts.push([id, x.name, x.notes]); x.name = fresh18(x); if (prod) x.notes = freshNote(x, prod);
+    if (!(x.store && qtyNum(x) != null)) { x.qty = q; x.full = q; } x.store = true; x.buy = true; x.ordered = false; x.need = false; x.stock = countLevel(x); n++; }
+  st.fresh = { ...(st.fresh || {}), [FRESH.id]: Date.now() };
+  commit(); render();
+  toast(`Stocked ${n} parts from the slips`, 'Undo', () => {
+    snaps.forEach(([id, s]) => { const x = itemById(id); if (x) restoreSnap(x, s); });
+    texts.forEach(([id, nm, nt]) => { const x = itemById(id); if (!x) return; x.name = nm; if (nt === undefined) delete x.notes; else x.notes = nt; });
+    added.forEach(id => { const i = all.findIndex(x => x.id === id); if (i >= 0) all.splice(i, 1); });
+    if (prevFresh) st.fresh = prevFresh; else delete st.fresh; commit(); refresh(); });
 }
 function attention() {
   const it = items(), sec = (t, l) => l.length ? `<div class="h3">${t} <span class="c">${l.length}</span></div><div class="rows">${sortedParts(l).map(partRow).join('')}</div>` : '';
@@ -505,15 +681,15 @@ function storage() {
 let wallSel = (() => { try { return localStorage.getItem('wn.wallSel') || ''; } catch (e) { return ''; } })();
 function wallHtml(cabs) {
   const ix = index(), sel = cabs.some(u => u.id === wallSel) ? wallSel : cabs[0].id;
-  const info = cabs.map(u => { const sl = S.slots(u); let used = 0, low = 0, out = 0;
+  const info = cabs.map(u => { const sl = S.slots(u); let used = 0, low = 0, out = 0, ok = 0;
     const cells = sl.map(s => { const ps = [...(ix.by.get(s.code) || []), ...(ix.th.get(s.code) || [])], f = flag(ix.by.get(s.code) || []);
-      if (ps.length) used++; if (f === 'w') low++; if (f === 'r') out++;
-      return `<button type="button" class="wc${f ? ' ' + f : ps.length ? ' has' : ''}" data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : ', empty'}" title="${esc(s.code)}${ps.length ? ' · ' + esc(ps.map(x => x.name).join(', ')) : ''}">${esc(s.label)}</button>`; }).join('');
+      if (ps.length) used++; if (f === 'w') low++; if (f === 'r') out++; if (f === 'g') ok++;
+      return `<button type="button" class="wc${f ? ' ' + f : ''}" data-slot="${esc(s.code)}" aria-label="${esc(s.code)}${ps.length ? ': ' + esc(ps.map(x => x.name).join(', ')) : ', empty'}" title="${esc(s.code)}${ps.length ? ' · ' + esc(ps.map(x => x.name).join(', ')) : ''}">${esc(s.label)}</button>`; }).join('');
     const tags = u.rowTags ? [...S.ROWS.slice(0, u.rows)].map(r => u.rowTags[r] && u.rowTags[r].t).filter(Boolean) : [];
     const sub = tags.length ? 'Rows: ' + tags.join(' · ') : (u.model || '');
-    return { u, sl, used, low, out, cells, sub }; });
+    return { u, sl, used, low, out, ok, cells, sub }; });
   const tot = (k) => info.reduce((a, c) => a + c[k], 0);
-  return `<div class="wall"><div class="whd"><b>Akro-Mils wall</b><span class="k"><i class="has"></i>Has parts</span><span class="k"><i class="w"></i>Low${tot('low') ? ' ' + tot('low') : ''}</span><span class="k"><i class="r"></i>Out${tot('out') ? ' ' + tot('out') : ''}</span><span class="k"><i></i>Empty</span></div>
+  return `<div class="wall"><div class="whd"><b>Akro-Mils wall</b><span class="k"><i class="g"></i>In stock${tot('ok') ? ' ' + tot('ok') : ''}</span><span class="k"><i class="w"></i>Low${tot('low') ? ' ' + tot('low') : ''}</span><span class="k"><i class="r"></i>Out${tot('out') ? ' ' + tot('out') : ''}</span><span class="k"><i></i>Empty</span></div>
     <div class="wseg" role="tablist">${info.map(c => `<button type="button" role="tab" aria-selected="${c.u.id === sel}" class="${c.u.id === sel ? 'on' : ''}" data-act="wallpick" data-unit="${esc(c.u.id)}">${esc(c.u.id)}<small>${c.used}/${c.sl.length}</small></button>`).join('')}</div>
     <div class="wgrid">${info.map(c => `<div class="wcab${c.u.id === sel ? ' sel' : ''}"><button type="button" class="wt" data-go="#/storage/${esc(c.u.id)}"><b>${esc(c.u.id)}</b><span>${c.used} / ${c.sl.length} used${c.low ? ` · <b style="font:inherit;color:#8a5a00">${c.low} low</b>` : ''}${c.out ? ` · <b style="font:inherit;color:var(--bad)">${c.out} out</b>` : ''}</span></button>
       <div class="wmini">${c.cells}</div><div class="wsub">${esc(c.sub)}</div><button type="button" class="gbtn wopen" data-go="#/storage/${esc(c.u.id)}">Open ${esc(c.u.id)} map</button></div>`).join('')}</div></div>`;
@@ -552,10 +728,10 @@ function searchView(q) {
   const raw = S.norm(q), slotHit = S.find(doc(), raw), unitHits = S.units(doc()).filter(u => normS(u.name + ' ' + u.model).includes(normS(q)) || u.id === raw);
   const found = items().filter(x => matchesSearch(x, terms)), list = sortedParts(found);
   const tHits = terms.length ? things().filter(t => { const hay = normS([t.id, t.name, t.type, t.brand, t.model, t.serial, t.voltage, t.platform, t.notes, t.location].join(' ')); return terms.every(w => hay.includes(w)); }) : [];
-  const best = list.find(x => canon(x.location)) || tHits.find(x => canon(x.location));
+  const best = list.find(x => loc1(x)) || tHits.find(x => canon(x.location));
   let top = '';
   if (slotHit) { const ps = index().by.get(slotHit.slot.code) || []; top = `<div class="where"><div class="wc">${esc(slotHit.slot.code)}</div><div class="wd">${esc(slotHit.unit.name)} · ${esc(slotHit.slot.where)} · ${ps.length ? esc(ps.map(x => x.name).join(', ')) : 'empty'}</div>${mapHtml(slotHit.unit, slotHit.slot.code, true)}<div class="btns"><button type="button" class="gbtn" data-slot="${esc(slotHit.slot.code)}">Open this spot</button></div></div>`; }
-  else if (best) { const f = S.find(doc(), best.location), part = !!itemById(best.id), gwc = part ? gwCodes(best) : []; top = `<div class="where"><div style="font-size:13px;font-weight:700;color:var(--ink2)">${hl(best.name)}</div><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}${gwc.length ? ' · <span style="color:#5b8bd0;font-weight:700">what goes with it lit too</span>' : ''}</div>${mapHtml(f.unit, [f.slot.code, ...gwc], true)}${part ? `<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(best.id)}">Take out / put back</button></div>` : ''}</div>${part ? gwCard(best) : ''}`; }
+  else if (best) { const part = !!itemById(best.id), f = S.find(doc(), part ? loc1(best) : best.location), gwc = part ? gwCodes(best) : []; top = `<div class="where"><div style="font-size:13px;font-weight:700;color:var(--ink2)">${hl(best.name)}</div><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}${part && codesOf(best).length > 1 ? ' · <b>also in ' + esc(codesOf(best).slice(1).join(', ')) + '</b>' : ''}${gwc.length ? ' · <span style="color:#5b8bd0;font-weight:700">what goes with it lit too</span>' : ''}</div>${mapHtml(f.unit, [f.slot.code, ...gwc], true)}${part ? `<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(best.id)}">Take out / put back</button></div>` : ''}</div>${part ? gwCard(best) : ''}`; }
   const uh = !slotHit && unitHits.length ? `<div class="h3">Storage</div><div class="rows">${unitHits.map(u => `<button type="button" class="row" data-go="#/storage/${esc(u.id)}"><span class="loc">${esc(u.id)}</span><div class="t"><b>${esc(u.name)}</b><span>${esc(u.model || '')}</span></div></button>`).join('')}</div>` : '';
   const th = tHits.length ? `<div class="h3">Tools &amp; other items <span class="c">${tHits.length}</span></div><div class="rows">${tHits.slice(0, 40).map(t => thingRow(t)).join('')}</div>` : '';
   return top + uh + th + `<div class="h3">Parts <span class="c">${list.length}</span></div><div class="rows">${list.slice(0, 80).map(partRow).join('') || `<div class="empty">No parts match “${esc(q)}”.</div>`}${list.length > 80 ? `<div class="empty">Showing 80 of ${list.length}. Add a size to narrow it down.</div>` : ''}</div>`;
@@ -567,7 +743,7 @@ function toolsView() {
     `<div class="rows">${tools.map(t => thingRow(t)).join('') || '<div class="empty">No tools yet. Tap “Add a tool”, or open a drawer on the Storage map → Add to this spot → A tool.</div>'}</div>` +
     `<div class="h3">Other items <span class="c">${other.length}</span><span style="flex:1"></span><button type="button" class="gbtn" data-act="newthing" data-kind="item" style="padding:6px 12px;font-size:13px;text-transform:none;letter-spacing:0">Add</button></div><div class="rows">${other.map(t => thingRow(t)).join('') || '<div class="empty">Zip ties, blades, tape… anything that isn’t a part or a tool.</div>'}</div>`;
 }
-const VIEWS = { tools: toolsView, unplaced, home, parts: () => route().a ? family(route().a) : parts(), attention, storage: () => route().a ? unitView(route().a) : storage() };
+const VIEWS = { tools: toolsView, unplaced, home, fresh: freshView, parts: () => route().a ? family(route().a) : parts(), attention, storage: () => route().a ? unitView(route().a) : storage() };
 
 // ---------------------------------------------------------------- sheets: a part, a spot, picking a spot, editing a unit
 const sheet = $('sheet'), shBody = $('shBody');
@@ -593,11 +769,14 @@ function paintSheet(fresh) {
 }
 function partSheet(t) {
   const x = itemById(t.a); if (!x) return null;
-  const loc = String(x.location || '').trim(), f = loc ? S.find(doc(), loc) : null, st = itemStatus(x), q = qtyNum(x), lv = stockLevel(x);
+  const st = itemStatus(x), q = qtyNum(x), lv = stockLevel(x), ls = locList(x), id = esc(x.id), box = 'box-shadow:none;border:1px solid var(--line)';
   let where;
-  if (f) where = `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}</div>${mapHtml(f.unit, f.slot.code, true)}<div class="btns"><button type="button" class="gbtn" data-act="pick" data-part="${esc(x.id)}">Move</button><button type="button" class="gbtn danger" data-act="unplace" data-part="${esc(x.id)}">Take out of drawer</button></div></div>`;
-  else if (loc) { const sug = S.suggest(loc), ok = sug && S.find(doc(), sug); where = `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div class="wc" style="color:#8a5f00">${esc(loc)}</div><div class="wd">Typed location — not on your map yet.</div><div class="btns">${ok ? `<button type="button" class="pbtn2" data-act="setloc" data-part="${esc(x.id)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : ''}<button type="button" class="${ok ? 'gbtn' : 'pbtn2'}" data-act="pick" data-part="${esc(x.id)}">Pick on the map</button></div></div>`; }
-  else where = `<div class="where" style="box-shadow:none;border:1px solid var(--line)"><div class="wd" style="margin:0 0 4px">Not in a drawer yet.</div><div class="btns"><button type="button" class="pbtn2" data-act="pick" data-part="${esc(x.id)}">Put in a drawer</button></div></div>`;
+  if (ls.length) {
+    const rows = ls.map(l => { const f = S.find(doc(), l), c = f ? f.slot.code : '', sug = !f && S.suggest(l), ok = sug && S.find(doc(), sug), key = esc(c || l);
+      return `<div class="lrow">${c ? `<button type="button" class="lcode" data-slot="${esc(c)}" aria-label="Open ${esc(c)}">${esc(c)}</button>` : `<span class="lcode old">${esc(l)}</span>`}<span class="lwh">${f ? esc(f.unit.name) + ' · ' + esc(f.slot.where) : 'Typed — not on your map yet'}</span><span class="lbt">${ok ? `<button type="button" class="pbtn2" data-act="setloc" data-part="${id}" data-from="${esc(l)}" data-to="${esc(sug)}">Use ${esc(sug)}</button>` : ''}<button type="button" class="gbtn" data-act="pick" data-part="${id}" data-from="${key}">${f ? 'Move' : 'Pick'}</button><button type="button" class="gbtn danger" data-act="unplace" data-part="${id}" data-from="${key}" aria-label="Take it out of ${key}">Remove</button></span></div>`; }).join('');
+    const codes = codesOf(x), f0 = codes.length ? S.find(doc(), codes[0]) : null, same = f0 ? codes.filter(c => S.find(doc(), c).unit.id === f0.unit.id) : [];
+    where = `<div class="where" style="${box}"><div class="lhd">${ls.length > 1 ? `In ${ls.length} places` : 'Where it is'}</div>${rows}${f0 ? mapHtml(f0.unit, same, true) : ''}<div class="btns"><button type="button" class="gbtn" data-act="pick" data-part="${id}" data-mode="add">+ Add another location</button></div></div>`;
+  } else where = `<div class="where" style="${box}"><div class="wd" style="margin:0 0 4px">Not in a drawer yet.</div><div class="btns"><button type="button" class="pbtn2" data-act="pick" data-part="${id}">Put in a drawer</button></div></div>`;
   return { title: x.category || 'Part', body: `<div class="ph">${photo(x, true)}<div style="min-width:0"><div class="nm">${esc(x.name)}</div><div class="pills"><span class="pill st-${st}">${ST_LABEL[st]}</span><span class="pill">${esc(x.id)}</span></div></div><div class="bigc">${q == null ? `<b>${lv ? STOCK_LABEL[lv] : '—'}</b><small>${lv ? 'stock' : 'no count'}</small>` : `<b class="${qtyClass(x)}">${q}</b><small>${STOCK_LABEL[lv] || 'on hand'}</small>`}</div></div>${where}${x.notes ? `<p class="note">${esc(x.notes)}</p>` : ''}<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(x.id)}">Take out / put back</button><a class="gbtn" href="index.html?checklist#edit=${encodeURIComponent(x.id)}">Edit in Checklist</a></div>${gwCard(x)}<label class="note" style="display:flex;align-items:center;gap:8px;margin-top:12px">Counted in <input id="unitIn" value="${esc(x.unit || '')}" placeholder="${esc(SETS.unitWord({ ...x, unit: '' }, 2))}" style="width:120px;height:36px;border-radius:10px;border:1px solid var(--line);padding:0 10px;font:inherit;font-size:15px"></label>`,
     after: () => { const i = $('unitIn'); if (i) i.addEventListener('change', () => { const y = itemById(x.id); if (!y) return; const v = i.value.trim(); if (v) y.unit = v; else delete y.unit; commit(); toast(v ? `Counted in ${v}` : 'Back to the usual word'); }); } };
 }
@@ -607,7 +786,7 @@ function thingRow(t, inSpot) { return `<div class="row"><button type="button" cl
 function slotSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null;
   const ix = index(), ps = sortedParts(ix.by.get(f.slot.code) || []), ts = (ix.th.get(f.slot.code) || []).slice().sort((a, b) => a.name.localeCompare(b.name)), pur = (f.unit.spots || {})[f.slot.code] || '';
-  const rows = ps.map(x => `<div class="row"><button type="button" class="nozoom" data-part="${esc(x.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${photo(x)}<div class="t"><b>${esc(x.name)}</b><span>Part · ${ST_LABEL[itemStatus(x)]}</span></div>${countHtml(x)}</button><button type="button" class="xbtn" data-act="unplace" data-part="${esc(x.id)}" aria-label="Take ${esc(x.name)} out of this drawer">×</button></div>`).join('') + ts.map(x => thingRow(x, true)).join('');
+  const rows = ps.map(x => `<div class="row"><button type="button" class="nozoom" data-part="${esc(x.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${photo(x)}<div class="t"><b>${esc(x.name)}</b><span>Part · ${ST_LABEL[itemStatus(x)]}</span></div>${countHtml(x)}</button><button type="button" class="xbtn" data-act="unplace" data-part="${esc(x.id)}" data-from="${esc(f.slot.code)}" aria-label="Take ${esc(x.name)} out of this drawer">×</button></div>`).join('') + ts.map(x => thingRow(x, true)).join('');
   return { title: f.slot.code, body: `<p class="note" style="margin-top:0">${esc(f.unit.name)} · ${esc(f.slot.where)}</p>
     <div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink2)">What this spot is for</div><div style="font-size:15px;margin-top:2px;${pur ? '' : 'color:var(--ink3)'}">${pur ? esc(pur) : 'Not set'}</div></div><button type="button" class="gbtn" data-act="purpose" data-slot="${esc(f.slot.code)}">${pur ? 'Change' : 'Set'}</button></div>
     <div class="rows" style="box-shadow:none;border:1px solid var(--line)">${rows || '<div class="empty">Nothing here yet.</div>'}</div>
@@ -681,7 +860,7 @@ const doneBtns = () => `<button type="button" class="tk-go app-only" data-act="t
 // ---- the take / put back sheet (one part)
 function takeSheet(t) {
   const x = itemById(t.a); if (!x) return null;
-  const code = t.code || canon(x.location) || '', f = code ? S.find(doc(), code) : null, q = qtyNum(x), lv = stockLevel(x);
+  const code = t.code || loc1(x) || '', f = code ? S.find(doc(), code) : null, q = qtyNum(x), lv = stockLevel(x);
   if (t.n == null) t.n = Math.max(1, Number(LS.get('wn-take:' + x.id, '1')) || 1);
   if (!t.mode) t.mode = 'take';
   if (!t.step) t.step = q == null && !lv ? 'count' : 'edit';
@@ -690,6 +869,7 @@ function takeSheet(t) {
   if (t.step === 'done') return { title: 'Saved', body: head + doneHtml(t.res) + doneBtns() };
   if (t.step === 'count') return { title: 'Count the drawer', body: head + `<div class="tk-ask"><b>How many are in the drawer?</b><span>Count once. After this, scans just take out or put back.</span></div>
     <label class="tk-lbl" for="tkCount">Count</label><input id="tkCount" class="tk-in" type="number" inputmode="numeric" min="0" placeholder="0" value="${t.cnt == null ? '' : esc(t.cnt)}">
+    <div class="tk-chips">${[-50, -25, -10, 10, 25, 50].map(v => `<button type="button" data-act="tkcq" data-v="${v}" class="${v < 0 ? 'neg' : 'pos'}">${v < 0 ? '−' + (-v) : '+' + v}</button>`).join('')}</div>
     <div class="tk-lbl">Or roughly</div><div class="tk-rough"><button type="button" class="r1" data-act="tkrough" data-v="plenty">Plenty</button><button type="button" class="r2" data-act="tkrough" data-v="low">Low</button><button type="button" class="r3" data-act="tkrough" data-v="out">Out</button></div>
     <button type="button" class="tk-go" data-act="tkcount">Save count</button><button type="button" class="tk-link" data-act="tkskip">Skip counting</button>` };
   // edit: how many, take or put back, and what goes with it
@@ -697,8 +877,8 @@ function takeSheet(t) {
   if (!t.on) { t.on = {}; set.forEach(e => { t.on[e.x.id] = e.on; }); }
   if (!t.per) { t.per = {}; set.forEach(e => { t.per[e.x.id] = Number(LS.get(perKey(gw, e.role), '')) || 1; }); }   // how many per bolt, remembered per size
   const stats = `<div class="tk-stats"><div><small>In the drawer</small><b class="${q == null ? '' : q === 0 ? 'out' : qtyClass(x)}">${q == null ? (lv ? STOCK_LABEL[lv] : '—') : q}</b></div>${q != null ? `<div><small>Running low at</small><b>${lowAt(x)}</b></div>` : `<div><small>Count</small><b style="font-size:16px;margin-top:8px"><button type="button" class="gbtn" data-act="tkrecount">Count it</button></b></div>`}</div>`;
-  const chips = [1, 5, 10, 25, 50].map(v => `<button type="button" data-act="tkn" data-v="${v}" class="${t.n === v ? 'on' : ''}">${v}</button>`).join('');
-  const gwRows = set.map(e => { const y = e.x, yq = qtyNum(y), ylv = stockLevel(y), yc = canon(y.location);
+  const chips = [-50, -25, -10, 10, 25, 50].map(v => `<button type="button" data-act="tkpm" data-v="${v}" class="${v < 0 ? 'neg' : 'pos'}" aria-label="${v < 0 ? v + ' less' : '+' + v + ' more'}">${v < 0 ? '−' + (-v) : '+' + v}</button>`).join('');
+  const gwRows = set.map(e => { const y = e.x, yq = qtyNum(y), ylv = stockLevel(y), yc = loc1(y);
     const st = yq != null ? `${yq} left` : ylv ? STOCK_LABEL[ylv] : 'no count', bad = ylv === 'out' || yq === 0;
     const per = t.per[y.id], on = !!t.on[y.id], pl = perLabel(per, x);
     return `<div class="tk-gr${e.instead ? ' alt' : ''}${on ? '' : ' off'}"><label class="tk-gl"><input type="checkbox" data-act="tkset" data-id="${esc(y.id)}"${on ? ' checked' : ''}><span class="t"><b>${esc(y.name)}${e.instead ? ' <span style="display:inline;font-weight:600;color:var(--ink2)">· instead</span>' : ''}</b><span class="${bad ? 'r' : ''}">${yc ? esc(yc) + ' · ' : 'no drawer · '}${esc(st)}${e.instead ? ' · replaces hex nut + lock washer' : ''}${e.otherMat ? ' · different material' : ''}</span><span class="tk-pl" data-pl="${esc(y.id)}">${esc(pl)}</span></span></label>
@@ -808,16 +988,16 @@ function gwCard(x, opts) {
   const comp = ['flat', 'lock', 'nut', 'nyloc'].map(k => gw[k] && { y: gw[k].x, k }).filter(Boolean);
   const lens = gw.bolts.slice(0, 10);
   if (!comp.length && !lens.length) return '';
-  const cell = ({ y }) => { const q = qtyNum(y), lv = stockLevel(y), c = canon(y.location), bad = lv === 'out' || q === 0, w = !bad && lv === 'low';
+  const cell = ({ y }) => { const q = qtyNum(y), lv = stockLevel(y), c = loc1(y), bad = lv === 'out' || q === 0, w = !bad && lv === 'low';
     return `<button type="button" class="${bad ? 'r' : w ? 'w' : ''}" data-act="gwopen" data-id="${esc(y.id)}"><i>${c ? esc(c) : 'no drawer'}</i><b>${esc(shortName(y))}</b><small>${y.need ? 'on To buy' : bad ? 'Out' : w ? 'Low · ' + q + ' left' : q != null ? q + ' left' : y.store ? (lv ? STOCK_LABEL[lv] : 'in stock') : 'not marked'}</small></button>`; };
   const need = comp.filter(({ y }) => !y.need && (stockLevel(y) === 'out' || stockLevel(y) === 'low' || (!y.store && x.need)));
   const lensTitle = gw.me.role === 'bolt' ? `Other ${esc(gw.me.thread || gw.me.dia)} lengths` : `Fits ${esc(gw.me.thread || gw.me.dia)}`;
   return `<div class="gw-card where" style="box-shadow:none;border:1px solid var(--line)">${comp.length ? `<div class="h3" style="margin:0 2px 8px">Goes with</div><div class="gw-grid">${comp.map(cell).join('')}</div>` : ''}
     ${need.length ? `<div class="btns"><button type="button" class="pbtn2" data-act="gwbuy" data-ids="${esc(need.map(e => e.y.id).join(','))}">Add ${need.length === 1 ? esc(shortName(need[0].y)) : need.length + ' of these'} to To buy</button></div>` : ''}
-    ${lens.length && !(opts && opts.noLens) ? `<div class="h3" style="margin:12px 2px 8px">${lensTitle}</div><div class="gw-chips">${lens.map(b => `<button type="button" data-act="gwopen" data-id="${esc(b.id)}">${esc(shortName(b))}${canon(b.location) ? ' · ' + esc(canon(b.location)) : ''}</button>`).join('')}</div>` : ''}</div>`;
+    ${lens.length && !(opts && opts.noLens) ? `<div class="h3" style="margin:12px 2px 8px">${lensTitle}</div><div class="gw-chips">${lens.map(b => `<button type="button" data-act="gwopen" data-id="${esc(b.id)}">${esc(shortName(b))}${loc1(b) ? ' · ' + esc(loc1(b)) : ''}</button>`).join('')}</div>` : ''}</div>`;
 }
 // codes to light up on a map next to the part's own drawer
-function gwCodes(x) { const gw = SETS.goesWith(x, items()); return gw ? ['flat', 'lock', 'nut', 'nyloc'].map(k => gw[k] && canon(gw[k].x.location)).filter(Boolean) : []; }
+function gwCodes(x) { const gw = SETS.goesWith(x, items()); return gw ? ['flat', 'lock', 'nut', 'nyloc'].flatMap(k => gw[k] ? codesOf(gw[k].x) : []) : []; }
 // To buy: matching nuts / washers that are also out or low
 function gwForBuying() {
   const seen = new Set(), out = [];
@@ -858,17 +1038,19 @@ function purposeSheet(t) {
 function pickSheet(t) {
   const x = t.ref || itemById(t.a); if (!x) return null; const us = S.units(doc());
   if (!us.length) return { title: 'Put in a drawer', body: `<p class="note">Set up your storage map first.</p><div class="btns"><a class="pbtn2" href="#/storage" data-act="close">Set up storage</a></div>` };
-  const cur = S.find(doc(), x.location), uid = t.unit || (cur ? cur.unit.id : us[0].id), u = us.find(v => v.id === uid) || us[0];
-  const nm = x.name ? shortName(x) : (x.kind === 'tool' ? 'this tool' : 'this item');
+  const isPart = !!(t.a && itemById(t.a)), have = isPart ? codesOf(x) : [canon(x.location)].filter(Boolean), cur = S.find(doc(), t.from || (t.mode === 'add' ? '' : have[0] || '')) || (have[0] ? S.find(doc(), have[0]) : null), uid = t.unit || (cur ? cur.unit.id : us[0].id), u = us.find(v => v.id === uid) || us[0];
+  const nm = x.name ? shortName(x) : (x.kind === 'tool' ? 'this tool' : 'this item'), inU = have.filter(c => c.startsWith(u.id + '-'));
   const unitBtn = (v) => { const sl = S.slots(v), used = sl.filter(sp => occupied(sp.code)).length; return `<button type="button" class="ubtn${v.id === u.id ? ' on' : ''}" data-act="pickunit" data-unit="${esc(v.id)}"><b>${esc(v.id)}</b><span>${esc(v.name.replace(/^(Husky|Akro-Mils)\s/, ''))}</span><small>${used}/${sl.length} used</small></button>`; };
-  return { title: 'Pick a spot for ' + nm, body: `<div class="fld" style="margin-bottom:6px"><span>1 · Choose the storage</span></div><div class="ugrid">${us.map(unitBtn).join('')}</div>
-    <div class="fld" style="margin:12px 0 6px"><span>2 · Tap a spot in ${esc(u.id)} · ${esc(u.name)}</span></div>${mapHtml(u, cur ? cur.slot.code : '', false)}<p class="note">${cur ? `It's in <b>${esc(cur.slot.code)}</b> now.` : 'Tap a spot to put it there.'}</p>`,
+  const ttl = t.mode === 'add' ? 'Add a location for ' + nm : t.from && cur ? `Move ${nm} out of ${cur.slot.code}` : 'Pick a spot for ' + nm;
+  return { title: ttl, body: `<div class="fld" style="margin-bottom:6px"><span>1 · Choose the storage</span></div><div class="ugrid">${us.map(unitBtn).join('')}</div>
+    <div class="fld" style="margin:12px 0 6px"><span>2 · Tap a spot in ${esc(u.id)} · ${esc(u.name)}</span></div>${mapHtml(u, t.mode === 'add' ? inU : cur && cur.unit.id === u.id ? [cur.slot.code, ...inU.filter(c => c !== cur.slot.code)] : inU, false)}<p class="note">${have.length ? `It's in <b>${have.map(esc).join(', ')}</b> now. ` : ''}${t.mode === 'add' ? 'Tap a spot to add it there too — any storage, pick it above.' : cur && t.from ? `Tap the spot it moves to — the other${have.length > 2 ? 's' : ''} stay${have.length > 2 ? '' : 's'}.` : 'Tap a spot to put it there.'}</p>`,
     after: () => { if (t.scrollMap) { t.scrollMap = false; const m = shBody.querySelector('.map'); if (m) m.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } };
 }
 function addSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null; const qv = t.q || '';
-  const ts = searchTerms(qv), list = sortedParts(items().filter(x => matchesSearch(x, ts) && canon(x.location) !== f.slot.code)).slice(0, 40);
-  return { title: 'Add to ' + f.slot.code, body: `<div class="fld"><input id="addQ" type="search" placeholder="Search parts to put in ${esc(f.slot.code)}" value="${esc(qv)}" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)" id="addList">${list.map(x => `<button type="button" class="row" data-act="place" data-part="${esc(x.id)}" data-slot="${esc(f.slot.code)}">${photo(x)}<div class="t"><b>${esc(x.name)}</b><span>${canon(x.location) ? 'Now in ' + esc(canon(x.location)) + ' — tap to move here' : esc(x.location || 'No drawer yet')}</span></div><span class="pbtn2" style="padding:6px 12px">Add</span></button>`).join('') || '<div class="empty">No matching parts.</div>'}</div>`,
+  const ts = searchTerms(qv), list = sortedParts(items().filter(x => matchesSearch(x, ts) && !codesOf(x).includes(f.slot.code))).slice(0, 40), sc = esc(f.slot.code);
+  const addRow = (x) => { const l = locList(x), now = l.map(v => canon(v) || v).join(', '); return `<div class="row">${photo(x)}<div class="t"><b>${esc(x.name)}</b><span>${l.length ? 'Now in ' + esc(now) : 'No drawer yet'}</span></div><span class="abt">${l.length === 1 ? `<button type="button" class="gbtn" data-act="place" data-part="${esc(x.id)}" data-slot="${sc}" data-from="${esc(canon(l[0]) || l[0])}">Move here</button>` : ''}<button type="button" class="pbtn2" data-act="place" data-part="${esc(x.id)}" data-slot="${sc}" data-mode="add">${l.length ? 'Also here' : 'Add'}</button></span></div>`; };
+  return { title: 'Add to ' + f.slot.code, body: `<div class="fld"><input id="addQ" type="search" placeholder="Search parts to put in ${esc(f.slot.code)}" value="${esc(qv)}" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)" id="addList">${list.map(addRow).join('') || '<div class="empty">No matching parts.</div>'}</div>`,
     after: () => { const i = $('addQ'); i.oninput = () => { t.q = i.value; const pos = i.selectionStart; paintSheet(); const j = $('addQ'); j.focus(); try { j.setSelectionRange(pos, pos); } catch (e) { } }; } };
 }
 function unitSheet(t) {
@@ -898,7 +1080,7 @@ function orgMoves(info, sel, others) {
   const moves = [], noRoom = [], taken = new Set(), ix = index(), chosen = info.cabs.filter(C => C.ok && sel.includes(C.id));
   chosen.filter(C => !C.done).forEach(C => Object.keys(C.cells).forEach(code => taken.add(code)));
   for (const C of chosen) for (const [code, c] of Object.entries(C.cells)) {
-    const x = c.x, loc = String(x.location || '').trim(), cur = canon(loc);
+    const x = c.x, loc = locList(x)[0] || '', cur = loc1(x);
     if (cur === code) continue;
     if (C.done && cur && inAkro(cur)) continue;
     if (loc && !(cur && inAkro(cur)) && !others) continue;
@@ -934,7 +1116,7 @@ function organizeSheet(t) {
   const cellOf = (code) => {
     const now = [...(ix.by.get(code) || []).filter(p => !away.has(p.id)), ...(ix.th.get(code) || [])], m = inc.get(code), pl = V.cells[code];
     if (V.done) { const list = [...now, ...(m ? [m.x] : [])]; return { st: m ? 'new' : now.length ? 'here' : 'spare', list, fit: m ? O.checkFit(O.classify(m.x)) : false }; }
-    if (pl) { const x = pl.x, there = canon(x.location) === code, share = now.filter(p => p.id !== x.id), st = there ? 'here' : m ? 'new' : incl && V.ok ? 'kept' : 'plan'; return { st, x, list: [x, ...share], share: share.length > 0 && st !== 'kept' && st !== 'plan', fit: O.checkFit(pl) }; }
+    if (pl) { const x = pl.x, there = codesOf(x).includes(code), share = now.filter(p => p.id !== x.id), st = there ? 'here' : m ? 'new' : incl && V.ok ? 'kept' : 'plan'; return { st, x, list: [x, ...share], share: share.length > 0 && st !== 'kept' && st !== 'plan', fit: O.checkFit(pl) }; }
     return { st: now.length ? 'other' : 'spare', list: now };
   };
   const cellHtml = (code) => { const k = cellOf(code), lab = code.split('-')[1], g = tags[lab[0]] || {};
@@ -980,7 +1162,7 @@ function orgApply(t) {
   if (!R.moves.length && !run.some(C => !C.done)) return toast('Nothing new to put in');
   const list = doc().locations, today = new Date().toISOString().slice(0, 10);
   const snap = { at: Date.now(), moves: R.moves.map(m => [m.x.id, m.x.location || '', m.to]), units: run.map(C => JSON.parse(JSON.stringify(C.u))) };
-  R.moves.forEach(m => { const y = itemById(m.x.id); if (y) y.location = m.to; });
+  R.moves.forEach(m => { const y = itemById(m.x.id); if (!y) return; const l = locList(y); writeLocs(y, [m.to, ...l.slice(1)]); });   // the main spot moves; any extra places stay
   run.forEach(C => { const i = list.findIndex(l => l && l.kind === 'unit' && l.id === C.id); if (i < 0) return; const u = cleanUnit({ ...list[i], organized: C.done ? list[i].organized : today, rowTags: O.rowTags(C) }); u.detail = S.detail(u); u.order = list[i].order ?? i; list[i] = u; });
   commit(); LS.set('wn-org-undo', JSON.stringify(snap));
   t.justDid = { ids: run.map(C => C.id), n: R.moves.length }; t.sel = []; t.fresh = {}; t.focus = ''; t.others = false;
@@ -989,7 +1171,7 @@ function orgApply(t) {
 }
 function orgUndo() {
   const s = orgSnap(); if (!s) return; let n = 0;
-  s.moves.forEach(([id, prev, to]) => { const y = itemById(id); if (y && (y.location || '') === to) { y.location = prev; n++; } });
+  s.moves.forEach(([id, prev, to]) => { const y = itemById(id); if (y && locKey(locList(y)[0] || '') === locKey(to)) { y.location = prev; n++; } });
   const list = doc().locations; (s.units || []).forEach(u => { const i = list.findIndex(l => l && l.kind === 'unit' && l.id === u.id); if (i >= 0) list[i] = u; });
   commit(); LS.set('wn-org-undo', '');
   const top = stack[stack.length - 1]; if (top && top.k === 'organize') { top.justDid = null; top.sel = null; }
@@ -1160,6 +1342,8 @@ document.addEventListener('click', (e) => {
   const act = t.dataset.act;
   if (t.dataset.soon) { toast(t.dataset.soon + ' arrive' + (t.dataset.soon.endsWith('s') ? '' : 's') + ' in the next update'); return; }
   if (act === 'close') { closeSheet(); return; }
+  if (act === 'fresh') { if (!confirm('Stock the ' + (freshBags().length + freshAdds().filter(o => !o.x).length) + ' parts from the Bolt Depot slips? Nothing else changes.')) return; applyFresh(); return; }
+  if (act === 'freshhide') { const st = doc().app.state; st.fresh = { ...(st.fresh || {}), [FRESH.id]: -Date.now() }; commit(); go('#/'); return; }
   if (act === 'setup') { if (S.units(doc()).length) return; S.MY_UNITS.forEach((u, i) => { const o = cleanUnit(u); o.order = i; o.detail = S.detail(o); doc().locations.push(o); }); commit(); render(); toast('Storage map added — ' + S.MY_UNITS.length + ' units'); return; }
   if (act === 'wallpick') { wallSel = t.dataset.unit; try { localStorage.setItem('wn.wallSel', wallSel); } catch (e) {} render(); return; }
   if (act === 'newunit') { openSheet('unit', ''); return; }
@@ -1204,6 +1388,7 @@ document.addEventListener('click', (e) => {
     if (act === 'tkmode') { top.mode = t.dataset.v; paintSheet(); return; }
     if (act === 'tkpm') { top.n = Math.max(1, (top.n || 1) + Number(t.dataset.v)); paintSheet(); return; }
     if (act === 'tkn') { top.n = Number(t.dataset.v); paintSheet(); return; }
+    if (act === 'tkcq') { const i = $('tkCount'); if (i) { i.value = Math.max(0, (Number(i.value) || 0) + Number(t.dataset.v)); top.cnt = i.value; i.dispatchEvent(new Event('input', { bubbles: true })); } return; }
     if (act === 'tkset') { top.on = top.on || {}; top.on[t.dataset.id] = t.checked; paintSheet(); return; }
     if (act === 'tkper') { const id = t.dataset.id; top.on = top.on || {}; top.per = top.per || {}; const v = Number(t.dataset.v);
       if (!top.on[id]) { if (v > 0) top.on[id] = true; paintSheet(); return; }          // + on an unticked row ticks it at its usual amount
@@ -1262,17 +1447,17 @@ document.addEventListener('click', (e) => {
   if (act === 'custom') { closeMenu(); openSheet('custom', '', sheet.open && !!t.closest('#shBody')); setTimeout(() => { const el = $('cData'); if (el && matchMedia('(hover:hover)').matches) el.focus(); }, 80); return; }
   if (act === 'croll') { const top = stack[stack.length - 1]; top.roll = t.dataset.v; LS.set('wn-roll', top.roll); paintSheet(); return; }
   if (act === 'cprint') { doCustomPrint(stack[stack.length - 1]); return; }
-  if (act === 'pick') { openSheet('pick', t.dataset.part, true); return; }
+  if (act === 'pick') { openSheet('pick', t.dataset.part, true, { from: t.dataset.from || '', mode: t.dataset.mode || '' }); return; }
   if (act === 'pickunit') { const top = stack[stack.length - 1]; top.unit = t.dataset.unit; top.scrollMap = true; paintSheet(); return; }
-  if (act === 'unplace') { const x = itemById(t.dataset.part); if (x) setLocation(x, ''); return; }
-  if (act === 'setloc') { const x = itemById(t.dataset.part); if (x) setLocation(x, t.dataset.to); return; }
-  if (act === 'convert') { const from = t.dataset.from.toUpperCase(), to = t.dataset.to, moved = items().filter(x => String(x.location || '').trim().toUpperCase() === from), prev = moved.map(x => [x, x.location]); moved.forEach(x => x.location = to); commit(); render(); toast(`${moved.length} part${moved.length > 1 ? 's' : ''} → ${to}`, 'Undo', () => { prev.forEach(([x, l]) => { const y = itemById(x.id); if (y) y.location = l; }); commit(); render(); }); return; }
+  if (act === 'unplace') { const x = itemById(t.dataset.part); if (x) setLocation(x, '', false, { remove: t.dataset.from || locList(x)[0] || '' }); return; }
+  if (act === 'setloc') { const x = itemById(t.dataset.part); if (x) setLocation(x, t.dataset.to, false, { from: t.dataset.from || locList(x)[0] || '' }); return; }
+  if (act === 'convert') { const from = t.dataset.from.toUpperCase(), to = t.dataset.to, moved = items().filter(x => locList(x).some(v => v.toUpperCase() === from)), prev = moved.map(x => [x, x.location]); moved.forEach(x => writeLocs(x, locList(x).map(v => v.toUpperCase() === from ? to : v))); commit(); render(); toast(`${moved.length} part${moved.length > 1 ? 's' : ''} → ${to}`, 'Undo', () => { prev.forEach(([x, l]) => { const y = itemById(x.id); if (y) y.location = l; }); commit(); render(); }); return; }
   if (act === 'addto') { if (stack.length > 1 && stack[stack.length - 1].k === 'addwhat') stack.pop(); openSheet('addto', t.dataset.slot, true); setTimeout(() => { const i = $('addQ'); if (i && matchMedia('(hover:hover)').matches) i.focus(); }, 80); return; }
-  if (act === 'place') { const x = itemById(t.dataset.part); if (x) setLocation(x, t.dataset.slot); return; }
+  if (act === 'place') { const x = itemById(t.dataset.part); if (x) setLocation(x, t.dataset.slot, false, t.dataset.mode === 'add' ? { add: true } : { from: t.dataset.from || '' }); return; }
   // tapping a spot: in the picker it places the part; elsewhere it opens the spot
   if (t.dataset.slot && t.classList.contains('cell') && sheet.open && stack.length && stack[stack.length - 1].k === 'pick') {
     const top = stack[stack.length - 1]; if (top.ref) { top.ref.location = t.dataset.slot; stack.pop(); paintSheet(true); return; }
-    const x = itemById(top.a); if (x) { setLocation(x, t.dataset.slot); stack.pop(); paintSheet(true); } return; }
+    const x = itemById(top.a); if (x) { setLocation(x, t.dataset.slot, false, top.mode === 'add' ? { add: true } : { from: top.from || '' }); stack.pop(); paintSheet(true); } return; }
   if (t.dataset.slot && !act) { if (sheet.open && t.closest('#shBody') && stack[stack.length - 1].k === 'slot' && stack[stack.length - 1].a === t.dataset.slot) return; openSheet('slot', t.dataset.slot, sheet.open && !!t.closest('#shBody')); return; }
   if (t.dataset.part && !act) { openSheet('part', t.dataset.part, sheet.open && !!t.closest('#shBody')); return; }
   if (t.dataset.go) { if (sheet.open) closeSheet(); go(t.dataset.go); }
@@ -1294,12 +1479,95 @@ function closeMenu() { menu.classList.remove('on'); mb.setAttribute('aria-expand
 mb.onclick = (e) => { e.stopPropagation(); if (menu.classList.contains('on')) return closeMenu(); const r = mb.getBoundingClientRect(); menu.style.top = (r.bottom + 8) + 'px'; menu.style.right = Math.max(10, innerWidth - r.right) + 'px'; menu.classList.add('on'); mb.setAttribute('aria-expanded', 'true'); };
 document.addEventListener('pointerdown', (e) => { if (menu.classList.contains('on') && !menu.contains(e.target) && e.target !== mb && !mb.contains(e.target)) closeMenu(); });
 function paintSync() { const s = WN.status || {}, d = $('syncDot'); d.className = 'dot ' + (s.state === 'live' ? 'ok' : s.state === 'busy' ? 'busy' : s.state === 'error' || s.state === 'paused' ? 'err' : ''); $('syncChip').title = s.msg || ''; }
-$('syncChip').onclick = () => { const s = WN.status || {}; if (!WN.user) toast('Not signed in — sign in on the Checklist', 'Sign in', () => { location.href = 'index.html#settings'; }); else if (s.state === 'live') toast(s.msg || 'Synced'); else { toast('Syncing…'); WN.syncNow().then(() => toast((WN.status || {}).msg || 'Synced'), e => toast('Sync problem: ' + (e.message || e))); } };
+$('syncChip').onclick = () => { const s = WN.status || {}; if (!WN.user) toast('Not signed in — sign in on the Checklist', 'Sign in', () => { WNShell.show('#settings'); }); else if (s.state === 'live') toast(s.msg || 'Synced'); else { toast('Syncing…'); WN.syncNow().then(() => toast((WN.status || {}).msg || 'Synced'), e => toast('Sync problem: ' + (e.message || e))); } };
 WN.on('status', paintSync); WN.on('auth', () => { paintSync(); hydrate(document); });
 WN.on('change', (d, src) => { if (src === 'local') return; refresh(); paintBadge(); drain(); });
 $('today').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
 window.WS = { go, render, openSheet, closeSheet, get stack() { return stack; } }; // for tests
 paintSync(); paintBadge(); if (!deepLink()) render(); setTimeout(drain, 1500);
 })();
+</script>
+
+
+<style>#wnCL{position:fixed;inset:0;width:100%;height:100%;border:0;margin:0;padding:0;z-index:900;background:var(--bg);visibility:hidden;pointer-events:none}html.wn-cl #wnCL{visibility:visible;pointer-events:auto}</style>
+<script>
+// 10.21: the Checklist lives inside this screen (loaded quietly in the background), so Home ↔ Checklist switches
+// instantly — no page load, no flash, and the bar's bubble glides once — exactly like Home ↔ Parts.
+window.WNShell = (function () {
+  const de = document.documentElement;
+  let fr = null, ready = false, pend = null, hideT = 0;
+  const win = () => { try { return fr && fr.contentWindow; } catch (e) { return null; } };
+  const api = () => { const w = win(); return ready && w && w.WNCL ? w.WNCL : null; };
+  function sa() { const p = document.createElement('div'); p.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;top:0;left:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)'; document.body.appendChild(p); const c = getComputedStyle(p), r = { top: c.paddingTop, right: c.paddingRight, bottom: c.paddingBottom, left: c.paddingLeft }; p.remove(); return r; }
+  function pushSA() { try { const s = sa(), st = fr.contentDocument.documentElement.style; for (const k in s) st.setProperty('--wsa-' + k, s[k]); } catch (e) { } }
+  function make() {
+    if (fr) return fr;
+    fr = document.createElement('iframe'); fr.id = 'wnCL'; fr.title = 'Checklist'; fr.setAttribute('aria-hidden', 'true'); fr.setAttribute('tabindex', '-1');
+    fr.addEventListener('load', () => { ready = true; pushSA(); if (pend != null) { const h = pend; pend = null; run(h); } if (on()) markIn(); });
+    fr.src = 'index.html?checklist&embed=1';
+    document.body.appendChild(fr);
+    return fr;
+  }
+  function run(h) { const a = api(); if (!a) { pend = h; return; } try { a.go(h || ''); } catch (e) { } }
+  const on = () => de.classList.contains('wn-cl');
+  function markIn() { const a = api(); WNBar.mark(a && a.inSettings() ? null : 'checklist'); }
+  function top() { try { const w = win(); w.scrollTo(0, 0); } catch (e) { } }
+  // show the Checklist (h: '' = the list, '#settings', '#add', '#edit=ID')
+  function show(h, instant) {
+    make(); clearTimeout(hideT);
+    document.querySelectorAll('dialog[open]').forEach(d => { try { d.close(); } catch (e) { } });
+    const was = on();
+    if (h) run(h); else if (!was) { top(); }
+    if (!was) { de.classList.add('wn-cl'); fr.removeAttribute('aria-hidden'); }
+    markIn(); if (instant) WNBar.sync(true);
+  }
+  function hide() { clearTimeout(hideT); if (!on()) return; de.classList.remove('wn-cl'); fr.setAttribute('aria-hidden', 'true'); try { if (document.activeElement === fr) fr.blur(); } catch (e) { } }
+  // hide on the next page change, so the new Workshop page and the hiding land in the same frame (no flash of the old page)
+  function hideOnHash() { const f = () => { window.removeEventListener('hashchange', f); hide(); }; window.addEventListener('hashchange', f); hideT = setTimeout(f, 400); }
+  // go to a Workshop place from inside the Checklist
+  function goW(h) { h = h || '#/'; const cur = location.hash || '#/'; if (cur === h || (h === '#/' && !location.hash)) { hide(); window.scrollTo(0, 0); } else { hideOnHash(); location.hash = h; } }
+  const act = (a) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = a; b.hidden = true; document.body.appendChild(b); b.click(); b.remove(); };
+  function leave(h) {
+    if (h === '#notifs') return window.WNBell && WNBell.open();
+    if (h === '#scan') { hide(); return window.WNScan ? window.WNScan() : act('scancode'); }
+    if (/^#act=/.test(h)) { goW('#/storage'); setTimeout(() => act(h.slice(5)), 60); return; }
+    goW(h || '#/');
+  }
+  // the Checklist tab tapped while you're on it: from Settings it goes back to the list; otherwise nothing (the bar blinks)
+  function back() { const a = api(); return !!(a && a.back()); }
+  function reset() { hide(); if (fr) { fr.remove(); fr = null; ready = false; pend = null; } setTimeout(make, 700); }
+  // links that used to open the Checklist page (Edit in Checklist, Account & sync…) open it here instead
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="index.html"]'); if (!a || e.defaultPrevented) return;
+    const href = a.getAttribute('href'), i = href.indexOf('#'); e.preventDefault(); show(i >= 0 ? href.slice(i) : '');
+  }, true);
+  window.addEventListener('resize', () => { if (ready) pushSA(); });
+  return { sa, show, hide, hideOnHash, goW, leave, back, reset, on, make };
+})();
+</script>
+<script>
+// 10.21: bottom bar with the + menu (replaces the gear) — js/tabbar.js
+WNBar.mount({ page: 'workshop', run: (k) => {
+  const act = (a) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = a; b.hidden = true; document.body.appendChild(b); b.click(); b.remove(); };
+  switch (k) {
+    case 'scan': WNShell.hide(); return act('scancode');
+    case 'add': return WNShell.show('#add');
+    case 'alerts': return WNBell.open();
+    case 'low': return WNShell.goW('#/attention');
+    case 'labels': if (WNShell.on()) { WNShell.goW('#/storage'); setTimeout(() => act('printer'), 60); return; } return act('printer');
+    case 'custom': if (WNShell.on()) { WNShell.goW('#/storage'); setTimeout(() => act('custom'), 60); return; } return act('custom');
+    case 'organize': if (WNShell.on()) { WNShell.goW('#/storage'); setTimeout(() => act('organize'), 60); return; } return act('organize');
+    case 'settings': return WNShell.show('#settings');
+    case 'logout': return window.WNLogin && WNLogin.logout();
+    case 'viewer': location.href = 'labs.html#viewer'; return;
+  } } });
+// the Checklist's + panel sends you here with #act=… for the Workshop-only actions (labels, custom label, organize)
+if (/^#act=/.test(location.hash)) { const a = location.hash.slice(5); history.replaceState(null, '', '#/storage'); setTimeout(() => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = a; b.hidden = true; document.body.appendChild(b); b.click(); b.remove(); }, 350); }
+if (window.__wnCL != null) WNShell.show(window.__wnCL, true); else setTimeout(() => WNShell.make(), 900);
+// the bell: notifications (new parts, count changes, moves, take-outs) — js/notify.js
+WNBell.watch();
+WNBell.onCount((n) => { const d = document.getElementById('bellDot'); d.hidden = !n; d.textContent = ''; document.getElementById('bellBtn').setAttribute('aria-label', n ? `Notifications: ${n} new` : 'Notifications'); });
+document.getElementById('bellBtn').onclick = () => WNBell.open();
+if (location.hash === '#notifs') { history.replaceState(null, '', '#/'); setTimeout(() => WNBell.open(), 200); }
 </script>
 </body></html>

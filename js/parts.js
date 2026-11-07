@@ -30,6 +30,7 @@
     [/lock washer/i, 'lock-washer.png', 'Split lock washer'],
     [/washer/i, 'flat-washer.png', 'Flat washer'],
     [/hex nut/i, (t) => /nylon/i.test(t) || !/#\d/.test(t) ? 'hex-nut.png' : 'hex-machine-screw-nut.png', 'Hex nut'],
+    [/slotted round|round[- ]head|nylon fasteners — machine screws/i, 'machine-screw-slotted-round.gif', 'Machine screw, slotted round head'],
     [/machine screw/i, (t) => /\bM\d/.test(t) ? 'machine-screw-phillips-pan-metric.png' : 'machine-screw-phillips-pan.png', 'Machine screw, Phillips pan'],
     [/hex bolt/i, 'hex-bolts-standard.png', 'Hex bolt'],
   ];

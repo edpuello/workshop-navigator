@@ -28,9 +28,21 @@ extension Bundle {
 // Long-press the app icon → "Scan a drawer": opens the camera straight away (cold start or already running).
 enum Shortcuts {
     static var pendingScan = false
+    static var pendingHash: String?          // from a universal link (an NFC tag): "#scan", "#loc=A1-D02" or "#/"
     static func handle(_ item: UIApplicationShortcutItem) {
         guard item.type.hasSuffix(".scan") else { return }
         pendingScan = true
+        NotificationCenter.default.post(name: .wnScan, object: nil)
+    }
+    // NFC tag / link: https://edpuello.github.io/workshop-navigator/app/?go=scan · ?loc=A1-D02 · (nothing) = home
+    static func handle(link url: URL) {
+        guard url.path.hasPrefix("/workshop-navigator/app") else { return }
+        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        func value(_ k: String) -> String? { items.first(where: { $0.name == k })?.value }
+        let safe = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_."))
+        if let loc = value("loc"), !loc.isEmpty { pendingHash = "#loc=" + (loc.addingPercentEncoding(withAllowedCharacters: safe) ?? "") }
+        else if value("go") == "scan" { pendingHash = "#scan" }
+        else { pendingHash = "#/" }
         NotificationCenter.default.post(name: .wnScan, object: nil)
     }
 }
@@ -40,6 +52,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         if let item = options.shortcutItem { Shortcuts.handle(item) }
+        for activity in options.userActivities where activity.activityType == NSUserActivityTypeBrowsingWeb {
+            if let url = activity.webpageURL { Shortcuts.handle(link: url) }      // app opened by an NFC tag / link
+        }
         let config = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
         config.delegateClass = ShortcutSceneDelegate.self
         return config
@@ -51,5 +66,11 @@ final class ShortcutSceneDelegate: NSObject, UIWindowSceneDelegate {
                      completionHandler: @escaping (Bool) -> Void) {
         Shortcuts.handle(shortcutItem)
         completionHandler(true)
+    }
+
+    // An NFC tag or link while the app is already running
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb, let url = userActivity.webpageURL else { return }
+        Shortcuts.handle(link: url)
     }
 }

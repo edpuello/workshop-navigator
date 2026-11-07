@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Universal links: https://edpuello.github.io/workshop-navigator/app/… (NFC tags, links) open this app.
+	     The permission file lives at https://edpuello.github.io/.well-known/apple-app-site-association -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:edpuello.github.io</string>
+		<string>applinks:edpuello.github.io?mode=developer</string>
+	</array>
+</dict>
+</plist>

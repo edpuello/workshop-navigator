@@ -9,9 +9,10 @@ SITE="${1:-..}"
 rm -rf www && mkdir -p www/vendor
 cp "$SITE/index.html" "$SITE/workshop.html" "$SITE/manifest.json" www/
 cp -R "$SITE/js" "$SITE/img" www/
-CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js'
 for f in www/index.html www/workshop.html; do
   CDN="$CDN" perl -pi -e 's#\Q$ENV{CDN}\E#vendor/supabase.min.js#g' "$f"
 done
 if [ -f vendor/supabase.min.js ]; then cp vendor/supabase.min.js www/vendor/; fi
+rm -f www/js/html5-qrcode.min.js   # the website's camera scanner library; the app scans with its own built-in scanner
 echo "www/ ready ($(find www -type f | wc -l | tr -d ' ') files)"
