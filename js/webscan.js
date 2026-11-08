@@ -17,7 +17,7 @@
       ov.className = 'wscan'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Scan a drawer');
       ov.innerHTML = '<div class="wscan-top"><b>Scan a drawer</b><button type="button" class="wscan-x" aria-label="Close">×</button></div>'
         + '<div id="wscanView" class="wscan-view"></div><p class="wscan-hint">Point at the square code on a drawer label</p><p class="wscan-err" hidden></p>';
-      document.body.appendChild(ov);
+      (document.querySelector('dialog[open]') || document.body).appendChild(ov);   // 10.22: above an open sheet too (scan a place while adding items)
       const errEl = ov.querySelector('.wscan-err');
       let q = null, done = false;
       const finish = async (val, err) => {

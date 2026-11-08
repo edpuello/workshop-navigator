@@ -75,6 +75,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 .wnmenu .hd{display:flex;align-items:center;height:58px;margin:-2px 0 12px}.wnmenu .hd b{font-size:20px;font-weight:800;letter-spacing:-.3px}
 .wnmenu .grab{position:absolute;top:7px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:rgba(255,255,255,.28)}
 .wnmenu .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px}
+.wnmenu .mi[data-k=settings]{grid-column:4;grid-row:2}.wnmenu .mi[data-k=logout]{grid-column:1;grid-row:3}.wnmenu .mi[data-k=scan]{grid-column:4;grid-row:3}
 .wnmenu .mi{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0;border:0;background:none;font:inherit;font-size:12px;font-weight:650;line-height:1.2;color:#c9d9ea;text-decoration:none;text-align:center;touch-action:manipulation}
 .wnmenu .mi i{display:grid;place-items:center;width:100%;max-width:72px;aspect-ratio:1;border-radius:20px;background:rgba(255,255,255,.1);transition:transform .14s,background-color .14s}
 .wnmenu .mi i{transition:transform .18s cubic-bezier(.3,1.4,.5,1),background-color .22s ease-out}.wnmenu .mi svg{transition:stroke .22s ease-out}
@@ -172,16 +173,25 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     plus = document.createElement('button'); plus.type = 'button'; plus.className = 'wnplus'; plus.setAttribute('aria-label', 'More'); plus.setAttribute('aria-haspopup', 'true'); plus.setAttribute('aria-expanded', 'false'); plus.innerHTML = ic('plus'); document.body.appendChild(plus);
     menu = document.createElement('div'); menu.className = 'wnmenu'; menu.setAttribute('role', 'menu');
     // the same actions on every tab and both pages; each page says how to do them (opts.run)
-    const ITEMS = [['scan', 'Scan', 'scan', 'app-only'], ['add', 'Add item', 'add'], ['alerts', 'Alerts', 'bell'], ['low', 'Running low', 'low'],
-      ['labels', 'Labels', 'print'], ['custom', 'Custom label', 'pen'], ['organize', 'Organize', 'sort'], ['settings', 'Settings', 'gear'],
-      ['logout', 'Log out', 'logout'], ['viewer', '3D viewer', 'cube', 'web-only']];
+    // 10.22: Scan sits bottom-right under Settings (one-handed, right thumb); Log out bottom-left, out of the thumb's way
+    const ITEMS = [['add', 'Add item', 'add'], ['alerts', 'Alerts', 'bell'], ['low', 'Running low', 'low'], ['labels', 'Labels', 'print'],
+      ['custom', 'Custom label', 'pen'], ['organize', 'Organize', 'sort'], ['viewer', '3D viewer', 'cube', 'web-only'], ['settings', 'Settings', 'gear'],
+      ['logout', 'Log out', 'logout'], ['scan', 'Scan', 'scan', 'app-only']];
     let n = 0;
     menu.innerHTML = '<span class="grab" aria-hidden="true"></span><div class="in"><div class="hd"><b>Quick actions</b></div><div class="grid">'
       + ITEMS.map(([k, label, icon, cls]) => `<button type="button" class="mi${cls ? ' ' + cls : ''}" role="menuitem" data-k="${k}" style="--i:${n++}"><i>${ic(icon)}</i><span>${label}</span></button>`).join('') + '</div>'
       + `<div class="th"><b>${ic('moon')}Theme</b><div class="seg" role="group" aria-label="Theme"><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button><button type="button" data-theme="system">Auto</button></div></div></div>`;
     document.body.appendChild(menu);
     let plusAt = 0;   // the + can be pressed at most once every 0.1 s
-    plus.addEventListener('click', () => { const t = Date.now(); if (t - plusAt < 100) return; plusAt = t; openMenu(); });
+    // press and hold the + (finger still): straight to the scanner, no panel
+    let holdT = 0, holdFired = false, hx = 0, hy = 0;
+    const canScan = () => { const c = document.documentElement.classList; return !!(window.WNNative || c.contains('wn-canscan') || c.contains('webcam')) && typeof opts.run === 'function'; };
+    plus.addEventListener('pointerdown', (e) => { holdFired = false; clearTimeout(holdT); hx = e.clientX; hy = e.clientY; if (plus.classList.contains('open') || !canScan()) return;
+      holdT = setTimeout(() => { holdFired = true; plus.classList.remove('press'); try { const h = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn; if (h) { const r = h.postMessage({ cmd: 'haptic', style: 'medium' }); if (r && r.catch) r.catch(() => { }); } } catch (x) { } opts.run('scan'); }, 450); });
+    plus.addEventListener('pointermove', (e) => { if (Math.hypot(e.clientX - hx, e.clientY - hy) > 10) clearTimeout(holdT); });
+    ['pointerup', 'pointercancel'].forEach(ev => plus.addEventListener(ev, () => clearTimeout(holdT)));
+    plus.addEventListener('contextmenu', (e) => e.preventDefault());
+    plus.addEventListener('click', () => { if (holdFired) { holdFired = false; return; } const t = Date.now(); if (t - plusAt < 100) return; plusAt = t; openMenu(); });
     scrim.addEventListener('pointerdown', (e) => { e.preventDefault(); openMenu(false); });
     let md = null, mSkip = 0;
     menu.addEventListener('dragstart', (e) => e.preventDefault());

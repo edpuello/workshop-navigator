@@ -13,7 +13,9 @@
   const tokenKeys = () => { const out = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^sb-.+-auth-token$/.test(k)) out.push(k); } } catch (e) { } return out; };
   const hasSession = () => tokenKeys().some(k => /access_token/.test(ls.get(k) || ''));
   const NB = () => (window.WNNative && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn) || null;
-  const nat = (cmd, a) => { const h = NB(); return h ? h.postMessage(Object.assign({ cmd }, a || {})) : Promise.reject(new Error('Only in the iPhone app')); };
+  // 10.22: nothing in the login waits forever — a stalled connection or a native call that never answers ends with a message
+  const withTime = (p, ms, msg) => Promise.race([Promise.resolve(p), new Promise((_, no) => setTimeout(() => no(new Error(msg)), ms))]);
+  const nat = (cmd, a) => { const h = NB(); return h ? withTime(h.postMessage(Object.assign({ cmd }, a || {})), cmd === 'oauth' ? 180000 : /^(unlock|credLoad)$/.test(cmd) ? 60000 : 15000, 'The iPhone didn’t answer — try again.') : Promise.reject(new Error('Only in the iPhone app')); };
   const native = () => !!NB();
   const faceOn = () => ls.get('wn-faceid') !== 'off';
   const remember = () => ls.get('wn-remember') !== '0';
@@ -141,7 +143,7 @@ html.wl-open,html.wl-open body{overflow:hidden!important}
     if (el) return el;
     if (!document.getElementById('wl-css')) { const st = document.createElement('style'); st.id = 'wl-css'; st.textContent = CSS; document.head.appendChild(st); }
     el = document.createElement('div'); el.className = 'wl'; el.id = 'wnlogin'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Log in');
-    el.innerHTML = `<div class="wl-box"><p class="wl-v">Workshop Navigator · v10.21_1</p><h1 class="wl-h"></h1><p class="wl-s"></p>
+    el.innerHTML = `<div class="wl-box"><p class="wl-v">Workshop Navigator · v10.21_2</p><h1 class="wl-h"></h1><p class="wl-s"></p>
 <div class="wl-stage" aria-live="polite"><div class="wl-pop">${WHEEL}<p class="wl-msg"></p></div></div>
 <form class="wl-form" autocomplete="on" novalidate>
 <label class="wl-lbl" for="wl-u">Username</label>
@@ -212,7 +214,7 @@ html.wl-open,html.wl-open body{overflow:hidden!important}
     btn.disabled = true; if (!fromFace) btn.textContent = 'Logging in…';
     try {
       if (!window.WN || !WN.signIn) throw new Error('Can’t reach the server right now');
-      await WN.signIn(email, pw);
+      await withTime(WN.signIn(email, pw), 20000, 'Can’t reach the server — check your internet connection and try again.');
       await keep(email, pw); f.password.value = '';
       await done('Logged in', fromFace);
     } catch (x) {

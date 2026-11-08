@@ -55,6 +55,7 @@
   const SIZE_TOK = /^(#\d[\d\-\/]*|M\d+(\.\d+)?|\d[\d.\/\-]*″?|×|mm|″)$/;
   // one thing → {main, desc}: "1/4-20 × 1″" + "Hex Bolt · 18-8 Stainless"
   function words(x) {
+    if (x && x.kind === 'supply') { const d = [x.size, x.color].filter(Boolean).map(v => title(pretty(v))).join(' · '); return { main: title(pretty(x.name)), desc: d || title(pretty(x.stype || x.category || '')) }; }   // a supply: its name big, size · color small
     let name = pretty(x.name); const extra = [];
     { const bits = name.split(/\s+·\s+/); name = bits.shift(); extra.push(...bits); }
     { const bits = name.split(/\s+[—–]\s+/); name = bits.shift(); extra.push(...bits); }
@@ -102,7 +103,9 @@
   const SITE = 'https://edpuello.github.io/workshop-navigator/';
   const rk = (roll) => roll === 'side' ? 'side' : 'front';
   const setStyle = (roll, st) => { if (STYLES.includes(st)) STYLE[rk(roll)] = st; };
-  const styleOf = (roll, c) => c && c.loc ? 'qr' : STYLES.includes(c && c.style) ? c.style : STYLE[rk(roll)];
+  let LOCST = (() => { try { return localStorage.getItem('wn-locstyle') === 'dm' ? 'dm' : 'qr'; } catch (e) { return 'qr'; } })();   // location labels: QR (default) or Data Matrix
+  const setLocStyle = (v) => { LOCST = v === 'dm' ? 'dm' : 'qr'; LAYOUTS.clear(); IMGS.clear(); };
+  const styleOf = (roll, c) => c && c.loc ? (c.style === 'dm' || c.style === 'qr' ? c.style : LOCST) : STYLES.includes(c && c.style) ? c.style : STYLE[rk(roll)];
   const symData = (kind, c) => kind === 'qr' ? (c.custom ? String(c.code).trim() : SITE + 'app/?loc=' + encodeURIComponent(c.code)) : clean(c.code).replace(/×/g, 'x');
   const SYMS = new Map();
   function symbolFor(kind, c) {
@@ -177,7 +180,7 @@
         const rows = [], cy = y0 + sz + qz * m + Math.round(codeH * CAPH) + 2, ch = fitOne(c.code, W - 2 * MX, codeH, 20);
         rows.push({ t: c.code, h: ch, y: cy, x: Math.round((W - textW(c.code, ch)) / 2) });
         if (c.desc) { const nh = fitOne(c.desc, W - 2 * MX, nameH, 14), t = ell(c.desc, W - 2 * MX, nh); rows.push({ t, h: nh, y: cy + nameH + 8, x: Math.round((W - textW(t, nh)) / 2) }); }
-        return { W, H, style: 'qr', sym: { ...sym, m, s: sz, x: Math.round((W - sz) / 2), y: y0 }, rows };
+        return { W, H, style: sym.kind, sym: { ...sym, m, s: sz, x: Math.round((W - sz) / 2), y: y0 }, rows };
       }
       const m = Math.max(2, Math.min(mmax, Math.floor((W - 2 * MX) / (sym.n + 2 * qz)))), sz = sym.n * m;
       return { W, H, style: sym.kind, sym: { ...sym, m, s: sz, x: Math.round((W - sz) / 2), y: Math.round((H - sz) / 2) }, rows: [] };
@@ -185,7 +188,7 @@
     // 1.5″ × 0.5″ with a code: the code on the left, the words beside it
     const m = Math.max(2, Math.min(mmax, Math.floor((H - 2 * 10) / sym.n))), sz = sym.n * m, tx = MX + sz + 16, w = W - MX - tx, o = SZ.frontSym;
     const symO = { ...sym, m, s: sz, x: MX, y: Math.round((H - sz) / 2) };
-    if (c.loc) { const ch = fitOne(c.code, w, 56, 24), rows = placeMain([c.code], ch, tx, w, 10, c.desc ? 92 : H - 10); if (c.desc) { const nh = fitOne(c.desc, w, 24, 14), t = ell(c.desc, w, nh); rows.push({ t, h: nh, y: 124, x: Math.round(tx + (w - textW(t, nh)) / 2) }); } return { W, H, style: 'qr', sym: symO, rows }; }
+    if (c.loc) { const ch = fitOne(c.code, w, 56, 24), rows = placeMain([c.code], ch, tx, w, 10, c.desc ? 92 : H - 10); if (c.desc) { const nh = fitOne(c.desc, w, 24, 14), t = ell(c.desc, w, nh); rows.push({ t, h: nh, y: 124, x: Math.round(tx + (w - textW(t, nh)) / 2) }); } return { W, H, style: sym.kind, sym: symO, rows }; }
     if (!has && !c.custom) { const h = fitOne(c.code, w, 56, 18); return { W, H, style: sym.kind, sym: symO, rows: placeMain([c.code], h, tx, w, 0, H) }; }
     const left = c.custom ? c.desc : (c.reserved ? '' : c.desc), right = c.custom ? '' : c.code, base = H - 14, bottom = (left || right) ? base - Math.round(o.small * CAPH) - 10 : H - 10;
     const mm = mainLines(main, w, bottom - 10, o);
@@ -287,5 +290,5 @@
     const r = await timed(fetch(BP() + 'write', { method: 'POST', body: JSON.stringify({ device: dev, data }) }), 15000);
     if (!r.ok) throw new Error((await r.text()) || 'The printer refused the job');
   }
-  window.WNLabels = { location, words, pretty, title, svgLabel, setStyle, style: (roll) => STYLE[rk(roll)], STYLES, layout, png, BP, timed, setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
+  window.WNLabels = { setLocStyle, locStyle: () => LOCST, location, words, pretty, title, svgLabel, setStyle, style: (roll) => STYLE[rk(roll)], STYLES, layout, png, BP, timed, setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
 })();
