@@ -1,9 +1,9 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#ffffff">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob:; connect-src 'self' data: blob: https://phrkzabhneiczzujfpgp.supabase.co wss://phrkzabhneiczzujfpgp.supabase.co http://localhost:* https://localhost:* http://127.0.0.1:* https://127.0.0.1:*; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'"><meta name="referrer" content="no-referrer"><script>(function(){if(window.top===window.self)return;var ok=false;try{ok=window.top.location.origin===location.origin}catch(e){}if(!ok){document.documentElement.style.display="none";try{window.top.location=location.href}catch(e){}}})();</script><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#ffffff">
 <script>try{var t=localStorage.getItem("wn-theme")||"light";if(t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}</script><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-title" content="Workshop"><link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="icon" type="image/svg+xml" href="img/icon.svg">
 <title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261106b"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261107a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261108b"></script><script src="js/notify.js?v=20261107a"></script>
+<script src="js/vendor/supabase.min.js"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261107a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261108b"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -335,9 +335,34 @@ html.dark .wnplus:not(.open),html.dark #ckScan,html.dark .scanfab{background:var
 html.dark .wnmenu .mi,html.dark .wnmenu .seg button{background:none!important}html.dark .wnmenu .seg button.on{background:#fff!important;color:var(--brand)!important}html.dark .wnmenu{background:var(--brand)!important;color:#fff!important}
 html.dark .wnbar .tabbar a{background:none!important}
 html.dark header.hw,html.dark body.hdr-a header{background:var(--card)!important}html.dark{background:#121214}html.dark .chip{border:1px solid rgba(56,56,56,0.22)}html.dark .chip .dot{background:#4b5865}html.dark .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .dock{background:rgba(18,18,20,0.92)}html.dark .sbar{background:#1c1c1c}html.dark .ic{background:#1b242c;color:#9cc3ea}html.dark .att .w{color:#fec767}html.dark .soon{background:#19232e}html.dark .back{background:#1c1c1c}html.dark .rows{background:#1c1c1c}html.dark .row:active{background:#121214}html.dark .st-instock{background:#273f30;color:#83ebb1}html.dark .st-tobuy{background:#311717;color:#dd888a}html.dark .st-putaway{background:#4d3e1a;color:#ffd475}html.dark .loc{background:#19232e;color:#9cc3ea}html.dark .loc.old{background:#4d3e1a;color:#ffd475}html.dark .q-half{color:#fecd67}html.dark mark{background:#5b511e}html.dark .ucard .code{color:#9cc3ea;background:#19232e}html.dark .map{background:#1c1c1c}html.dark .cell.pur{border-color:#34373c}html.dark .cell.has{background:#233241;border-color:#2c3744;color:#9cc3ea}html.dark .cell .k2{color:#9cc3ea}html.dark .cell.hit{background:#203349}html.dark .wall{background:#1c1c1c}html.dark .whd .k i{background:#303339}html.dark .wseg button.on{background:#1c1c1c;color:#9cc3ea}html.dark .wcab .wt b{color:#9cc3ea}html.dark .wmini .wc{background:#303339}html.dark .wc.has,html.dark .whd .k i.has{background:#283747}html.dark.native .wmini .wc{color:#caced4}@media (max-width:700px){html.dark .wmini .wc{color:#caced4}}html.dark .pmap .cell{background:rgba(28,28,28,0.42);border:1px solid rgba(56,56,56,0.55);color:#caced4}html.dark .pmap .cell.has{background:#1c1c1c;border-color:#383838;color:#9cc3ea}html.dark .pmap .cell.pur{background:rgba(28,28,28,0.72)}html.dark .pmap .cell.hit{background:#1c1c1c}html.dark .where{background:#1c1c1c}html.dark .where .wc{color:#9cc3ea}html.dark .menu{background:#1c1c1c}html.dark .sh-grab span{background:#38383d}html.dark .fld input,html.dark .fld select{background:#121214}html.dark .ubtn{background:#1c1c1c}html.dark .ubtn b{color:#9cc3ea}html.dark .ubtn.on{background:#19232e}html.dark .rtag{color:#ced2d8}html.dark .oc{background:#131313}html.dark .oc b{color:#b2b2b2}html.dark .oc i{color:#fec767}html.dark .lprev{background:#2d3138}html.dark header .chip{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .att .b{color:#9cc3ea}html.dark .hcta{color:#9cc3ea;background:#1b242c}html.dark .hk i{background:#283747}html.dark .hct b{color:#9cc3ea}html.dark .hmini i{background:#303339}html.dark .hmini i.h{background:#283747}html.dark .hchip b{color:#9cc3ea}html.dark .hrow b.b{color:#9cc3ea}html.dark .hrow b.w{color:#fec767}html.dark .hmore{color:#9cc3ea}html.dark .hline em.w{color:#fec767}html.dark .hline em.b{color:#9cc3ea}html.dark .hpc{background:#1c1c1c}html.dark .hpc em{color:#9cc3ea}html.dark .utr b{color:#9cc3ea}html.dark .prow em.w{color:#fec767}html.dark .prow em.b{color:#9cc3ea}html.dark .tk-code{background:#19232e;color:#9cc3ea}html.dark .tk-stats b.q-low{color:#ffd475}html.dark .tk-seg button{color:#b5bdc8}html.dark .tk-pm{background:#19232e;color:#9cc3ea}html.dark .tk-chips button{border:1px solid #34383c;background:#1c1c1c}html.dark .tk-chips button.on{background:#19232e;color:#9cc3ea}html.dark .tk-chips button.neg{color:#f07e75;border-color:#462d2a;background:#341714}html.dark .tk-chips button.pos{color:#97eabc;border-color:#2f4136;background:#1c2b20}html.dark .tk-after{color:#b5bdc8}html.dark .tk-after .warn{color:#ffd475}html.dark .tk-gr .x{color:#9cc3ea}html.dark .tk-gr.alt{background:#202428}html.dark .tk-ask{background:#19232e}html.dark .tk-ask b{color:#9cc3ea}html.dark .tk-ask span{color:#98b4d1}html.dark .tk-in{background:#1c1c1c}html.dark .tk-rough .r1{border:1px solid #314036;background:#273f30;color:#83ebb1}html.dark .tk-rough .r2{background:#4d3e1a;color:#ffd475}html.dark .tk-rough .r3{border:1px solid #462b2b;background:#311717;color:#dd888a}html.dark .tk-done i{background:#273f30;color:#83ebb1}html.dark .tk-low{background:#4d3e1a;color:#ffe2a3}html.dark .tk-low .bb button.n{color:#ffe2a3}html.dark .tk-ok{background:#273f30;color:#83ebb1}html.dark .dr-row .t span.w{color:#ffd475}html.dark .dr-pm{background:#19232e;color:#9cc3ea}html.dark .dr-n.on{color:#9cc3ea}html.dark .dr-seg button{color:#b5bdc8}html.dark .dr-bar{background:#1c1c1c}html.dark .dr-bar span{color:#b5bdc8}html.dark .gw-grid button.r{background:#311717}html.dark .gw-grid button.w small{color:#ffd475}html.dark .cell.hit2{background:#19232e}html.dark .pmap .cell.hit2{background:#293d56}html.dark .tk-pc button{background:#19232e;color:#9cc3ea}html.dark .tk-pc b{color:#9cc3ea}html.dark .lvsum{background:#1c1c1c}html.dark .lcode{color:#9cc3ea;background:#19232e}html.dark .lcode.old{color:#ffd475;background:#493c1c}html.dark .dock{background:rgba(18,18,20,0.98)!important}html.dark .cathead{background:#121214!important}</style>
+<style id="wn-home2">
+/* 10.22 search-first home */
+.hw-h{font-size:22px!important;font-weight:700!important}
+.hero-q{display:none;margin:12px 0 2px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",system-ui,Inter,sans-serif;font-size:27px;line-height:1.1;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
+html.rt-home .hero-q{display:block}
+html.rt-home header.hw{padding-bottom:4px}
+html.rt-home .dock .sbar{min-height:52px;border-radius:15px}
+.hfeed{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.attstrip{display:flex;align-items:center;gap:11px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.attstrip .ad{width:9px;height:9px;border-radius:50%;flex:none}
+.attstrip .ad.r{background:var(--bad);box-shadow:0 0 0 4px rgba(229,72,77,.16)}
+.attstrip .ad.b{background:var(--brand)}
+.attstrip .at{flex:1;min-width:0;font-size:15px;font-weight:500;color:var(--ink)}
+.attstrip .at b{font-weight:800}.attstrip .at i{color:var(--ink3);font-style:normal;font-weight:500}
+.astchev{width:17px;height:17px;flex:none;color:var(--ink3)}
+.rlbl{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 0}
+.rlbl>span{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3)}
+.rall{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--accent);padding:4px 2px}
+.rlist{display:flex;flex-direction:column;gap:2px}
+.rrow{display:flex;align-items:center;gap:11px;width:100%;background:none;border:0;padding:8px 2px;font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.rrow .rt{flex:1;min-width:0}
+.rrow .rt b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.rrow .rt small{display:block;font-size:12.5px;color:var(--ink3);margin-top:1px}
+.rempty{padding:14px 2px;color:var(--ink3);font-size:14px}
+</style>
 </head>
 <body><script src="js/login.js?v=20261108a"></script>
-<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Welcome, Ed</h1><p class="hw-v">Workshop Navigator v10.21_3 · Nov 8, 2026<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div></div></header>
+<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator v10.22 · Nov 9, 2026<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
 <div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
@@ -482,7 +507,7 @@ function saveUnit(u) {
 }
 
 // ---------------------------------------------------------------- routes
-function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = h.split('/'); return { v: a || 'home', a: b ? decodeURIComponent(b) : '' }; }
+function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = h.split('/'); let d = ''; try { d = b ? decodeURIComponent(b) : ''; } catch (e) { d = b; } return { v: a || 'home', a: d }; }
 // 10.21: leaving a search (tab bar, Home, Back, any link) empties the search box, so Home is never stuck showing old results
 function clearQ() { const e = $('q'); if (!e || !e.value) return false; e.value = ''; $('qClear').hidden = true; if (document.activeElement === e) e.blur(); return true; }
 function go(h) { clearQ(); if (location.hash === h) render(); else location.hash = h; }
@@ -493,7 +518,7 @@ function deepLink() {
   const h = location.hash; if ((h === '#scan' || /^#(part|loc)=/.test(h)) && window.WNShell && WNShell.on()) WNShell.hide();   // a scan / link while the Checklist is showing: back to the Workshop
   if (h === '#scan') { history.replaceState(null, '', '#/'); render(); setTimeout(() => window.WNScan(), 300); return true; }
   const m = h.match(/^#(part|loc)=(.+)$/); if (!m) return false;
-  const v = decodeURIComponent(m[2]);
+  let v; try { v = decodeURIComponent(m[2]); } catch (e) { history.replaceState(null, '', '#/'); return false; }   // a broken link just opens Home
   if (m[1] === 'part') { history.replaceState(null, '', '#/'); render(); openSheet('part', v); }
   else { const unit = S.units(doc()).find(u => u.id === v.toUpperCase()); if (unit) { history.replaceState(null, '', '#/storage/' + unit.id); render(); if (unit.type === 'box') openDrawer(unit.id, true); return true; }
     const mo = moduleOf(v); if (mo && mo.m.bins > 0) { history.replaceState(null, '', '#/storage/' + mo.u.id); render(); openSheet('group', mo.code); return true; }
@@ -507,6 +532,7 @@ function markTab() { if (window.WNShell && WNShell.on()) return; const t = TAB_O
 function render() { markTab();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
+  document.documentElement.classList.toggle('rt-home', route().v === 'home' && !q);
   try { $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)(); }
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
@@ -530,7 +556,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.21_3 · Nov 8</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.22 · Nov 9</span></p>`;
 const attRow = (tab, label, n, cls) => `<button type="button" class="attr" data-go="#/attention/${tab}"><span>${label}</span><b class="${n ? cls : ''}">${n}</b></button>`;
 const attRows = (D) => attRow('tobuy', 'To buy', D.tobuy.length, 'r') + attRow('low', 'Running low', D.low.length, 'w') + attRow('home', 'Need a home', D.homeN, 'b') + (D.exp.length ? attRow('expiring', 'Expiring', D.exp.length, 'r') : '') + (D.lent.length ? attRow('lent', 'Lent out', D.lent.length, '') : '') + (D.c.putaway ? attRow('putaway', 'Bought, not stocked', D.c.putaway, '') : '');
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
@@ -561,9 +587,32 @@ function pcMore(D, skip) {
    <div class="pp span2"><div class="pph">${ic('clip')}Label prints<span>Zebra ZD421</span></div>${prints.length ? prints.map(p => `<div class="hrow"><span class="hn">${p.custom ? 'Custom label' : esc((p.codes || []).slice(0, 3).join(', ')) + ((p.codes || []).length > 3 ? ' +' + ((p.codes || []).length - 3) : '')}</span><b class="g">${ago(p.at)}</b></div>`).join('') : `<span class="hok">No labels printed yet. Open a drawer and tap Labels.</span>`}</div>
   </div>`;
 }
+const WN_RECENT = (() => {
+  const K = 'wn-recent', CAP = 12;
+  const get = () => { try { return JSON.parse(localStorage.getItem(K)) || []; } catch (e) { return []; } };
+  const push = (id) => { if (!id) return; try { let a = get().filter(x => x !== id); a.unshift(id); localStorage.setItem(K, JSON.stringify(a.slice(0, CAP))); } catch (e) { } };
+  return { get, push };
+})();
+const homeAtt = (D) => {
+  const bits = [];
+  if (D.tobuy.length) bits.push(`<b>${D.tobuy.length}</b> to buy`);
+  if (D.low.length) bits.push(`<b>${D.low.length}</b> running low`);
+  if (D.homeN) bits.push(`<b>${D.homeN}</b> <i>need a home</i>`);
+  if (!bits.length) return '';
+  const hot = D.tobuy.length || D.low.length;
+  return `<button type="button" class="attstrip" data-go="#/attention"><span class="ad ${hot ? 'r' : 'b'}"></span><span class="at">${bits.join(' <i>·</i> ')}</span><svg class="astchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>`;
+};
+const recRow = (x) => `<button type="button" class="rrow" data-part="${esc(x.id)}">${photo(x)}<span class="rt"><b>${esc(x.name)}</b><small>${esc(x.category || '')}</small></span>${locChip(x)}</button>`;
+function recentBlock() {
+  const ids = WN_RECENT.get(), map = new Map(items().map(x => [x.id, x]));
+  const list = ids.map(id => map.get(id)).filter(Boolean).slice(0, 4);
+  const label = `<div class="rlbl"><span>Recent</span>${list.length ? '<button type="button" class="rall" data-go="#/parts">See all</button>' : ''}</div>`;
+  if (!list.length) return `${label}<div class="rempty">Parts you open show up here for quick access.</div>`;
+  return label + `<div class="rlist">${list.map(recRow).join('')}</div>`;
+}
 function home() {
   const D = HD();
-  return `<div class="cards p3">${freshCard()}${partsCard(D)}${attCard(D, 1)}${storageCard(D)}${toolsCard(D)}${supCard(D)}<button type="button" class="card wide col" data-go="#/storage">${chev}<div class="k">${ic('grid')}Akro-Mils wall<span class="hk"><i class="g"></i>in stock <i class="w"></i>low <i class="r"></i>out</span></div>${miniWall(D)}<div class="hchips">${others(D)}</div></button></div>${pcMore(D, 'wall')}${foot}`;
+  return `<div class="hfeed">${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
 }
 const SUP_IC = { 'Tape': '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', 'Glue & sealants': '<path d="M10 2h4v4l2 3v12H8V9l2-3z"/><path d="M8 13h8"/>', 'Painting': '<rect x="3" y="3" width="14" height="6" rx="2"/><path d="M17 6h3v5h-8v3"/><rect x="10.5" y="14" width="3" height="7" rx="1"/>', 'Printing & paper': '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>', 'Cleaning': '<path d="M9 3h5v4l3 3v11H7V10l2-3z"/><path d="M14 5h3"/>', 'Electrical': '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>' };
 const supIc = (x) => `<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SUP_IC[x.category] || ICO.box}</svg></span>`;
@@ -871,6 +920,7 @@ const VIEWS = { supplies: suppliesView, tools: toolsView, unplaced, home, fresh:
 const sheet = $('sheet'), shBody = $('shBody');
 let stack = []; // [{k, a, unit}] — Back returns to the previous sheet
 function openSheet(k, a, push, extra) {
+  if (k === 'part' && a) { try { WN_RECENT.push(a); } catch (e) { } }
   if (!sheet.open && qEl && qEl.value.trim()) fromSearch = location.hash || '#/';   // opened from search results: closing it goes Home (unless it took you somewhere)
   const ent = { k, a, ...(extra || {}) };
   if (push && stack.length) stack.push(ent); else stack = [ent];
@@ -1514,7 +1564,7 @@ function printerSheet() {
   const cur = dest.local, how = { zebra: ' through Zebra Browser Print.', dymo: ' through DYMO Connect.', other: P.native() ? ' — opens AirPrint.' : ' — opens the print dialog.' };
   const wnDev = () => (window.WNNative && window.WNNative.device) || 'iPhone';
   const howCur = (p) => p.native ? (p.kind === 'ble' ? ' — straight from this ' + wnDev() + ' over Bluetooth.' : ' — straight from this ' + wnDev() + ' over the network.') : (how[p.brand] || '.');
-  // 10.21_3: each printer row has its own label-size buttons; each size is lit on exactly one printer.
+  // 10.21_5: each printer row has its own label-size buttons; each size is lit on exactly one printer.
   const fP = P.printerOf('front') || cur, sP = P.sideId() ? P.printerOf('side') : fP;
   const sizeOf = (p) => [fP && fP.id === p.id ? 'front' : '', sP && sP.id === p.id ? 'side' : ''].filter(Boolean);
   const chip = (p, roll) => { const on = sizeOf(p).includes(roll); return `<button type="button" class="chipb${on ? ' on' : ''}" data-act="passign" data-roll="${roll}" data-id="${esc(p.id)}" aria-pressed="${on}">${on ? '✓ ' : ''}${rollSize(roll)}</button>`; };
@@ -1525,7 +1575,7 @@ function printerSheet() {
       ${p.native || p.kind === 'air' ? `<button type="button" class="xbtn" data-act="forgetp" data-id="${esc(p.id)}" aria-label="Forget this printer" style="margin-left:auto;align-self:flex-start">×</button>` : ''}
       <div style="display:flex;gap:6px;align-items:center;width:100%;flex-wrap:wrap">${bad ? '' : chip(p, 'front') + chip(p, 'side')}<span style="flex:1"></span>${p.brand === 'computer' || bad ? '' : `<button type="button" class="gbtn" data-act="ptest" data-id="${esc(p.id)}">Test</button>`}</div></div>`; };
   const plistAll = [...(cur && cur.missing ? [cur] : []), ...(sP && sP.missing && sP.id !== (cur || {}).id ? [sP] : []), ...P.found.filter(p => !(cur && cur.missing && p.id === cur.id))];
-  // 10.21_3: only Zebras are listed (plus whatever a label size is still set to, so it can be moved)
+  // 10.21_5: only Zebras are listed (plus whatever a label size is still set to, so it can be moved)
   const isZebra = (p) => p.brand === 'zebra' && p.likely !== false, plist0 = plistAll.filter(p => isZebra(p) || sizeOf(p).length);
   const nLocal = plistAll.filter(isZebra).length, inApp = P.native();
 
@@ -1807,7 +1857,8 @@ window.WNShell = (function () {
   function leave(h) {
     if (h === '#notifs') return window.WNBell && WNBell.open();
     if (h === '#scan') { hide(); return window.WNScan ? window.WNScan() : act('scancode'); }
-    if (/^#act=/.test(h)) { goW('#/storage'); setTimeout(() => act(h.slice(5)), 60); return; }
+    if (/^#act=(printer|custom|organize)$/.test(h)) { goW('#/storage'); setTimeout(() => act(h.slice(5)), 60); return; }
+    if (/^#act=/.test(h)) return;
     goW(h || '#/');
   }
   // the Checklist tab tapped while you're on it: from Settings it goes back to the list; otherwise nothing (the bar blinks)
@@ -1839,7 +1890,7 @@ WNBar.mount({ page: 'workshop', run: (k) => {
     case 'viewer': location.href = 'labs.html#viewer'; return;
   } } });
 // the Checklist's + panel sends you here with #act=… for the Workshop-only actions (labels, custom label, organize)
-if (/^#act=/.test(location.hash)) { const a = location.hash.slice(5); history.replaceState(null, '', '#/storage'); setTimeout(() => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = a; b.hidden = true; document.body.appendChild(b); b.click(); b.remove(); }, 350); }
+if (/^#act=(printer|custom|organize)$/.test(location.hash)) { const a = location.hash.slice(5);   /* 10.21_5: only these — a link can't press any other button */ history.replaceState(null, '', '#/storage'); setTimeout(() => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = a; b.hidden = true; document.body.appendChild(b); b.click(); b.remove(); }, 350); }
 if (window.__wnCL != null) WNShell.show(window.__wnCL, true); else setTimeout(() => WNShell.make(), 900);
 // the bell: notifications (new parts, count changes, moves, take-outs) — js/notify.js
 WNBell.watch();
