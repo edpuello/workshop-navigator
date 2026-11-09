@@ -25,6 +25,7 @@
     chev: '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg>',
     back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg>',
     cam: I('<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+    vib: I('<rect x="8" y="3.5" width="8" height="17" rx="2"/><path d="M4.5 9v6M19.5 9v6"/>'),
   };
   const CSS = `
 #settingsTab .settings-head{display:none!important}
@@ -87,16 +88,16 @@
   const st = document.createElement('div'); st.className = 'st';
   st.innerHTML = `<h1 class="st-ttl">Settings</h1>
 <div class="st-grp"><button type="button" class="st-row st-prof" data-go="profile"><span class="st-av" data-av>${avatar()}</span><span style="flex:1;min-width:0"><b data-name>${esc(name())}</b><small data-email>${esc(email() || 'Your profile')}</small></span>${IC.chev}</button></div>
-<div class="st-grp">${row('transactions', 'receipt', 'Transactions', '')}${row('notifications', 'bell', 'Notifications', ls.get('wn-notif-pause') === '1' ? 'Paused' : 'On')}<div class="st-row st-nat" style="cursor:default">${IC.face}<b>Log in with Face ID</b>${sw('faceid', ls.get('wn-faceid') !== 'off')}</div></div>
+<div class="st-grp">${row('transactions', 'receipt', 'Transactions', '')}${row('notifications', 'bell', 'Notifications', ls.get('wn-notif-pause') === '1' ? 'Paused' : 'On')}<div class="st-row st-nat" style="cursor:default">${IC.face}<b>Log in with Face ID</b>${sw('faceid', ls.get('wn-faceid') !== 'off')}</div><div class="st-row st-nat" style="cursor:default">${IC.vib}<b>Haptics</b>${sw('haptics', ls.get('wn-haptics') !== 'off')}</div></div>
 <div class="st-grp">${row('appearance', 'moon', 'Appearance', themeName())}${row('language', 'globe', 'Language', 'English')}${row('customize', 'pen', 'Customize')}${row('backups', 'box', 'Backups')}</div>
 <div class="st-grp">${row('faq', 'help', 'Help & FAQ')}${row('terms', 'doc', 'Terms of Service')}${row('privacy', 'shield', 'Privacy Policy')}</div>
 <div class="st-grp"><button type="button" class="st-row red" data-act="logout">${IC.out}<b>Log out</b></button></div>
 <div data-faith></div>
-<div class="st-ab"><b>Workshop Navigator</b><span>Version 10.21_3</span><span>Created by Ed Puello</span></div>`;
+<div class="st-ab"><b>Workshop Navigator</b><span>Version 10.23</span><span>Created by Ed Puello</span></div>`;
   tab.appendChild(st);
   if (faith) st.querySelector('[data-faith]').appendChild(faith);
   [cloud, custom, backup].forEach(p => { if (p && p !== cloud) p.hidden = true; });
-  if (!NB()) st.querySelector('.st-nat').remove();
+  if (!NB()) st.querySelectorAll('.st-nat').forEach(e => e.remove());
   const css = document.createElement('style'); css.textContent = CSS; document.head.appendChild(css);
 
   // ---- pages
@@ -183,6 +184,7 @@
     }
     const k = t.dataset && t.dataset.sw; if (!k) return;
     if (k === 'faceid') ls.set('wn-faceid', t.checked ? 'on' : 'off');
+    if (k === 'haptics') { ls.set('wn-haptics', t.checked ? 'on' : 'off'); if (t.checked) nat('haptic', { style: 'light' }).catch(() => { }); }
     if (k === 'pause') { ls.set('wn-notif-pause', t.checked ? '1' : '0'); if (window.WNBell && WNBell.repaint) WNBell.repaint(); refresh(); }
     if (k === 'push') {
       if (!t.checked) { ls.set('wn-push', '0'); return; }

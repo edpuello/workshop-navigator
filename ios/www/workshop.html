@@ -3,7 +3,7 @@
 <title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="js/vendor/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261107a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261108b"></script><script src="js/notify.js?v=20261107a"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261109a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261109a"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -354,15 +354,46 @@ html.rt-home .dock .sbar{min-height:52px;border-radius:15px}
 .rlbl>span{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3)}
 .rall{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--accent);padding:4px 2px}
 .rlist{display:flex;flex-direction:column;gap:2px}
-.rrow{display:flex;align-items:center;gap:11px;width:100%;background:none;border:0;padding:8px 2px;font:inherit;text-align:left;color:var(--ink);cursor:pointer}
-.rrow .rt{flex:1;min-width:0}
-.rrow .rt b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
-.rrow .rt small{display:block;font-size:12.5px;color:var(--ink3);margin-top:1px}
+.rsr{display:flex;align-items:center;gap:2px}
+.rsq{flex:1;min-width:0;display:flex;align-items:center;gap:11px;background:none;border:0;padding:7px 2px;font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.rsi{width:36px;height:36px;padding:8px;box-sizing:border-box;border-radius:11px;background:var(--pill);color:var(--ink3);flex:none}
+.rsq .rt{flex:1;min-width:0}
+.rsq .rt b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.rsq .rt small{display:block;font-size:12.5px;color:var(--ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rsq .loc{flex:none}
+.rsx{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:none;color:var(--ink3);font-size:21px;line-height:1;cursor:pointer;padding:0}
+.rsx:active{background:var(--pill)}
 .rempty{padding:14px 2px;color:var(--ink3);font-size:14px}
+/* 10.23 search result: your part first, its drawer in the spotlight; what goes with it softly tinted */
+:root{--tgt:var(--brand,#173a5c);--tgtink:#fff}
+html.dark{--tgt:#6aaef0;--tgtink:#0b1622}
+.where.hc{display:flex;flex-direction:column;gap:12px}
+.where.hc .map,.where.hc .btns{margin:0}
+.hc-top{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:0;font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.hc-t{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.hc-t b{font-size:16px;font-weight:700;line-height:1.25;color:var(--ink)}
+.hc-n{flex:none;text-align:right}
+.hc-loc{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--brand,#173a5c);color:#fff}
+.hc-code{font:800 26px/1 ui-monospace,Menlo,monospace;letter-spacing:.5px;flex:none}
+.hc-wh{font-size:13px;line-height:1.35;opacity:.92;min-width:0}
+.hc-wh b{display:block;font-size:14px;font-weight:700;opacity:1}
+.hc-also{font-size:13px;color:var(--ink2);margin-top:-4px}
+.hc-key{display:flex;gap:16px;font-size:12.5px;color:var(--ink3);margin-top:-4px}
+.hc-key span{display:inline-flex;align-items:center;gap:6px}
+.hc-key i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.hc-key .k1{background:var(--tgt);box-shadow:0 0 0 1.5px var(--accent)}
+.hc-key .k2{background:color-mix(in srgb,var(--accent) 34%,var(--pill));border:1.5px solid color-mix(in srgb,var(--accent) 75%,transparent)}
+html .where.hc .cell.hit2{background:color-mix(in srgb,var(--accent) 34%,var(--pill));border:1.5px solid color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:none;color:var(--accent);z-index:1}
+html .where.hc .cell.hit{background:var(--tgt);border-color:var(--tgt);color:var(--tgtink);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--accent);z-index:3;overflow:visible;animation:wnpopc .5s cubic-bezier(.3,1.5,.5,1) both}
+html .where.hc .cell.hit .cl{color:var(--tgtink)}
+html .where.hc .cell.hit::after{content:"";position:absolute;inset:-3px;border-radius:10px;border:2px solid var(--accent);opacity:0;pointer-events:none;animation:wnping 1.15s ease-out .25s 4}
+@keyframes wnpopc{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes wnping{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){html .where.hc .cell.hit,html .where.hc .cell.hit::after{animation:none}}
 </style>
 </head>
-<body><script src="js/login.js?v=20261108a"></script>
-<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator v10.22 · Nov 9, 2026<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
+<body><script src="js/login.js?v=20261109a"></script>
+<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator v10.23 · Nov 9, 2026<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
 <div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
@@ -509,7 +540,7 @@ function saveUnit(u) {
 // ---------------------------------------------------------------- routes
 function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = h.split('/'); let d = ''; try { d = b ? decodeURIComponent(b) : ''; } catch (e) { d = b; } return { v: a || 'home', a: d }; }
 // 10.21: leaving a search (tab bar, Home, Back, any link) empties the search box, so Home is never stuck showing old results
-function clearQ() { const e = $('q'); if (!e || !e.value) return false; e.value = ''; $('qClear').hidden = true; if (document.activeElement === e) e.blur(); return true; }
+function clearQ() { const e = $('q'); if (!e || !e.value) return false; noteSearch(e.value); e.value = ''; $('qClear').hidden = true; if (document.activeElement === e) e.blur(); return true; }
 function go(h) { clearQ(); if (location.hash === h) render(); else location.hash = h; }
 window.addEventListener('hashchange', () => { clearQ(); deepLink(); render(); window.scrollTo(0, 0); });
 window.addEventListener('wn-labelfont', () => { if ($('sheet').open && $('shBody').querySelector('.zlabel')) paintSheet(); });   // the label font arrived: redraw previews with it
@@ -529,7 +560,7 @@ function deepLink() {
 // ---------------------------------------------------------------- views
 const TAB_OF = { home: 'home', attention: 'home', parts: 'parts', supplies: 'parts', storage: 'storage', unplaced: 'storage', tools: 'tools' };
 function markTab() { if (window.WNShell && WNShell.on()) return; const t = TAB_OF[route().v] || 'home'; document.querySelectorAll('.tabbar a').forEach(a => { const on = a.dataset.tab === t; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
-function render() { markTab();
+function render() { markTab(); migrateNames();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
   document.documentElement.classList.toggle('rt-home', route().v === 'home' && !q);
@@ -537,6 +568,8 @@ function render() { markTab();
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
   if (q) { const hit = $('view').querySelector('.cell.hit'); if (hit) hit.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+  const hc = q ? $('view').querySelector('.where.hc .cell.hit') : null, hcode = hc ? hc.dataset.slot : '';
+  if (hcode && hcode !== HAP_LAST) hapticTap('light'); HAP_LAST = hcode;
 }
 const refresh = () => { render(); if ($('sheet').open && !$('sheet').classList.contains('closing') && !sheetTyping()) paintSheet(); };
 const head = (title, back, extra) => `<div class="vhead"><button type="button" class="back" data-go="${back}" aria-label="Back">‹</button><h2>${title}</h2>${extra ? `<div style="display:flex;gap:8px;flex-wrap:wrap">${extra}</div>` : ''}</div>`;
@@ -556,7 +589,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.22 · Nov 9</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.23 · Nov 9</span></p>`;
 const attRow = (tab, label, n, cls) => `<button type="button" class="attr" data-go="#/attention/${tab}"><span>${label}</span><b class="${n ? cls : ''}">${n}</b></button>`;
 const attRows = (D) => attRow('tobuy', 'To buy', D.tobuy.length, 'r') + attRow('low', 'Running low', D.low.length, 'w') + attRow('home', 'Need a home', D.homeN, 'b') + (D.exp.length ? attRow('expiring', 'Expiring', D.exp.length, 'r') : '') + (D.lent.length ? attRow('lent', 'Lent out', D.lent.length, '') : '') + (D.c.putaway ? attRow('putaway', 'Bought, not stocked', D.c.putaway, '') : '');
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
@@ -587,12 +620,27 @@ function pcMore(D, skip) {
    <div class="pp span2"><div class="pph">${ic('clip')}Label prints<span>Zebra ZD421</span></div>${prints.length ? prints.map(p => `<div class="hrow"><span class="hn">${p.custom ? 'Custom label' : esc((p.codes || []).slice(0, 3).join(', ')) + ((p.codes || []).length > 3 ? ' +' + ((p.codes || []).length - 3) : '')}</span><b class="g">${ago(p.at)}</b></div>`).join('') : `<span class="hok">No labels printed yet. Open a drawer and tap Labels.</span>`}</div>
   </div>`;
 }
-const WN_RECENT = (() => {
-  const K = 'wn-recent', CAP = 12;
-  const get = () => { try { return JSON.parse(localStorage.getItem(K)) || []; } catch (e) { return []; } };
-  const push = (id) => { if (!id) return; try { let a = get().filter(x => x !== id); a.unshift(id); localStorage.setItem(K, JSON.stringify(a.slice(0, CAP))); } catch (e) { } };
-  return { get, push };
+// 10.23: recent searches — the last 8 things you looked up, kept on this device; tap one to run it again, × removes it, Clear empties the list
+const WN_SEARCH = (() => {
+  const K = 'wn-searches', CAP = 8;
+  const get = () => { try { const a = JSON.parse(localStorage.getItem(K)); return Array.isArray(a) ? a.filter(x => typeof x === 'string') : []; } catch (e) { return []; } };
+  const save = (a) => { try { localStorage.setItem(K, JSON.stringify(a.slice(0, CAP))); } catch (e) { } };
+  return { get, CAP,
+    push(v) { v = String(v || '').replace(/\s+/g, ' ').trim().slice(0, 60); if (v.length < 2) return; save([v, ...get().filter(x => x.toLowerCase() !== v.toLowerCase())]); },
+    drop(v) { save(get().filter(x => x !== v)); }, clear() { save([]); } };
 })();
+// only searches that found something are kept (a half-typed "1/4-" isn't)
+function noteSearch(v) {
+  try { v = String(v || '').trim(); if (v.length < 2) return; const t = searchTerms(v), n = normS(v);
+    const ok = S.find(doc(), S.norm(v)) || items().some(x => matchesSearch(x, t)) || things().some(x => normS([x.name, x.brand, x.model].join(' ')).includes(n));
+    if (ok) WN_SEARCH.push(v); } catch (e) { }
+}
+// what a saved search finds now: the drawer code + the part's name
+function searchBest(v) {
+  try { const slot = S.find(doc(), S.norm(v)); if (slot) return { code: slot.slot.code, name: slot.unit.name };
+    const l = sortedParts(items().filter(x => matchesSearch(x, searchTerms(v)))), b = l.find(x => loc1(x)) || l[0]; if (!b) return {};
+    const f = loc1(b) && S.find(doc(), loc1(b)); return { code: f ? f.slot.code : '', name: b.name }; } catch (e) { return {}; }
+}
 const homeAtt = (D) => {
   const bits = [];
   if (D.tobuy.length) bits.push(`<b>${D.tobuy.length}</b> to buy`);
@@ -602,14 +650,44 @@ const homeAtt = (D) => {
   const hot = D.tobuy.length || D.low.length;
   return `<button type="button" class="attstrip" data-go="#/attention"><span class="ad ${hot ? 'r' : 'b'}"></span><span class="at">${bits.join(' <i>·</i> ')}</span><svg class="astchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>`;
 };
-const recRow = (x) => `<button type="button" class="rrow" data-part="${esc(x.id)}">${photo(x)}<span class="rt"><b>${esc(x.name)}</b><small>${esc(x.category || '')}</small></span>${locChip(x)}</button>`;
+const CLOCK = '<svg class="rsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+const recSearchRow = (v) => { const r = searchBest(v); return `<div class="rsr"><button type="button" class="rsq" data-rsq="${esc(v)}">${CLOCK}<span class="rt"><b>${esc(v)}</b>${r.name ? `<small>${esc(r.name)}</small>` : ''}</span>${r.code ? `<span class="loc">${esc(r.code)}</span>` : ''}</button><button type="button" class="rsx" data-rsx="${esc(v)}" aria-label="Remove ${esc(v)} from recent searches">×</button></div>`; };
 function recentBlock() {
-  const ids = WN_RECENT.get(), map = new Map(items().map(x => [x.id, x]));
-  const list = ids.map(id => map.get(id)).filter(Boolean).slice(0, 4);
-  const label = `<div class="rlbl"><span>Recent</span>${list.length ? '<button type="button" class="rall" data-go="#/parts">See all</button>' : ''}</div>`;
-  if (!list.length) return `${label}<div class="rempty">Parts you open show up here for quick access.</div>`;
-  return label + `<div class="rlist">${list.map(recRow).join('')}</div>`;
+  const list = WN_SEARCH.get();
+  const label = `<div class="rlbl"><span>Recent searches</span>${list.length ? '<button type="button" class="rall" data-rsclear>Clear</button>' : ''}</div>`;
+  if (!list.length) return `${label}<div class="rempty">What you search for shows up here, so you can find it again with one tap.</div>`;
+  return label + `<div class="rlist">${list.map(recSearchRow).join('')}</div>`;
 }
+// 10.23: search result — your part first, its drawer in the spotlight
+const ordN = (n) => n + ((n % 100 >= 11 && n % 100 <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
+function plainWhere(u, s) {
+  if (!u || !s || u.type !== 'grid' || s.r == null) return '';
+  const R = u.rows || 8, row = s.r === 0 ? 'Top row' : s.r === R - 1 ? 'Bottom row' : ordN(s.r + 1) + ' row from the top';
+  return `${row} · ${ordN(s.c + 1)} from the left`;
+}
+const capW = (w) => w ? String(w).charAt(0).toUpperCase() + String(w).slice(1) : '';
+function hitCard(x, f, gwc) {
+  const st = itemStatus(x), also = codesOf(x).length > 1 ? `<div class="hc-also">Also in ${esc(codesOf(x).slice(1).join(', '))}</div>` : '', pw = plainWhere(f.unit, f.slot);
+  return `<div class="where hc"><button type="button" class="hc-top" data-part="${esc(x.id)}">${photo(x)}<span class="hc-t"><b>${hl(x.name)}</b><span class="pill st-${st}">${ST_LABEL[st]}</span></span><span class="hc-n">${countHtml(x)}</span></button>`
+    + `<div class="hc-loc"><span class="hc-code">${esc(f.slot.code)}</span><span class="hc-wh"><b>${esc(f.unit.name)} · ${esc(capW(f.slot.where))}</b>${pw ? esc(pw) : ''}</span></div>${also}`
+    + mapHtml(f.unit, [f.slot.code, ...gwc], true)
+    + `<div class="hc-key"><span><i class="k1"></i>Your part</span>${gwc.length ? '<span><i class="k2"></i>Goes with it</span>' : ''}</div>`
+    + `<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(x.id)}">Take out / put back</button></div></div>`;
+}
+// 10.23: the four Akro-Mils units are "Akro-Mils Cabinet #1-4" (were "64-drawer #N"); renamed once, and only if you never renamed them yourself
+let NAMES_BUSY = false;
+function migrateNames() {
+  if (NAMES_BUSY) return;
+  try { const hits = S.units(doc()).filter(u => /^Akro-Mils 64-drawer #\d+$/.test(u.name || '')); if (!hits.length) return;
+    NAMES_BUSY = true; hits.forEach(u => saveUnit({ ...u, name: u.name.replace(/^Akro-Mils 64-drawer #/, 'Akro-Mils Cabinet #') })); }
+  catch (e) { console.error(e); } finally { NAMES_BUSY = false; }
+}
+// 10.23: a small tap felt in the hand (iPhone app). Settings → Haptics turns it off.
+function hapticTap(style) {
+  try { if (localStorage.getItem('wn-haptics') === 'off') return; const h = window.WNNative && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn; if (!h) return;
+    const r = h.postMessage({ cmd: 'haptic', style: style || 'light' }); if (r && r.catch) r.catch(() => { }); } catch (e) { }
+}
+let HAP_LAST = '';
 function home() {
   const D = HD();
   return `<div class="hfeed">${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
@@ -656,7 +734,7 @@ function family(cat) {
       st.on = true; st.rows = rows; st.from = rows.indexOf(row); st.to = st.from;
       st.tops = rows.map(r => r.getBoundingClientRect()); st.h = st.tops[st.from].height + 1;
       row.classList.add('pdrag'); row.style.transform = 'scale(1.03)'; row.parentNode.classList.add('pdragging'); document.body.classList.add('pdrag-on');
-      try { if (window.WNNative && window.webkit) { const r = window.webkit.messageHandlers.wn.postMessage({ cmd: 'haptic' }); if (r && r.catch) r.catch(() => { }); } } catch (x) { }
+      hapticTap('medium');
     }, HOLD);
   }, true);
   document.addEventListener('pointermove', (e) => {
@@ -881,10 +959,12 @@ function searchView(q) {
   const best = list.find(x => loc1(x)) || tHits.find(x => canon(x.location));
   let top = '';
   if (slotHit) { const ps = index().by.get(slotHit.slot.code) || []; top = `<div class="where"><div class="wc">${esc(slotHit.slot.code)}</div><div class="wd">${esc(slotHit.unit.name)} · ${esc(slotHit.slot.where)} · ${ps.length ? esc(ps.map(x => x.name).join(', ')) : 'empty'}</div>${mapHtml(slotHit.unit, slotHit.slot.code, true)}<div class="btns"><button type="button" class="gbtn" data-slot="${esc(slotHit.slot.code)}">Open this spot</button></div></div>`; }
-  else if (best) { const part = !!itemById(best.id), f = S.find(doc(), part ? loc1(best) : best.location), gwc = part ? gwCodes(best) : []; top = `<div class="where"><div style="font-size:13px;font-weight:700;color:var(--ink2)">${hl(best.name)}</div><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}${part && codesOf(best).length > 1 ? ' · <b>also in ' + esc(codesOf(best).slice(1).join(', ')) + '</b>' : ''}${gwc.length ? ' · <span style="color:#5b8bd0;font-weight:700">what goes with it lit too</span>' : ''}</div>${mapHtml(f.unit, [f.slot.code, ...gwc], true)}${part ? `<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(best.id)}">Take out / put back</button></div>` : ''}</div>${part ? gwCard(best) : ''}`; }
+  else if (best) { const part = !!itemById(best.id), f = S.find(doc(), part ? loc1(best) : best.location), gwc = part ? gwCodes(best) : []; top = part ? hitCard(best, f, gwc) + gwCard(best) : `<div class="where"><div style="font-size:13px;font-weight:700;color:var(--ink2)">${hl(best.name)}</div><div class="wc">${esc(f.slot.code)}</div><div class="wd">${esc(f.unit.name)} · ${esc(f.slot.where)}${part && codesOf(best).length > 1 ? ' · <b>also in ' + esc(codesOf(best).slice(1).join(', ')) + '</b>' : ''}${gwc.length ? ' · <span style="color:#5b8bd0;font-weight:700">what goes with it lit too</span>' : ''}</div>${mapHtml(f.unit, [f.slot.code, ...gwc], true)}${part ? `<div class="btns"><button type="button" class="pbtn2" data-act="tkopen" data-id="${esc(best.id)}">Take out / put back</button></div>` : ''}</div>${part ? gwCard(best) : ''}`; }
   const uh = !slotHit && unitHits.length ? `<div class="h3">Storage</div><div class="rows">${unitHits.map(u => `<button type="button" class="row" data-go="#/storage/${esc(u.id)}"><span class="loc">${esc(u.id)}</span><div class="t"><b>${esc(u.name)}</b><span>${esc(u.model || '')}</span></div></button>`).join('')}</div>` : '';
   const th = tHits.length ? `<div class="h3">Tools &amp; other items <span class="c">${tHits.length}</span></div><div class="rows">${tHits.slice(0, 40).map(t => thingRow(t)).join('')}</div>` : '';
-  return top + uh + th + `<div class="h3">Parts <span class="c">${list.length}</span></div><div class="rows">${list.slice(0, 80).map(partRow).join('') || `<div class="empty">No parts match “${esc(q)}”.</div>`}${list.length > 80 ? `<div class="empty">Showing 80 of ${list.length}. Add a size to narrow it down.</div>` : ''}</div>`;
+  const bestPart = !slotHit && best && itemById(best.id) ? best : null, rest = bestPart ? list.filter(x => x !== bestPart) : list;
+  if (bestPart && !rest.length) return top + uh + th;
+  return top + uh + th + `<div class="h3">${bestPart ? 'Other matches' : 'Parts'} <span class="c">${rest.length}</span></div><div class="rows">${rest.slice(0, 80).map(partRow).join('') || `<div class="empty">No parts match “${esc(q)}”.</div>`}${rest.length > 80 ? `<div class="empty">Showing 80 of ${rest.length}. Add a size to narrow it down.</div>` : ''}</div>`;
 }
 function suppliesView() {
   const all = supplies(), grp = route().a, byName = (a, b) => a.name.localeCompare(b.name);
@@ -920,7 +1000,7 @@ const VIEWS = { supplies: suppliesView, tools: toolsView, unplaced, home, fresh:
 const sheet = $('sheet'), shBody = $('shBody');
 let stack = []; // [{k, a, unit}] — Back returns to the previous sheet
 function openSheet(k, a, push, extra) {
-  if (k === 'part' && a) { try { WN_RECENT.push(a); } catch (e) { } }
+  if (qEl && qEl.value.trim()) noteSearch(qEl.value);
   if (!sheet.open && qEl && qEl.value.trim()) fromSearch = location.hash || '#/';   // opened from search results: closing it goes Home (unless it took you somewhere)
   const ent = { k, a, ...(extra || {}) };
   if (push && stack.length) stack.push(ent); else stack = [ent];
@@ -1799,7 +1879,13 @@ sheet.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(); });
 // ---------------------------------------------------------------- search, menu, sync chip
 const qEl = $('q');
 qEl.addEventListener('input', () => { $('qClear').hidden = !qEl.value; render(); });
-$('qClear').onclick = () => { qEl.value = ''; $('qClear').hidden = true; render(); qEl.focus(); };
+$('qClear').onclick = () => { noteSearch(qEl.value); qEl.value = ''; $('qClear').hidden = true; render(); qEl.focus(); };
+qEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { noteSearch(qEl.value); qEl.blur(); } });
+qEl.addEventListener('blur', () => { if (qEl.value.trim()) noteSearch(qEl.value); });
+$('view').addEventListener('click', (e) => { const a = e.target.closest('[data-rsq],[data-rsx],[data-rsclear]'); if (!a) return; e.preventDefault(); e.stopPropagation();
+  if (a.hasAttribute('data-rsx')) { WN_SEARCH.drop(a.dataset.rsx); render(); return; }
+  if (a.hasAttribute('data-rsclear')) { WN_SEARCH.clear(); render(); return; }
+  qEl.value = a.dataset.rsq; $('qClear').hidden = false; window.scrollTo(0, 0); render(); });
 document.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' || (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) { e.preventDefault(); qEl.focus(); qEl.select(); } if (e.key === 'Escape' && document.activeElement === qEl && qEl.value) { qEl.value = ''; $('qClear').hidden = true; render(); } });
 const menu = $('menu'), mb = $('menuBtn');
 function closeMenu() { menu.classList.remove('on'); mb.setAttribute('aria-expanded', 'false'); }

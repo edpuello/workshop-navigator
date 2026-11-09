@@ -186,7 +186,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     let holdT = 0, holdFired = false, hx = 0, hy = 0;
     const canScan = () => { const c = document.documentElement.classList; return !!(window.WNNative || c.contains('wn-canscan') || c.contains('webcam')) && typeof opts.run === 'function'; };
     plus.addEventListener('pointerdown', (e) => { holdFired = false; clearTimeout(holdT); hx = e.clientX; hy = e.clientY; if (plus.classList.contains('open') || !canScan()) return;
-      holdT = setTimeout(() => { holdFired = true; plus.classList.remove('press'); try { const h = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn; if (h) { const r = h.postMessage({ cmd: 'haptic', style: 'medium' }); if (r && r.catch) r.catch(() => { }); } } catch (x) { } opts.run('scan'); }, 450); });
+      holdT = setTimeout(() => { holdFired = true; plus.classList.remove('press'); try { const h = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn; if (h && (() => { try { return localStorage.getItem('wn-haptics') !== 'off'; } catch (e) { return true; } })()) { const r = h.postMessage({ cmd: 'haptic', style: 'medium' }); if (r && r.catch) r.catch(() => { }); } } catch (x) { } opts.run('scan'); }, 450); });
     plus.addEventListener('pointermove', (e) => { if (Math.hypot(e.clientX - hx, e.clientY - hy) > 10) clearTimeout(holdT); });
     ['pointerup', 'pointercancel'].forEach(ev => plus.addEventListener(ev, () => clearTimeout(holdT)));
     plus.addEventListener('contextmenu', (e) => e.preventDefault());

@@ -22,7 +22,7 @@
     { name: 'Cabinet', blocks: [{ full: 1.6 }, { cols: [{ w: 40, hs: [1, 1, 1, 2.6] }, { w: 60, hs: [1, 1, 1, 2.6] }] }] }] };
   // The owner's storage (2026-11-02). Order = how they're listed on the Storage page.
   const MY_UNITS = [
-    ...[1, 2, 3, 4].map(n => ({ id: 'A' + n, type: 'grid', rows: 8, cols: 8, name: 'Akro-Mils 64-drawer #' + n, model: 'Akro-Mils 10164 · wall mounted' })),
+    ...[1, 2, 3, 4].map(n => ({ id: 'A' + n, type: 'grid', rows: 8, cols: 8, name: 'Akro-Mils Cabinet #' + n, model: 'Akro-Mils 10164 · wall mounted' })),
     { id: 'T1', ...T1_LAYOUT, name: 'Husky 52″ chest + cabinet', model: 'Husky 15-drawer combo · #1007 590 888' },
     { id: 'C1', type: 'stack', count: 15, name: 'Husky 61″ rolling cabinet', model: 'Husky 61″ · 15 drawers' },
     { id: 'M1', type: 'modules', name: 'Husky Connect rolling system', model: 'Husky Connect · #1002 091 132', modules: [
