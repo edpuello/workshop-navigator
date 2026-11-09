@@ -11,6 +11,8 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     static let zebraMember = CBUUID(string: "FE79")   // Zebra's Bluetooth SIG member ID, seen in some adverts
 
     private let savedKey = "wn.ble.printers"   // [uuid: name]
+    private let modelsKey = "wn.ble.models"    // [uuid: model the printer reported, e.g. "ZD421"]
+    private var listening: Data?               // replies from the printer while asking its model
     private var central: CBCentralManager!
     private var seen: [UUID: (peripheral: CBPeripheral, name: String, likely: Bool)] = [:]
     private var stateWaiters: [CheckedContinuation<Void, Error>] = []
@@ -26,6 +28,11 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     override init() {
         super.init()
         central = CBCentralManager(delegate: self, queue: .main)
+    }
+
+    private var models: [String: String] {
+        get { (UserDefaults.standard.dictionary(forKey: modelsKey) as? [String: String]) ?? [:] }
+        set { UserDefaults.standard.set(newValue, forKey: modelsKey) }
     }
 
     private var saved: [String: String] {
@@ -71,6 +78,10 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
         try? await Task.sleep(nanoseconds: UInt64(min(max(seconds, 2), 10) * 1_000_000_000))
         central.stopScan()
+        // Zebras already connected to this iPhone (by this app or another) don't advertise, so ask iOS for them too.
+        for p in central.retrieveConnectedPeripherals(withServices: [Self.parserService]) where seen[p.identifier] == nil {
+            seen[p.identifier] = (p, saved[p.identifier.uuidString] ?? p.name ?? "Zebra printer", true)
+        }
         let names = saved
         // Saved printers that weren't seen this time are still listed (they may be asleep).
         for (key, name) in names {
@@ -80,8 +91,9 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         }
         let likely = seen.values.filter { $0.likely }
         let list = likely.isEmpty ? Array(seen.values) : likely   // nothing looks like a Zebra → show what was found
+        let known = models
         return list.sorted { $0.name < $1.name }.map { item in
-            ["id": "ble:" + item.peripheral.identifier.uuidString, "kind": "ble", "name": item.name, "model": "",
+            ["id": "ble:" + item.peripheral.identifier.uuidString, "kind": "ble", "name": item.name, "model": known[item.peripheral.identifier.uuidString] ?? "",
              "conn": "Bluetooth LE", "likely": item.likely]
         }
     }
@@ -247,10 +259,37 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         }
     }
 
+    // Connected → "connected", plus the model the first time (asked once with getvar, then remembered).
     @MainActor
-    func status(id: String) async throws -> String {
-        _ = try await connect(id: id)
+    func status(id: String) async throws -> [String: String] {
+        let (p, write) = try await connect(id: id)
         scheduleIdleDisconnect()
-        return "connected"
+        let key = String(id.dropFirst("ble:".count))
+        if let m = models[key], !m.isEmpty { return ["text": "connected", "model": m] }
+        guard pending == nil, listening == nil,
+              let read = p.services?.first(where: { $0.uuid == Self.parserService })?.characteristics?.first(where: { $0.uuid == Self.fromPrinter }),
+              read.properties.contains(.notify) || read.properties.contains(.indicate) else { return ["text": "connected"] }
+        listening = Data()
+        defer { listening = nil }
+        p.setNotifyValue(true, for: read)
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        let ask = Data("! U1 getvar \"device.product_name\"\r\n".utf8)
+        p.writeValue(ask, for: write, type: write.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse)
+        for _ in 0..<20 {   // up to 2 seconds for the quoted answer
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            if let d = listening, d.filter({ $0 == 0x22 }).count >= 2 { break }
+        }
+        let parts = String(decoding: listening ?? Data(), as: UTF8.self).components(separatedBy: "\"")
+        let model = parts.count >= 3 ? parts[1].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+        guard !model.isEmpty, model != "?" else { return ["text": "connected"] }
+        var m = models
+        m[key] = model
+        models = m
+        return ["text": "connected", "model": model]
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        guard characteristic.uuid == Self.fromPrinter, let v = characteristic.value, listening != nil else { return }
+        listening?.append(v)
     }
 }

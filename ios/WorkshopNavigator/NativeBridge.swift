@@ -6,7 +6,7 @@
 //   addNetwork { host }                 → { id, kind, name, model, conn }        (checks the printer answers on port 9100)
 //   forget    { id }                    → true
 //   send      { id, data }              → true                                   (data = ZPL text)
-//   status    { id }                    → { text }                               (printer's ~HQES answer, or "connected")
+//   status    { id }                    → { text, model? }                       (printer's ~HQES answer, or "connected" + model over Bluetooth)
 //   airprint  { pages:[png base64], w, h, sheet } → true if printed              (w, h in inches)
 //   scan                                → the text in the code, or null if cancelled
 import UIKit
@@ -142,7 +142,7 @@ final class NativeBridge: NSObject, WKScriptMessageHandlerWithReply {
         case "status":
             guard let id = b["id"] as? String else { throw BridgeError("No printer picked") }
             if id.hasPrefix("net:") { return ["text": try await network.status(id: id)] }
-            if id.hasPrefix("ble:") { return ["text": try await bluetooth.status(id: id)] }
+            if id.hasPrefix("ble:") { return try await bluetooth.status(id: id) }
             throw BridgeError("That printer isn’t one the app can reach")
 
         case "airprint":
