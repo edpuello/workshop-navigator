@@ -458,7 +458,11 @@
     },
     async syncNow() { resume(); await pull('manual'); await push(); },
     async signIn(email, password) { if (!sb) throw new Error('Cloud sync could not load.'); const { error } = await sb.auth.signInWithPassword({ email, password }); if (error) throw error; },
-    async signOut() { if (sb) await sb.auth.signOut(); },
+    async signOut() {
+      const clean = !isDirty() && !unsent;   // only wipe when nothing is waiting to upload — never lose an edit
+      if (sb) await sb.auth.signOut();
+      if (clean) { try { localStorage.removeItem(LOCAL_KEY); localStorage.removeItem('workshop-navigator-photo-links-v1'); } catch { } setMeta({ lastCloud: null, dirty: null }); lastCloud = null; }   // next sign-in takes the cloud copy as-is
+    },
     // 10.21: create an account. Returns { session } (logged in now) or { confirm: true } (check your email first).
     async signUp(email, password, redirectTo) {
       if (!sb) throw new Error('Cloud sync could not load.');
@@ -489,7 +493,9 @@
   };
 
   // ---------- start-up
+  let seedFn = null;
   function init(seed) {
+    seedFn = seed;
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null'); } catch { saved = null; }
     doc = normalize(saved && Array.isArray(saved.items) ? saved : (typeof seed === 'function' ? seed() : {}));
@@ -508,7 +514,13 @@
         if (user.id !== prev) {
           const m = getMeta();
           lastCloud = m.userId === user.id ? (m.lastCloud || null) : null;
-          if (m.userId && m.userId !== user.id) dirty.full = true;
+          // 10.21_4 security: a DIFFERENT account signed in on this device. Never carry the last account's workshop
+          // (or its unsent edits) into this one — start from a clean list and take this account's own cloud copy.
+          if (m.userId && m.userId !== user.id) {
+            doc = normalize(typeof seedFn === 'function' ? seedFn() : {}); shadow = snapshot(doc);
+            dirty = { cols: {}, del: {}, settings: false, state: false, full: false }; unsent = false;
+            saveLocal(); setMeta({ dirty: null, userId: user.id, lastCloud: null }); emit('change', doc, 'account');
+          }
           setStatus('busy', 'Connecting…'); subscribe(); syncClock();
           if (isDirty()) schedulePush(0); // edits made while offline / app closed mid-save
           check('signin');

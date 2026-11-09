@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8"><meta name="referrer" content="no-referrer"><script>(function(){if(window.top===window.self)return;var ok=false;try{ok=window.top.location.origin===location.origin}catch(e){}if(!ok){document.documentElement.style.display="none";try{window.top.location=location.href}catch(e){}}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Workshop Navigator — Labs</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -457,8 +457,8 @@ html.m-phone .wn-header{padding-left:18px;padding-right:18px}
 <script src="js/parts.js?v=20261102d"></script>
 
 <script>/* Labs runs on this device only: no sign-in, no sync, never touches your parts list. */window.WN={doc:Object.assign(WN_SEED(),{app:{inventory:[],shopping:[],alerts:[],state:{}},del:{},settings:{}}),user:null,client:null,status:{state:'off',msg:'Labs runs on this device only'},on(){return()=>{}},commit(){},replace(){},init(){}};</script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" integrity="sha384-wagZhIFgY4hD+7awjQjR4e2E294y6J2HSnd8eTNc15ZubTeQeVRZwhQJ+W6hnBsf" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 // Shed calculator, a line-for-line port of workshop_ai/shed.py.
 // tests/test_parity.py runs both and fails if any quantity or 3D part differs.
@@ -834,7 +834,7 @@ html.m-phone .wn-header{padding-left:18px;padding-right:18px}
 'use strict';
 // ------------------------------------------------------------ helpers
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const P = {
   home: 'M4 11.2 12 4.5l8 6.7V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z',
   box: 'M12 3.2 20 7.6v8.8L12 20.8 4 16.4V7.6zM4.3 7.7 12 12l7.7-4.3M12 12v8.6',
@@ -1498,7 +1498,7 @@ function banner() {
 function loadXLSX() {
   return new Promise((res, rej) => {
     if (window.XLSX) return res(window.XLSX);
-    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    const s = document.createElement('script'); s.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js'; s.integrity = 'sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT'; s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer';   // 10.21_4: patched SheetJS (CVE-2023-30533), pinned
     s.onload = () => window.XLSX ? res(window.XLSX) : rej(new Error('missing')); s.onerror = () => rej(new Error('load')); document.head.appendChild(s);
   });
 }
@@ -1967,18 +1967,18 @@ const Viewer = (() => {
     $('v-bottom').innerHTML = `${sp.length ? `<label class="slider" for="v-build">${I('layers', 'sm')}<span>Build</span><input type="range" id="v-build" min="0" max="${sp.length}" step="1" value="${Math.min(v.build, sp.length)}"><b>${esc(stepName)}</b></label>` : ''}
       <label class="slider" for="v-explode" style="max-width:260px">${I('focus', 'sm')}<span>Explode</span><input type="range" id="v-explode" min="0" max="1" step="0.05" value="${v.explode}"></label>`;
     const counts = {}; data.scene.parts.forEach(p => counts[p.layer] = (counts[p.layer] || 0) + 1);
-    const outliner = `<h3>Outliner</h3>${data.scene.layers.map((l, i) => `<button class="lay ${v.off[l.id] ? 'off' : ''}" data-vlayer="${l.id}" aria-pressed="${!v.off[l.id]}"><span class="sw" style="background:${LAYER_COLORS[i % LAYER_COLORS.length]}"></span><span class="n">${esc(l.name)}</span><span class="c">${counts[l.id] || 0}</span>${I(v.off[l.id] ? 'eyeoff' : 'eye', 'sm')}</button>`).join('')}`;
+    const outliner = `<h3>Outliner</h3>${data.scene.layers.map((l, i) => `<button class="lay ${v.off[l.id] ? 'off' : ''}" data-vlayer="${esc(l.id)}" aria-pressed="${!v.off[l.id]}"><span class="sw" style="background:${LAYER_COLORS[i % LAYER_COLORS.length]}"></span><span class="n">${esc(l.name)}</span><span class="c">${counts[l.id] || 0}</span>${I(v.off[l.id] ? 'eyeoff' : 'eye', 'sm')}</button>`).join('')}`;
     $('v-left').innerHTML = outliner + ``;
     const tabs = [['materials', 'Materials'], ['props', 'Part'], ['cuts', 'Cut list'], ['params', 'Size']];
     let body = '';
     if (v.tab === 'materials') {
       const groups = [...new Set((data.materials || []).map(m => m.group))];
-      body = `<div class="dim" style="font-size:13px;padding:0 4px">Tap a line to highlight those parts.</div>` + groups.map(g => `<div class="group" style="padding-left:4px">${esc(g)}</div>` + data.materials.filter(m => m.group === g).map(m => `<button class="bom ${v.bom === m.key ? 'on' : ''}" data-vbom="${m.key}"><span class="q">${m.qty}</span><span class="t">${esc(m.item)}<span>${esc(m.unit)}${m.note ? ' · ' + esc(m.note) : ''}${m.estimate ? ' · estimate' : ''}</span></span></button>`).join('')).join('');
+      body = `<div class="dim" style="font-size:13px;padding:0 4px">Tap a line to highlight those parts.</div>` + groups.map(g => `<div class="group" style="padding-left:4px">${esc(g)}</div>` + data.materials.filter(m => m.group === g).map(m => `<button class="bom ${v.bom === m.key ? 'on' : ''}" data-vbom="${esc(m.key)}"><span class="q">${esc(m.qty)}</span><span class="t">${esc(m.item)}<span>${esc(m.unit)}${m.note ? ' · ' + esc(m.note) : ''}${m.estimate ? ' · estimate' : ''}</span></span></button>`).join('')).join('');
     } else if (v.tab === 'props') {
       const m = meshes.find(x => x.userData.i === v.sel);
-      body = m ? `<dl class="props">${partProps(m.userData.part).map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join('')}</dl><button class="b" data-vbom="${m.userData.part.bom}" style="margin-top:6px">${I('layers', 'sm')}Highlight all like this</button>` : `<div class="foot">Tap any part in the model to see its size, material, and how to buy it.</div><dl class="props" style="margin-top:8px">${Object.entries(data.summary || {}).filter(([k]) => k !== 'title').slice(0, 9).map(([k, val]) => `<dt>${esc(k.replace(/_/g, ' '))}</dt><dd>${esc(val)}</dd>`).join('')}</dl>`;
+      body = m ? `<dl class="props">${partProps(m.userData.part).map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join('')}</dl><button class="b" data-vbom="${esc(m.userData.part.bom)}" style="margin-top:6px">${I('layers', 'sm')}Highlight all like this</button>` : `<div class="foot">Tap any part in the model to see its size, material, and how to buy it.</div><dl class="props" style="margin-top:8px">${Object.entries(data.summary || {}).filter(([k]) => k !== 'title').slice(0, 9).map(([k, val]) => `<dt>${esc(k.replace(/_/g, ' '))}</dt><dd>${esc(val)}</dd>`).join('')}</dl>`;
     } else if (v.tab === 'cuts') {
-      body = (data.cut_list || []).map(c => `<div class="bom"><span class="q">${c.qty}</span><span class="t">${esc(c.part)} · ${esc(c.length)}<span>${esc(c.lumber)}${c.stock_ft ? ' from ' + c.stock_ft + ' ft stock' : ''}${c.note ? ' · ' + esc(c.note) : ''}</span></span></div>`).join('');
+      body = (data.cut_list || []).map(c => `<div class="bom"><span class="q">${esc(c.qty)}</span><span class="t">${esc(c.part)} · ${esc(c.length)}<span>${esc(c.lumber)}${c.stock_ft ? ' from ' + esc(c.stock_ft) + ' ft stock' : ''}${c.note ? ' · ' + esc(c.note) : ''}</span></span></div>`).join('');
     } else {
       body = v.project === 'shed' ? paramUI() : `<div class="foot">${v.project === 'shelf' ? 'The shelf is a fixed 36 x 48 in design.' : 'Imported scenes are view-only.'} Sizes are editable for the shed.</div>`;
     }

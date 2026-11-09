@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Workshop Navigator</title>
 <!-- NFC tags and links point here: https://edpuello.github.io/workshop-navigator/app/?go=scan · ?loc=A1-D02
      On an iPhone with the Workshop app installed, iOS opens the APP instead (universal link) and this page never loads.
      Anywhere else (a PC, another phone) this page sends you to the same place on the website. -->
-<script>(function () { var p = new URLSearchParams(location.search), l = p.get('loc');
+<script>(function () { var p = new URLSearchParams(location.search), l = (p.get('loc') || '').replace(/[^A-Za-z0-9._-]/g, '').slice(0, 40);
   location.replace('../workshop.html' + (l ? '#loc=' + encodeURIComponent(l) : '')); })();</script>
 <style>body{font:16px -apple-system,system-ui,sans-serif;margin:40px 20px;color:#14181f}a{color:#1565a5}</style>
 </head><body><p>Opening Workshop Navigator… <a href="../workshop.html">Continue</a></p></body></html>
