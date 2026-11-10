@@ -31,7 +31,7 @@
   let clockOff = 0;
   try { clockOff = Number(JSON.parse(localStorage.getItem('workshop-navigator-sync-meta-v2') || '{}').clockOff) || 0; } catch { }
   const stampNow = () => Math.floor(now() + clockOff) + FRAC;
-  function learnClock(serverNow, t0, t1) { const s = Date.parse(serverNow); if (!s || t1 - t0 > 5000) return; clockOff = Math.round(s - (t0 + t1) / 2); setMeta({ clockOff }); }
+  function learnClock(serverNow, t0, t1) { const s = Date.parse(serverNow); if (!s || t1 - t0 > 5000) return; clockOff = Math.round(s - (t0 + t1) / 2); setMeta({ clockOff, clockAt: Date.now() }); }
 
   let doc = null, shadow = {}, sb = null, user = null, channel = null;
   let pushTimer = null, pushing = false, pushAgain = false, rowStamp = null, pollTimer = null, checkTimer = null, retryMs = 0;
@@ -190,7 +190,8 @@
     status = { state, realtime: !!(channel && channel.__live), msg: msg || status.msg };
     emit('status', status);
   }
-  const synced = () => { if (status.state !== 'busy') setStatus('live', 'Synced · ' + new Date().toLocaleTimeString()); };
+  // "Connecting…" ends as soon as the cloud is checked; only an upload in progress ("Syncing…") keeps it busy.
+  const synced = () => { if (status.state !== 'busy' || !pushing) setStatus('live', 'Synced · ' + new Date().toLocaleTimeString()); };
 
   // Replace the working document with a merged one and tell the page (only if it changed).
   function adopt(next, source) {
@@ -357,6 +358,8 @@
   }
   async function syncClock() {
     if (!sb || !user || rpcOK === false) return;
+    // 10.21: the clock offset barely changes — ask the server at most every 6 hours, not on every page open
+    try { const at = Number(getMeta().clockAt) || 0; if (at && Date.now() - at < 6 * 3600e3) return; } catch { }
     try { guard('requests'); const t0 = now(); const { data, error } = await sb.rpc('wn_now'); const t1 = now(); if (!error && data) learnClock(data, t0, t1); } catch { }
   }
   let checkT = null;
@@ -455,14 +458,44 @@
     },
     async syncNow() { resume(); await pull('manual'); await push(); },
     async signIn(email, password) { if (!sb) throw new Error('Cloud sync could not load.'); const { error } = await sb.auth.signInWithPassword({ email, password }); if (error) throw error; },
-    async signOut() { if (sb) await sb.auth.signOut(); },
+    async signOut() {
+      const clean = !isDirty() && !unsent;   // only wipe when nothing is waiting to upload — never lose an edit
+      if (sb) await sb.auth.signOut();
+      if (clean) { try { localStorage.removeItem(LOCAL_KEY); localStorage.removeItem('workshop-navigator-photo-links-v1'); } catch { } setMeta({ lastCloud: null, dirty: null }); lastCloud = null; }   // next sign-in takes the cloud copy as-is
+    },
+    // 10.21: create an account. Returns { session } (logged in now) or { confirm: true } (check your email first).
+    async signUp(email, password, redirectTo) {
+      if (!sb) throw new Error('Cloud sync could not load.');
+      const { data, error } = await sb.auth.signUp({ email, password, options: redirectTo ? { emailRedirectTo: redirectTo } : undefined });
+      if (error) throw error;
+      return data && data.session ? { session: true } : { confirm: true };
+    },
+    // 10.21: "Continue with Google". Website: goes to Google and comes back here. iPhone app: returns the sign-in address for the
+    // app to open in Apple's secure sign-in sheet (Google doesn't allow its sign-in inside an app's web view).
+    async oauth(provider, redirectTo, noRedirect) {
+      if (!sb) throw new Error('Cloud sync could not load.');
+      const { data, error } = await sb.auth.signInWithOAuth({ provider, options: { redirectTo, skipBrowserRedirect: !!noRedirect } });
+      if (error) throw error;
+      return data && data.url;
+    },
+    // finish a sign-in from the address the sign-in sheet came back to (#access_token=… or ?code=…)
+    async finishOAuth(url) {
+      if (!sb) throw new Error('Cloud sync could not load.');
+      const u = new URL(url), h = new URLSearchParams((u.hash || '').replace(/^#/, '')), q = u.searchParams;
+      const bad = h.get('error_description') || q.get('error_description'); if (bad) throw new Error(bad.replace(/\+/g, ' '));
+      if (h.get('access_token')) { const { error } = await sb.auth.setSession({ access_token: h.get('access_token'), refresh_token: h.get('refresh_token') }); if (error) throw error; return true; }
+      if (q.get('code')) { const { error } = await sb.auth.exchangeCodeForSession(q.get('code')); if (error) throw error; return true; }
+      throw new Error('Google didn’t send a sign-in back');
+    },
     async resetPassword(email, redirectTo) { if (!sb) throw new Error('Cloud sync could not load.'); const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo }); if (error) throw error; },
     async updatePassword(pw) { const { error } = await sb.auth.updateUser({ password: pw }); if (error) throw error; },
     merge, normalize, applyDelta, // exposed for tests
   };
 
   // ---------- start-up
+  let seedFn = null;
   function init(seed) {
+    seedFn = seed;
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null'); } catch { saved = null; }
     doc = normalize(saved && Array.isArray(saved.items) ? saved : (typeof seed === 'function' ? seed() : {}));
@@ -481,7 +514,13 @@
         if (user.id !== prev) {
           const m = getMeta();
           lastCloud = m.userId === user.id ? (m.lastCloud || null) : null;
-          if (m.userId && m.userId !== user.id) dirty.full = true;
+          // 10.21_4 security: a DIFFERENT account signed in on this device. Never carry the last account's workshop
+          // (or its unsent edits) into this one — start from a clean list and take this account's own cloud copy.
+          if (m.userId && m.userId !== user.id) {
+            doc = normalize(typeof seedFn === 'function' ? seedFn() : {}); shadow = snapshot(doc);
+            dirty = { cols: {}, del: {}, settings: false, state: false, full: false }; unsent = false;
+            saveLocal(); setMeta({ dirty: null, userId: user.id, lastCloud: null }); emit('change', doc, 'account');
+          }
           setStatus('busy', 'Connecting…'); subscribe(); syncClock();
           if (isDirty()) schedulePush(0); // edits made while offline / app closed mid-save
           check('signin');

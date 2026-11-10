@@ -94,14 +94,18 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
             decisionHandler(.cancel)
             return
         }
-        if scheme == AppSchemeHandler.scheme || scheme == "about" || scheme == "blob" || scheme == "data" {
+        // 10.21_4 security: only the app's own pages load inside the app. Frames inside a page may only be app pages
+        // (the Checklist) or blank; a web page can never load inside the app, where it could reach native features.
+        let subframe = navigationAction.targetFrame != nil && navigationAction.targetFrame?.isMainFrame == false
+        if scheme == AppSchemeHandler.scheme || (scheme == "about" && ["blank", "srcdoc"].contains(url.absoluteString.dropFirst(6).prefix(while: { $0 != "?" && $0 != "#" }).lowercased())) {
             decisionHandler(.allow)
             return
         }
-        if navigationAction.targetFrame != nil && navigationAction.targetFrame?.isMainFrame == false {
-            decisionHandler(.allow)   // frames inside a page
+        if scheme == "blob" && url.absoluteString.hasPrefix("blob:\(AppSchemeHandler.scheme)://\(AppSchemeHandler.host)/") {
+            decisionHandler(.allow)   // files the app's own pages made (backup, CSV)
             return
         }
+        if subframe { decisionHandler(.cancel); return }
         if ["http", "https", "mailto", "tel"].contains(scheme) { UIApplication.shared.open(url) }
         decisionHandler(.cancel)
     }
@@ -109,8 +113,9 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
     // Links that ask for a new window open in Safari.
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
                  for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if let url = navigationAction.request.url {
-            if url.scheme == AppSchemeHandler.scheme { webView.load(navigationAction.request) } else { UIApplication.shared.open(url) }
+        if let url = navigationAction.request.url, let scheme = url.scheme?.lowercased() {
+            if scheme == AppSchemeHandler.scheme { webView.load(navigationAction.request) }
+            else if ["http", "https", "mailto", "tel"].contains(scheme) { UIApplication.shared.open(url) }   // 10.21_4: never other apps' links
         }
         return nil
     }
@@ -126,7 +131,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
 
     func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String,
                   completionHandler: @escaping (URL?) -> Void) {
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent(suggestedFilename)
+        let name = (suggestedFilename as NSString).lastPathComponent   // 10.21_4: no ../ in a page-chosen file name
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(name.isEmpty ? "export" : name)
         try? FileManager.default.removeItem(at: url)
         downloadURL = url
         completionHandler(url)

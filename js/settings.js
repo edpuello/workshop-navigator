@@ -93,7 +93,7 @@
 <div class="st-grp">${row('faq', 'help', 'Help & FAQ')}${row('terms', 'doc', 'Terms of Service')}${row('privacy', 'shield', 'Privacy Policy')}</div>
 <div class="st-grp"><button type="button" class="st-row red" data-act="logout">${IC.out}<b>Log out</b></button></div>
 <div data-faith></div>
-<div class="st-ab"><b>Workshop Navigator</b><span>Version 10.23</span><span>Created by Ed Puello</span></div>`;
+<div class="st-ab"><b>Workshop Navigator</b><span>Version 10.24</span><span>Created by Ed Puello</span></div>`;
   tab.appendChild(st);
   if (faith) st.querySelector('[data-faith]').appendChild(faith);
   [cloud, custom, backup].forEach(p => { if (p && p !== cloud) p.hidden = true; });

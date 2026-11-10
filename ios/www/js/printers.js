@@ -18,8 +18,10 @@
   const NB = () => (window.WNNative && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn) || null;
   const native = () => !!NB();
   const nat = (cmd, args) => { const b = NB(); if (!b) return Promise.reject(new Error('Only in the iPhone app')); return Promise.resolve(b.postMessage(Object.assign({ cmd }, args || {}))); };
-  const fromNative = (d) => ({ id: d.id, brand: 'zebra', name: d.name || d.id, model: d.model || '', conn: d.conn || (d.kind === 'ble' ? 'Bluetooth LE' : 'Network'), via: (d.kind === 'ble' ? 'Bluetooth LE' : 'Network') + ' from this ' + ((window.WNNative && window.WNNative.device) || 'iPhone'), native: true, kind: d.kind, likely: d.likely !== false });
-  async function nativeList() { try { const l = await nat('printers', { seconds: 3, bluetooth: true }); return (Array.isArray(l) ? l : []).map(fromNative); } catch (e) { return []; } }
+  const fromNative = (d) => ({ id: d.id, brand: 'zebra', name: d.name || d.id, model: cleanModel(d.model), conn: d.conn || (d.kind === 'ble' ? 'Bluetooth LE' : 'Network'), via: (d.kind === 'ble' ? 'Bluetooth LE' : 'Network') + ' from this ' + ((window.WNNative && window.WNNative.device) || 'iPhone'), native: true, kind: d.kind, likely: d.likely !== false });
+  async function nativeList(seconds) { try { const l = await nat('printers', { seconds: seconds || 4, bluetooth: true }); return (Array.isArray(l) ? l : []).map(fromNative); } catch (e) { return []; } }
+  // 10.21_3: a Zebra's model as it reports it ("ZD411-203dpi ZPL") → "ZD411"
+  const cleanModel = (m) => String(m || '').trim().split(/[\s,]/)[0].replace(/-\d+dpi.*$/i, '');
   // ~HQES answer → problems in plain words (same flags as the computer check in labels.js)
   const HQ = [[0x1, 'out of labels'], [0x2, 'ribbon out'], [0x4, 'print head open'], [0x8, 'cutter fault'], [0x10, 'print head too hot'], [0x20, 'motor too hot'], [0x40, 'bad print head element'], [0x80, 'print head not detected']];
   function parseHQES(t) { const m = String(t || '').match(/ERRORS:\s*(\d)\s+([0-9A-Fa-f]{8})\s+([0-9A-Fa-f]{8})/); if (!m) return { known: false, probs: [] }; const f = parseInt(m[3], 16), probs = HQ.filter(([b]) => f & b).map(([, w]) => w); return { known: true, probs: m[1] === '0' || !f ? [] : (probs.length ? probs : ['error code ' + m[2] + ' ' + m[3]]) }; }
@@ -103,6 +105,15 @@
       if (!r.ok || /false|error|exception/i.test(t)) throw new Error('DYMO didn’t take the label' + (t && t.length < 160 ? ': ' + t : ''));
     }
   }
+  // ---------------- AirPrint printers added with the iPhone's printer picker (10.21_3): each prints straight, no panel
+  const airSaved = () => { try { const a = JSON.parse(LS.get('wn-air', '') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  const airEntry = (a) => ({ id: 'air:' + a.url, brand: 'other', kind: 'air', name: a.name || 'AirPrint printer', model: a.model && a.model !== a.name ? a.model : '', url: a.url, conn: 'AirPrint', via: 'AirPrint from this ' + ((window.WNNative && window.WNNative.device) || 'iPhone') });
+  const airList = () => native() ? airSaved().map(airEntry) : [];
+  async function addAir() {
+    const a = await nat('airpick'); if (!a || !a.url) return null;
+    LS.set('wn-air', JSON.stringify([a, ...airSaved().filter(x => x.url !== a.url)]));
+    const e = airEntry(a); found = [...found.filter(p => p.id !== e.id && p !== OTHER && p !== COMPUTER), e, OTHER, COMPUTER]; return e;
+  }
   // ---------------- print dialog (AirPrint / any installed printer)
   const OTHER = { id: 'other:dialog', brand: 'other', name: 'Any printer — print dialog', conn: '', via: 'This device', always: true };
   const COMPUTER = { id: 'computer', brand: 'computer', name: 'My computer’s printer', conn: '', via: 'Sends the labels to Workshop on your computer', always: true };
@@ -122,29 +133,35 @@
     return svgs.length;
   }
   // AirPrint from the iPhone app: each label as a 300-dpi picture; the app makes the exact-size PDF and opens the print panel.
-  async function nativeAirPrint(roll, labels, copies, sheet) {
+  async function nativeAirPrint(roll, labels, copies, sheet, url) {
     const side = roll === 'side', pages = [];
     for (const c of labels) { const png = await L().png(roll, c); for (let i = 0; i < copies; i++) pages.push(png); }
-    const done = await nat('airprint', { pages, w: side ? 1 : 1.5, h: side ? 1 : 0.5, sheet: !!sheet });
+    const done = await nat('airprint', Object.assign({ pages, w: side ? 1 : 1.5, h: side ? 1 : 0.5, sheet: !!sheet }, url ? { url } : {}));
     return { n: pages.length, where: 'AirPrint', cancelled: done === false };
   }
   // Add a network printer by IP address (iPhone app). → the printer entry, now in the list and picked.
   async function addNetwork(host) { const d = fromNative(await nat('addNetwork', { host })); found = [d, ...found.filter(p => p.id !== d.id)]; choose(d.id); return d; }
-  async function forget(id) { if (native()) await nat('forget', { id }).catch(() => { }); found = found.filter(p => p.id !== id); if (chosenId() === id) choose(null); }
+  async function forget(id) {
+    if (String(id).startsWith('air:')) LS.set('wn-air', JSON.stringify(airSaved().filter(a => 'air:' + a.url !== id)));
+    else if (native()) await nat('forget', { id }).catch(() => { });
+    found = found.filter(p => p.id !== id); if (chosenId() === id) choose(null); if (sideId() === id) chooseSide(null);
+  }
   // Is the iPhone-app printer ready? → {state:'ready'|'problem', printer, model, probs, note}
   async function nativeStatus(p) {
     const r = await nat('status', { id: p.id }), q = parseHQES(r && r.text);
+    if (r && r.model) setModel(p, r.model);
     if (!q.known) return { state: 'ready', printer: { name: p.name }, model: p.model, note: p.kind === 'ble' ? 'Connected over Bluetooth.' : 'Connected (the printer didn’t report its status).' };
     return q.probs.length ? { state: 'problem', printer: { name: p.name }, model: p.model, probs: q.probs } : { state: 'ready', printer: { name: p.name }, model: p.model };
   }
-  const scanCode = () => nat('scan');
+  // The iPhone app scans with its own built-in scanner; the website uses the camera through js/webscan.js.
+  const scanCode = () => native() ? nat('scan') : window.WNWebScan && WNWebScan.available() ? WNWebScan.scan() : Promise.reject(new Error('Scanning needs a camera on this device'));
   // ---------------- what's here
   let found = [OTHER, COMPUTER], apps = { zebra: '', dymo: '' }, scanned = 0, scanning = null;
   async function scan(force) {
     if (scanning) return scanning;
     if (!force && Date.now() - scanned < 20000) return found;
     scanning = (async () => {
-      if (native()) { const n = await nativeList(); apps = { zebra: n.length ? 'on' : 'off', dymo: 'off', native: 'on' }; found = [...n.filter(p => p.likely), ...n.filter(p => !p.likely), OTHER, COMPUTER]; scanned = Date.now(); return found; }
+      if (native()) { const n = await nativeList(force ? 7 : 4); apps = { zebra: n.some(p => p.likely) ? 'on' : 'off', dymo: 'off', native: 'on' }; found = [...n.filter(p => p.likely), ...airList(), OTHER, COMPUTER, ...n.filter(p => !p.likely)]; scanned = Date.now(); return found; }
       const [z, d] = await Promise.all([zebraList(), dymoList()]);
       apps = { zebra: z.app, dymo: d.app };
       found = [...z.list, ...d.list, OTHER, COMPUTER]; scanned = Date.now(); return found;
@@ -160,8 +177,29 @@
     const f = found.find(p => p.id === id); if (f) return f;
     try { const p = JSON.parse(LS.get('wn-printer-info', '') || 'null'); return p && p.id === id ? p : null; } catch (e) { return null; }
   }
+  // 10.22: a second printer just for the 1″ × 1″ labels (e.g. a ZD411d). Unset → the main printer prints both sizes.
+  const sideId = () => LS.get('wn-printer-side', '');
+  function chooseSide(id) { LS.set('wn-printer-side', id || null); const p = id && found.find(x => x.id === id); LS.set('wn-printer-side-info', p && !p.always ? JSON.stringify(p) : null); }
+  function quickFor(roll) {
+    if (roll === 'side') { const id = sideId(); if (id) { const f = found.find(p => p.id === id); if (f) return f; try { const p = JSON.parse(LS.get('wn-printer-side-info', '') || 'null'); if (p && p.id === id) return p; } catch (e) { } } }
+    return quick();
+  }
+  // 10.21_3: each label size goes to one printer, picked on the printer's own row. Moving the 1.5″ × 0.5″ size keeps
+  // the 1″ × 1″ size where it was (it no longer follows the main printer once you've split them).
+  function assign(roll, id) {
+    if (roll === 'side') { chooseSide(id); return; }
+    const was = quick() || current(); if (!sideId() && was && was.id !== id) chooseSide(was.id);
+    choose(id); if (sideId() === id) chooseSide(null);   // both sizes on one printer again → keep it simple
+  }
+  const printerOf = (roll) => roll === 'side' && sideId() ? quickFor('side') : (quick() || (scanned ? current() : null));
+  const split = () => { const f = printerOf('front'), s = printerOf('side'); return !!(f && s && f.id !== s.id); };
+  // A model the printer reported: shown next to its name and kept with the remembered printer.
+  function setModel(p, m) {
+    m = cleanModel(m); if (!m) return; p.model = m; const f = found.find(x => x.id === p.id); if (f) f.model = m;
+    if (chosenId() === p.id) choose(p.id); if (sideId() === p.id) chooseSide(p.id);
+  }
   // iPhone app + Bluetooth printer: connect now (while you look at the labels), so the Print tap sends right away.
-  function warm() { const p = quick(); if (p && p.native && p.kind === 'ble') nat('status', { id: p.id }).catch(() => { }); }
+  function warm() { [quick(), sideId() ? quickFor('side') : null].forEach(p => { if (p && p.native && p.kind === 'ble') nat('status', { id: p.id }).catch(() => { }); }); }
   const remembered = (id) => { try { const p = JSON.parse(LS.get('wn-printer-info', '') || 'null'); return p && p.id === id ? Object.assign(p, { missing: true }) : null; } catch (e) { return null; } };
   // The printer jobs go to: the one picked on this device if it's still here; else the first Zebra, then a connected DYMO; else the computer.
   function current() {
@@ -170,17 +208,19 @@
     if (id && /^(zebra|dymo):/.test(id) && !scanned) return null; // not looked yet
     return found.find(p => p.brand === 'zebra' && p.likely !== false) || found.find(p => p.brand === 'dymo' && p.ready && p.kind !== 'Tape') || COMPUTER;
   }
-  const label = (p) => p ? (p.brand === 'zebra' && p.likely !== false ? 'Zebra' : p.brand === 'dymo' ? 'DYMO' : p.brand === 'computer' ? 'Computer' : 'Other') : '';
+  const label = (p) => p ? (p.brand === 'zebra' && p.likely !== false ? 'Zebra' : p.brand === 'dymo' ? 'DYMO' : p.brand === 'computer' ? 'Computer' : p.kind === 'air' ? 'AirPrint' : 'Other') : '';
   // Print a batch: labels = [WNLabels.content…]. → {n, where}. Throws with a plain message. brand 'computer' is the caller's job.
   async function print(p, roll, labels, copies, opts) {
     copies = Math.max(1, copies | 0); const n = labels.length * copies;
     if (!p) throw new Error('No printer picked');
-    if (p.brand === 'other' && native()) return nativeAirPrint(roll, labels, copies, opts && opts.sheet);
+    if (p.brand === 'other' && native()) return nativeAirPrint(roll, labels, copies, opts && opts.sheet, p.url);
     if (p.brand === 'other') return { n: dialogPrint(roll, labels, copies, opts && opts.sheet), where: 'the print dialog' };
     if (p.native) { await nat('send', { id: p.id, data: labels.map(c => L().zpl(roll, c, copies)).join('') }); return { n, where: p.name }; }
     if (p.brand === 'zebra') { await L().send(labels.map(c => L().zpl(roll, c, copies)).join(''), p.dev); return { n, where: p.name }; }
     if (p.brand === 'dymo') { await dymoPrint(p, roll, labels, copies); return { n, where: p.name }; }
     throw new Error('That printer can’t print from here');
   }
-  window.WNPrinters = { quick, warm, native, addNetwork, forget, nativeStatus, scanCode, parseHQES, scan, current, choose, chosenId, print, dialogPrint, dymoXml, label, get found() { return found; }, get apps() { return apps; }, get scanned() { return scanned; }, OTHER, COMPUTER, apple, phone, DY_PAPER };
+  // 10.21_3: your own name for a printer ("ZD421d"), kept on this device. '' → the printer's own name again.
+  const nick = (id, v) => { if (v === undefined) return LS.get('wn-pnick:' + id, ''); LS.set('wn-pnick:' + id, String(v).trim() || null); };
+  window.WNPrinters = { nick, assign, printerOf, split, setModel, addAir, sideId, chooseSide, quickFor, quick, warm, native, addNetwork, forget, nativeStatus, scanCode, parseHQES, scan, current, choose, chosenId, print, dialogPrint, dymoXml, label, get found() { return found; }, get apps() { return apps; }, get scanned() { return scanned; }, OTHER, COMPUTER, apple, phone, DY_PAPER };
 })();

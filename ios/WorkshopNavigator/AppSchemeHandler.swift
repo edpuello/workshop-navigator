@@ -6,6 +6,7 @@ import WebKit
 
 final class AppSchemeHandler: NSObject, WKURLSchemeHandler {
     static let scheme = "wn"
+    static let host = "workshop"
     static let startURL = URL(string: "wn://workshop/workshop.html")!
 
     private let root: URL = {

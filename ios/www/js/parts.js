@@ -30,6 +30,7 @@
     [/lock washer/i, 'lock-washer.png', 'Split lock washer'],
     [/washer/i, 'flat-washer.png', 'Flat washer'],
     [/hex nut/i, (t) => /nylon/i.test(t) || !/#\d/.test(t) ? 'hex-nut.png' : 'hex-machine-screw-nut.png', 'Hex nut'],
+    [/slotted round|round[- ]head|nylon fasteners — machine screws/i, 'machine-screw-slotted-round.gif', 'Machine screw, slotted round head'],
     [/machine screw/i, (t) => /\bM\d/.test(t) ? 'machine-screw-phillips-pan-metric.png' : 'machine-screw-phillips-pan.png', 'Machine screw, Phillips pan'],
     [/hex bolt/i, 'hex-bolts-standard.png', 'Hex bolt'],
   ];
@@ -59,6 +60,8 @@
   const MAXZ = 100;
   const css = document.createElement('style');
   css.textContent = `.pthumb img{cursor:zoom-in}
+dialog.pzoom{max-width:none;max-height:none;width:100%;height:100%;margin:0;border:0;box-sizing:border-box;color:inherit}dialog.pzoom::backdrop{background:transparent}
+.pphoto img{cursor:zoom-in}.pbtn[data-act="photo"]{transition:transform .18s cubic-bezier(.2,.8,.2,1)}.pbtn[data-act="photo"].hold{transform:scale(.9)}
 .pzoom{position:fixed;inset:0;z-index:9999;background:rgba(18,45,75,.6);display:none;align-items:center;justify-content:center;padding:16px;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 .pzoom.on{display:flex}
 .pzoom-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;max-width:96vw}
@@ -98,7 +101,7 @@
   }
   function ensureBox() {
     if (box) return box;
-    box = document.createElement('div');
+    box = document.createElement('dialog');
     box.className = 'pzoom'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Part image');
     box.innerHTML = '<div class="pzoom-card"><div class="pzoom-view"><img alt=""></div><div class="pzoom-bar"><div class="pzoom-text"><span class="pzoom-name"></span><span class="pzoom-label"></span></div><button type="button" data-z="out" aria-label="Zoom out">&minus;</button><span class="pzoom-pct">1×</span><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="fit" aria-label="Fit to window">Fit</button><button type="button" data-z="close" aria-label="Close">&times;</button></div></div>';
     view = box.querySelector('.pzoom-view'); im = view.querySelector('img');
@@ -133,36 +136,64 @@
     const up = (e) => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) view.classList.remove('drag'); };
     view.addEventListener('pointerup', up); view.addEventListener('pointercancel', up);
     window.addEventListener('resize', () => { if (box.classList.contains('on')) reset(); });
+    box.addEventListener('close', () => box.classList.remove('on'));
+    box.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
     document.body.appendChild(box);
     return box;
   }
   function open(img) {
     const b = ensureBox();
     lastFocus = document.activeElement;
+    if (!b.open) { try { b.showModal(); } catch (e) { b.setAttribute('open', ''); } }
     b.classList.add('on');
-    b.querySelector('.pzoom-name').textContent = img.dataset.name || '';
-    b.querySelector('.pzoom-label').textContent = (img.dataset.label || '') + ' · Bolt Depot';
+    const pb = img.closest('.pbtn'), nm = img.closest('.ph') && img.closest('.ph').querySelector('.nm');
+    b.querySelector('.pzoom-name').textContent = img.dataset.name || (nm && nm.textContent) || ((pb && pb.getAttribute('aria-label')) || '').split(': ').slice(1).join(': ');
+    b.querySelector('.pzoom-label').textContent = img.dataset.label ? img.dataset.label + ' · Bolt Depot' : 'Your photo';
     im.alt = img.dataset.label || '';
     const src = img.getAttribute('src');
     if (im.getAttribute('src') !== src) { im.style.transform = 'scale(0)'; im.src = src; if (im.complete && im.naturalWidth) reset(); } else reset();
     b.querySelector('[data-z="close"]').focus({ preventScroll: true });
   }
-  function close() { if (!box) return; box.classList.remove('on'); if (lastFocus && lastFocus.focus) try { lastFocus.focus({ preventScroll: true }); } catch { } }
-  // pointerdown (capture) opens it at once and stops the row underneath from reacting to the click
-  let opening = false;
+  function close() { if (!box) return; box.classList.remove('on'); try { if (box.open) box.close(); } catch (e) { } if (lastFocus && lastFocus.focus) try { lastFocus.focus({ preventScroll: true }); } catch { } }
+  // Tap a picture: see it big (opens at once, the row underneath doesn't react).
+  // On the Checklist's part photos: tap = see it big, press and hold = the photo options (choose / remove a photo).
+  const ZSEL = '.pthumb img, .pphoto img';
+  const zoomable = (img) => !!img && !(box && box.contains(img)) && !img.closest('.nozoom') && !!img.getAttribute('src');
+  const holdBtn = (el) => el && el.closest ? el.closest('.pbtn[data-act="photo"]') : null;
+  const buzz = () => { try { const h = window.WNNative && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.wn; if (h) { const r = h.postMessage({ cmd: 'haptic' }); if (r && r.catch) r.catch(() => { }); } else if (navigator.vibrate) navigator.vibrate(10); } catch (e) { } };
+  let opening = false, hold = null, passClick = false, eatClick = 0;
+  const endHold = () => { if (!hold) return; clearTimeout(hold.tm); hold.btn.classList.remove('hold'); hold = null; };
   window.addEventListener('pointerdown', (e) => {
-    const img = e.target.closest && e.target.closest('.pthumb img');
-    if (!img || (box && box.contains(img)) || e.button > 0 || img.closest('.pbtn')) return; // Checklist photo button handles its own taps
+    if (e.button > 0) return;
+    const hb = holdBtn(e.target), img = e.target.closest && e.target.closest(ZSEL);
+    if (hb) {
+      e.stopPropagation(); endHold();
+      hold = { x: e.clientX, y: e.clientY, id: e.pointerId, btn: hb, img: zoomable(img) ? img : null, fired: false };
+      hb.classList.add('hold');
+      hold.tm = setTimeout(() => { if (!hold) return; hold.fired = true; hb.classList.remove('hold'); buzz(); eatClick = Date.now(); passClick = true; try { hb.click(); } finally { passClick = false; } }, 450);
+      return;
+    }
+    if (!zoomable(img)) return;
     e.preventDefault(); e.stopPropagation(); opening = true; open(img);
   }, true);
-  window.addEventListener('click', (e) => {
-    const img = e.target.closest && e.target.closest('.pthumb img');
-    if (img && img.closest('.pbtn') && !opening) return;
-    if (opening || (img && !(box && box.contains(img)))) { e.preventDefault(); e.stopPropagation(); if (!opening && img) open(img); opening = false; }
+  window.addEventListener('pointermove', (e) => { if (hold && e.pointerId === hold.id && Math.hypot(e.clientX - hold.x, e.clientY - hold.y) > 10) endHold(); }, true);
+  window.addEventListener('pointerup', (e) => {
+    if (!hold || e.pointerId !== hold.id) return;
+    const h = hold; endHold(); eatClick = Date.now();
+    if (!h.fired && h.img) open(h.img);   // a tap: see it big (no photo yet: nothing — hold to add one)
   }, true);
-  document.addEventListener('keydown', (e) => {
+  window.addEventListener('pointercancel', endHold, true);
+  window.addEventListener('contextmenu', (e) => { if (holdBtn(e.target)) e.preventDefault(); }, true);
+  window.addEventListener('click', (e) => {
+    if (passClick) return;
+    const hb = holdBtn(e.target);
+    if (hb) { if (e.detail === 0 && Date.now() - eatClick > 700) return; e.preventDefault(); e.stopPropagation(); return; }   // keyboard Enter still opens the options
+    const img = e.target.closest && e.target.closest(ZSEL);
+    if (opening || zoomable(img)) { e.preventDefault(); e.stopPropagation(); if (!opening && img) open(img); opening = false; }
+  }, true);
+  window.addEventListener('keydown', (e) => {
     if (!box || !box.classList.contains('on')) return;
-    if (e.key === 'Escape') close();
+    if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close(); }
     else if (e.key === '+' || e.key === '=') zoomAt(Z.z * 2, view.clientWidth / 2, view.clientHeight / 2);
     else if (e.key === '-') zoomAt(Z.z / 2, view.clientWidth / 2, view.clientHeight / 2);
     else if (e.key === '0') reset();

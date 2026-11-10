@@ -30,6 +30,14 @@ final class NativeBridge: NSObject, WKScriptMessageHandlerWithReply {
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage,
                                replyHandler: @escaping (Any?, String?) -> Void) {
+        // 10.21_4 security: only the app's own bundled pages (wn://workshop/…, main page or the Checklist frame inside it)
+        // may use native features. A web page, data: page or foreign frame that somehow ends up in the view gets nothing.
+        let origin = message.frameInfo.securityOrigin
+        guard origin.protocol == AppSchemeHandler.scheme, origin.host == AppSchemeHandler.host,
+              message.frameInfo.request.url?.scheme == AppSchemeHandler.scheme else {
+            replyHandler(nil, "Not allowed")
+            return
+        }
         guard let body = message.body as? [String: Any], let cmd = body["cmd"] as? String else {
             replyHandler(nil, "Unknown request")
             return
@@ -58,7 +66,7 @@ final class NativeBridge: NSObject, WKScriptMessageHandlerWithReply {
             guard ctx.canEvaluatePolicy(.deviceOwnerAuthentication, error: &err) else { throw BridgeError("no-lock") }
             do {
                 return try await ctx.evaluatePolicy(.deviceOwnerAuthentication,
-                                                    localizedReason: (b["reason"] as? String) ?? "Unlock Workshop Navigator")
+                                                    localizedReason: "Unlock Workshop Navigator")   // fixed text: a page can't word the Face ID prompt
             } catch let e as LAError {
                 switch e.code {
                 case .userCancel, .appCancel, .systemCancel, .userFallback: return false
@@ -67,8 +75,10 @@ final class NativeBridge: NSObject, WKScriptMessageHandlerWithReply {
             }
 
         case "oauth":   // 10.21: Continue with Google — opens Apple's secure sign-in sheet; returns the address it came back to (nil = cancelled)
-            guard let s = b["url"] as? String, let url = URL(string: s) else { throw BridgeError("No sign-in address") }
-            return try await WebAuth.shared.start(url: url, scheme: (b["scheme"] as? String) ?? "workshopnavigator",
+            // 10.21_4 security: only your own Supabase sign-in page, only back to this app's own address
+            guard let s = b["url"] as? String, let url = URL(string: s), url.scheme == "https",
+                  url.host == "phrkzabhneiczzujfpgp.supabase.co", url.path.hasPrefix("/auth/v1/") else { throw BridgeError("No sign-in address") }
+            return try await WebAuth.shared.start(url: url, scheme: "workshopnavigator",
                                                   window: presenter?.view.window)
 
         case "haptic":   // 10.21: a small tap felt in the hand (picking up a part to drag it)
@@ -98,7 +108,7 @@ final class NativeBridge: NSObject, WKScriptMessageHandlerWithReply {
             return true
 
         case "credLoad":   // Face ID → your saved login (false = cancelled, null = nothing saved yet)
-            return try await LoginKeychain.load(reason: (b["reason"] as? String) ?? "Log in to Workshop Navigator")
+            return try await LoginKeychain.load(reason: "Log in to Workshop Navigator")   // fixed text
 
         case "credForget":
             LoginKeychain.forget()
@@ -134,6 +144,7 @@ final class NativeBridge: NSObject, WKScriptMessageHandlerWithReply {
         case "send":
             guard let id = b["id"] as? String, let text = b["data"] as? String else { throw BridgeError("Nothing to print") }
             let data = Data(text.utf8)
+            guard data.count <= 4_000_000 else { throw BridgeError("That print job is too big") }   // 10.21_4: labels are KBs
             if id.hasPrefix("net:") { try await network.send(id: id, data: data) }
             else if id.hasPrefix("ble:") { try await bluetooth.send(id: id, data: data) }
             else { throw BridgeError("That printer isn’t one the app can reach") }

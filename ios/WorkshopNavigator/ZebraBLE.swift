@@ -289,7 +289,7 @@ final class ZebraBLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        guard characteristic.uuid == Self.fromPrinter, let v = characteristic.value, listening != nil else { return }
+        guard characteristic.uuid == Self.fromPrinter, let v = characteristic.value, let have = listening, have.count < 65_536 else { return }
         listening?.append(v)
     }
 }

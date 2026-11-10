@@ -390,11 +390,85 @@ html .where.hc .cell.hit::after{content:"";position:absolute;inset:-3px;border-r
 @keyframes wnpopc{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
 @keyframes wnping{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.2);opacity:0}}
 @media (prefers-reduced-motion:reduce){html .where.hc .cell.hit,html .where.hc .cell.hit::after{animation:none}}
+/* 10.24 home with more life: color tiles, a needs-attention strip, card rows.
+   Every blue on it is one of two values: the footer's navy (--brand) or --wnblue (the link blue). */
+:root{--wnblue:#1565a5}
+html header.hw,html.dark header.hw{background:transparent!important}
+header.hw .htop{align-items:center;gap:10px}
+.hw-av{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 17px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",system-ui,Inter,sans-serif;background:linear-gradient(140deg,var(--brand),var(--wnblue));box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px color-mix(in srgb,var(--wnblue) 55%,transparent)}
+.hw-t{display:flex;flex-direction:column-reverse}
+.hw-h{font-size:19px!important;line-height:1.2}
+.hw-v{margin:0 0 1px;font-size:11.5px;letter-spacing:.1px;text-transform:none}
+header.hw .chip{width:40px;height:40px;margin-top:0;background:var(--card);border:0;border-radius:50%}
+header.hw .chip svg{stroke:var(--ink)}
+header.hw .chip .dot{border-color:var(--card)}
+.dock .sbar,html.rt-home .dock .sbar{height:52px;min-height:52px;border-radius:26px;padding:0 7px 0 16px}
+.sbar .sclear{margin-right:4px}
+.sscan{display:none;flex:none;width:38px;height:38px;border-radius:50%;border:0;padding:0;background:var(--bg);place-items:center;cursor:pointer}
+.native .sscan,.webcam .sscan,.wn-canscan .sscan{display:grid}
+.sbar .sscan svg{stroke:var(--ink)}
+#qClear:not([hidden])~.sscan{display:none}
+.dock,html.dark .dock{background:var(--bg)!important;margin-top:0;padding-top:10px}
+html.dark .sbar{background:var(--card)}
+.sbar input,html.dark .sbar input{background:transparent}
+.htiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.htile{display:flex;flex-direction:column;align-items:stretch;min-width:0;border:0;border-radius:22px;background:var(--card);color:var(--ink);padding:13px 14px 14px;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.htile:active{transform:scale(.98)}
+.htile .top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.htile .pic{width:38px;height:38px}
+.htile .go{width:34px;height:34px;border-radius:50%;background:var(--bg);color:var(--ink);display:grid;place-items:center}
+.htile .go svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.htile .tl{font-size:14px;font-weight:600;color:var(--ink2)}
+.htile .tn{font:800 28px/1.1 -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",system-ui,Inter,sans-serif;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.htile .tn small{font-size:15px;font-weight:700;color:var(--ink2);letter-spacing:0}
+.htile .ts{font-size:12.5px;color:var(--ink2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar2{display:flex;height:5px;border-radius:999px;overflow:hidden;background:rgba(127,127,127,.22);margin-top:8px}
+.hbar2 i{display:block;height:100%}
+.htile.hero{background:linear-gradient(150deg,var(--brand),var(--wnblue));color:#fff;box-shadow:0 12px 24px -14px var(--wnblue)}
+.htile.hero .go{background:#fff;color:var(--brand)}
+.htile.hero .tl{color:rgba(255,255,255,.9)}
+.htile.hero .ts{color:rgba(255,255,255,.88)}
+.htile.hero .hbar2{background:rgba(255,255,255,.22)}
+@media (min-width:900px){.htiles{grid-template-columns:repeat(4,1fr)}}
+.hsec{display:flex;align-items:baseline;justify-content:space-between;margin:6px 2px -4px}
+.hsec b{font:700 17px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",system-ui,Inter,sans-serif;color:var(--ink)}
+.hlink{border:0;background:none;padding:4px 2px;font:inherit;font-size:14px;font-weight:600;color:var(--accent);cursor:pointer}
+.hatt{display:grid;grid-template-columns:.8fr 1.1fr 1.1fr;background:var(--card);border-radius:16px;padding:11px 4px}
+.hax{display:flex;align-items:center;gap:8px;min-width:0;border:0;background:none;padding:0 6px 0 10px;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.hax+.hax{border-left:1.5px solid var(--line)}
+.hdot{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.hdot svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.hdot.r{background:var(--bad)}.hdot.w{background:var(--warn)}.hdot.b{background:var(--wnblue)}
+.hxt{min-width:0}
+.hxt small{display:block;font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hxt b{display:block;font:800 17px/1.15 -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro",system-ui,Inter,sans-serif;font-variant-numeric:tabular-nums}
+.hfeed .rlist{gap:8px}
+.hfeed .rsr{background:var(--card);border-radius:16px;padding:3px 4px 3px 8px}
+.hfeed .rsi{background:var(--bg)}
+.hfeed .rempty{background:var(--card);border-radius:16px;padding:14px}
+@media (prefers-reduced-motion:no-preference){
+.hfeed.in .htile{animation:wnrise .5s cubic-bezier(.2,.8,.3,1) backwards}
+.hfeed.in .htile:nth-child(2){animation-delay:.06s}.hfeed.in .htile:nth-child(3){animation-delay:.12s}.hfeed.in .htile:nth-child(4){animation-delay:.18s}
+.hfeed.in .hbar2 i{animation:wnfill .9s .3s cubic-bezier(.2,.8,.3,1) backwards;transform-origin:left}
+}
+@keyframes wnrise{from{transform:translateY(10px) scale(.97)}to{transform:none}}
+@keyframes wnfill{from{transform:scaleX(0)}to{transform:none}}
 </style>
 </head>
-<body><script src="js/login.js?v=20261109a"></script>
-<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator v10.23 · Nov 9, 2026<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
-<div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="Find a part or drawer — size, name, A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button></label></div></div>
+<body><script src="js/login.js?v=20261109b"></script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="hg-brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe09a"/><stop offset="1" stop-color="#e08f1a"/></linearGradient>
+<linearGradient id="hg-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe5ec"/><stop offset="1" stop-color="#76828f"/></linearGradient>
+<linearGradient id="hg-red" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a86"/><stop offset="1" stop-color="#de4436"/></linearGradient>
+<linearGradient id="hg-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9cbfa"/><stop offset="1" stop-color="#4a82d8"/></linearGradient>
+<linearGradient id="hg-teal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8eead8"/><stop offset="1" stop-color="#14a08f"/></linearGradient></defs>
+<symbol id="hi-nut" viewBox="0 0 48 48"><path d="M24 4 41.3 14v20L24 44 6.7 34V14Z" fill="url(#hg-brass)"/><path d="M24 4 41.3 14 24 24 6.7 14Z" fill="#fff" opacity=".3"/><path d="M24 24v20L6.7 34V14Z" fill="#000" opacity=".08"/><circle cx="24" cy="24" r="8.6" fill="#7a4e08"/><path d="M17.6 21.5a7 7 0 0 1 9.6-3.6" fill="none" stroke="#ffe7b0" stroke-width="2" stroke-linecap="round" opacity=".8"/></symbol>
+<symbol id="hi-cab" viewBox="0 0 48 48"><rect x="6" y="4" width="36" height="40" rx="7" fill="url(#hg-blue)"/><g fill="#f6f9ff"><rect x="10.5" y="9" width="8" height="8.6" rx="2"/><rect x="29.5" y="9" width="8" height="8.6" rx="2"/><rect x="20" y="19.7" width="8" height="8.6" rx="2"/><rect x="29.5" y="19.7" width="8" height="8.6" rx="2"/><rect x="10.5" y="30.4" width="8" height="8.6" rx="2"/><rect x="20" y="30.4" width="8" height="8.6" rx="2"/></g><rect x="20" y="9" width="8" height="8.6" rx="2" fill="#39c980"/><rect x="10.5" y="19.7" width="8" height="8.6" rx="2" fill="#39c980"/><rect x="29.5" y="30.4" width="8" height="8.6" rx="2" fill="#f0666c"/></symbol>
+<symbol id="hi-tool" viewBox="0 0 48 48"><g transform="rotate(-42 24 24)"><rect x="21" y="13" width="6" height="30" rx="3" fill="url(#hg-steel)"/><path d="M21 2.6V9a3 3 0 0 0 6 0V2.6a8 8 0 1 1-6 0Z" fill="url(#hg-steel)"/></g><g transform="rotate(42 24 24)"><rect x="22.4" y="18" width="3.2" height="20" fill="#aab5c1"/><rect x="21.4" y="37" width="5.2" height="6.5" rx="1.2" fill="#8e9aa8"/><rect x="19.6" y="3" width="8.8" height="17" rx="3.4" fill="url(#hg-red)"/><path d="M21.6 6v11M24 6v11M26.4 6v11" stroke="#fff" stroke-width=".9" opacity=".35"/></g></symbol>
+<symbol id="hi-tape" viewBox="0 0 48 48"><path d="M24 38h18a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H24Z" fill="#6fd6c4"/><circle cx="23" cy="25" r="19" fill="url(#hg-teal)"/><circle cx="23" cy="25" r="9" fill="#0b5a52"/><circle cx="23" cy="25" r="5.4" fill="#e9fbf7"/><path d="M9.5 20a14.5 14.5 0 0 1 10-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></symbol>
+</svg>
+<header class="hw"><div class="wrap"><div class="htop"><span class="hw-av" aria-hidden="true">E</span><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator · v10.24<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
+<div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="part, tool, drawer, or A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button><button type="button" class="sscan" id="qScan" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></svg></button></label></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
  <a href="#/storage" role="menuitem">Storage map</a>
@@ -564,6 +638,7 @@ function render() { markTab(); migrateNames();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
   document.documentElement.classList.toggle('rt-home', route().v === 'home' && !q);
+  { const vk = q ? 'search' : (route().v || 'home'); HOME_FRESH = vk === 'home' && HOME_KEY !== 'home'; HOME_KEY = vk; }
   try { $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)(); }
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
@@ -589,7 +664,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.23 · Nov 9</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.24 · Nov 9</span></p>`;
 const attRow = (tab, label, n, cls) => `<button type="button" class="attr" data-go="#/attention/${tab}"><span>${label}</span><b class="${n ? cls : ''}">${n}</b></button>`;
 const attRows = (D) => attRow('tobuy', 'To buy', D.tobuy.length, 'r') + attRow('low', 'Running low', D.low.length, 'w') + attRow('home', 'Need a home', D.homeN, 'b') + (D.exp.length ? attRow('expiring', 'Expiring', D.exp.length, 'r') : '') + (D.lent.length ? attRow('lent', 'Lent out', D.lent.length, '') : '') + (D.c.putaway ? attRow('putaway', 'Bought, not stocked', D.c.putaway, '') : '');
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
@@ -641,20 +716,31 @@ function searchBest(v) {
     const l = sortedParts(items().filter(x => matchesSearch(x, searchTerms(v)))), b = l.find(x => loc1(x)) || l[0]; if (!b) return {};
     const f = loc1(b) && S.find(doc(), loc1(b)); return { code: f ? f.slot.code : '', name: b.name }; } catch (e) { return {}; }
 }
-const homeAtt = (D) => {
-  const bits = [];
-  if (D.tobuy.length) bits.push(`<b>${D.tobuy.length}</b> to buy`);
-  if (D.low.length) bits.push(`<b>${D.low.length}</b> running low`);
-  if (D.homeN) bits.push(`<b>${D.homeN}</b> <i>need a home</i>`);
-  if (!bits.length) return '';
-  const hot = D.tobuy.length || D.low.length;
-  return `<button type="button" class="attstrip" data-go="#/attention"><span class="ad ${hot ? 'r' : 'b'}"></span><span class="at">${bits.join(' <i>·</i> ')}</span><svg class="astchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>`;
-};
+// 10.24 home: four color tiles (same doorways as before), a needs-attention strip, recent searches
+const HARROW = '<svg viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></svg>';
+const hSeg = (parts, total) => { const used = parts.reduce((n, p) => n + p[0], 0), rest = Math.max(0, total - used); return `<span class="hbar2">${parts.filter(p => p[0] > 0).map(p => `<i style="flex:${p[0]};background:${p[1]}"></i>`).join('')}${rest ? `<i style="flex:${rest}"></i>` : ''}</span>`; };
+const hTile = (cls, go, pic, label, num, sub, bar) => `<button type="button" class="htile${cls ? ' ' + cls : ''}" data-go="${go}"><span class="top"><svg class="pic" aria-hidden="true"><use href="#hi-${pic}"/></svg><span class="go">${HARROW}</span></span><span class="tl">${label}</span><span class="tn">${num}</span>${bar || ''}<span class="ts">${sub}</span></button>`;
+function homeTiles(D) {
+  const lv = D.lv, supBuy = D.sup.filter(x => x.need).length;
+  const pSub = lv.low && lv.out ? `${lv.ok} in · ${lv.low} low · ${lv.out} out` : [lv.ok + ' in stock', lv.low ? lv.low + ' low' : '', lv.out ? lv.out + ' out' : ''].filter(Boolean).join(' · ');
+  return '<div class="htiles">'
+    + hTile('hero', '#/parts', 'nut', 'Parts', D.n, D.n ? pSub : 'Add your first part', D.n ? hSeg([[lv.ok, '#7df0b0'], [lv.low, '#ffd66b'], [lv.out, '#ff9a9e']], D.n) : '')
+    + hTile('', '#/storage', 'cab', 'Storage', `${D.placed}<small> / ${D.spots}</small>`, `spots used · ${D.us.length} unit${D.us.length === 1 ? '' : 's'}`, hSeg([[D.placed, 'var(--wnblue)']], D.spots))
+    + hTile('', '#/tools', 'tool', 'Tools &amp; Gear', D.tools, D.tools ? 'brand, model, serial' : 'Tools, cameras, audio…')
+    + hTile('', '#/supplies', 'tape', 'Supplies', D.sup.length, supBuy ? supBuy + ' to buy' : 'tape, glue, paint…')
+    + '</div>';
+}
+const hAx = (tab, cls, icon, label, n) => `<button type="button" class="hax" data-go="#/attention/${tab}"><span class="hdot ${cls}"><svg viewBox="0 0 24 24">${icon}</svg></span><span class="hxt"><small>${label}</small><b>${n}</b></span></button>`;
+const homeAtt = (D) => '<div class="hsec"><b>Needs attention</b><button type="button" class="hlink" data-go="#/attention">See all</button></div><div class="hatt">'
+  + hAx('tobuy', 'r', '<path d="M3 4h2.5l2.2 10.5h10l2-7.5H7"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="16.5" cy="19" r="1.4"/>', 'To buy', D.tobuy.length)
+  + hAx('low', 'w', '<path d="M12 6v7"/><path d="M12 17.5h.01"/>', 'Running low', D.low.length)
+  + hAx('home', 'b', '<path d="M4 11l8-7 8 7"/><path d="M6.5 10v9h11v-9"/>', 'Need a home', D.homeN) + '</div>';
+let HOME_KEY = '', HOME_FRESH = false;   // tiles rise in only when you arrive on Home, not on every background refresh
 const CLOCK = '<svg class="rsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
 const recSearchRow = (v) => { const r = searchBest(v); return `<div class="rsr"><button type="button" class="rsq" data-rsq="${esc(v)}">${CLOCK}<span class="rt"><b>${esc(v)}</b>${r.name ? `<small>${esc(r.name)}</small>` : ''}</span>${r.code ? `<span class="loc">${esc(r.code)}</span>` : ''}</button><button type="button" class="rsx" data-rsx="${esc(v)}" aria-label="Remove ${esc(v)} from recent searches">×</button></div>`; };
 function recentBlock() {
   const list = WN_SEARCH.get();
-  const label = `<div class="rlbl"><span>Recent searches</span>${list.length ? '<button type="button" class="rall" data-rsclear>Clear</button>' : ''}</div>`;
+  const label = `<div class="hsec"><b>Recent searches</b>${list.length ? '<button type="button" class="hlink" data-rsclear>Clear</button>' : ''}</div>`;
   if (!list.length) return `${label}<div class="rempty">What you search for shows up here, so you can find it again with one tap.</div>`;
   return label + `<div class="rlist">${list.map(recSearchRow).join('')}</div>`;
 }
@@ -690,7 +776,7 @@ function hapticTap(style) {
 let HAP_LAST = '';
 function home() {
   const D = HD();
-  return `<div class="hfeed">${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
+  return `<div class="hfeed${HOME_FRESH ? ' in' : ''}">${freshCard()}${homeTiles(D)}${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
 }
 const SUP_IC = { 'Tape': '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', 'Glue & sealants': '<path d="M10 2h4v4l2 3v12H8V9l2-3z"/><path d="M8 13h8"/>', 'Painting': '<rect x="3" y="3" width="14" height="6" rx="2"/><path d="M17 6h3v5h-8v3"/><rect x="10.5" y="14" width="3" height="7" rx="1"/>', 'Printing & paper': '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>', 'Cleaning': '<path d="M9 3h5v4l3 3v11H7V10l2-3z"/><path d="M14 5h3"/>', 'Electrical': '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>' };
 const supIc = (x) => `<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SUP_IC[x.category] || ICO.box}</svg></span>`;
@@ -1881,6 +1967,7 @@ const qEl = $('q');
 qEl.addEventListener('input', () => { $('qClear').hidden = !qEl.value; render(); });
 $('qClear').onclick = () => { noteSearch(qEl.value); qEl.value = ''; $('qClear').hidden = true; render(); qEl.focus(); };
 qEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { noteSearch(qEl.value); qEl.blur(); } });
+$('qScan').onclick = (e) => { e.preventDefault(); qEl.blur(); if (window.WNScan) window.WNScan(); };
 qEl.addEventListener('blur', () => { if (qEl.value.trim()) noteSearch(qEl.value); });
 $('view').addEventListener('click', (e) => { const a = e.target.closest('[data-rsq],[data-rsx],[data-rsclear]'); if (!a) return; e.preventDefault(); e.stopPropagation();
   if (a.hasAttribute('data-rsx')) { WN_SEARCH.drop(a.dataset.rsx); render(); return; }

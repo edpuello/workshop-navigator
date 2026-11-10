@@ -171,6 +171,7 @@ final class ZebraNetwork {
     // A printer typed in by IP address: check it answers, ask its name, remember it.
     @MainActor
     func add(host: String) async throws -> [String: Any] {
+        guard Self.isLocal(host) else { throw BridgeError("That isn’t an address on your own network — it looks like 192.168.1.40") }
         let id = "net:ip:" + host
         let reply = try await exchange(endpoint(for: id)!, send: Data(Self.askNames.utf8), listen: 1.5)
         let parsed = Self.parseNames(reply)
@@ -203,9 +204,25 @@ final class ZebraNetwork {
         return String(decoding: reply, as: UTF8.self)
     }
 
+    // 10.21_4 security: printers are only ever on your own network — private and link-local addresses or .local names.
+    // Nothing can make the app send data to an address on the internet.
+    static func isLocal(_ host: String) -> Bool {
+        if let v4 = IPv4Address(host) {
+            let b = [UInt8](v4.rawValue)
+            return b[0] == 10 || (b[0] == 172 && (16...31).contains(b[1])) || (b[0] == 192 && b[1] == 168) || (b[0] == 169 && b[1] == 254)
+        }
+        if let v6 = IPv6Address(host) {
+            let b = [UInt8](v6.rawValue)
+            return (b[0] & 0xfe) == 0xfc || (b[0] == 0xfe && (b[1] & 0xc0) == 0x80)
+        }
+        let h = host.lowercased()
+        return h.hasSuffix(".local") && h.count > 6 && h.allSatisfy { $0.isLetter || $0.isNumber || $0 == "-" || $0 == "." }
+    }
+
     private func endpoint(for id: String) -> NWEndpoint? {
         if id.hasPrefix("net:ip:") {
             let host = String(id.dropFirst("net:ip:".count))
+            guard Self.isLocal(host) else { return nil }
             return .hostPort(host: NWEndpoint.Host(host), port: 9100)
         }
         if id.hasPrefix("net:bj:") {
@@ -271,7 +288,8 @@ private final class TCPExchange: @unchecked Sendable {
     func receive() {
         conn.receive(minimumIncompleteLength: 1, maximumLength: 65_536) { chunk, _, isComplete, error in
             if let chunk { self.buffer.append(chunk) }
-            if isComplete || error != nil { self.finish(.success(self.buffer)) } else { self.receive() }
+            // 10.21_4: a printer's answer is a few hundred bytes — stop at 64 KB whatever a device on the network sends
+            if isComplete || error != nil || self.buffer.count >= 65_536 { self.finish(.success(self.buffer)) } else { self.receive() }
         }
     }
 }

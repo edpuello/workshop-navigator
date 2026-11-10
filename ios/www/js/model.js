@@ -4,7 +4,7 @@
 const STOCK_LABEL={plenty:'Plenty',low:'Low',out:'Out'};
 function qtyNum(x){return x.qty===''||x.qty==null||isNaN(Number(x.qty))?null:Number(x.qty)}
 const RODLIKE=x=>/threaded rod/i.test(x.category||'');
-function defaultLowAt(x){return RODLIKE(x)?1:10}
+function defaultLowAt(x){return x&&x.kind==='supply'?1:RODLIKE(x)?1:10}
 function lowAt(x){const v=x.lowAt;return v===''||v==null||isNaN(Number(v))?defaultLowAt(x):Number(v)}
 function qtyLevel(x){const q=qtyNum(x);if(q==null)return '';const full=Math.max(Number(x.full)||0,q);
  if(q<lowAt(x))return 'low';if(q<full/2||(RODLIKE(x)&&q<full))return 'half';return 'ok'}
