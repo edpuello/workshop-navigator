@@ -3,7 +3,7 @@
 <title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="js/vendor/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261107a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261109a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261109a"></script><script src="js/notify.js?v=20261107a"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261110a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261109a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261109a"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -392,6 +392,23 @@ html .where.hc .cell.hit::after{content:"";position:absolute;inset:-3px;border-r
 @media (prefers-reduced-motion:reduce){html .where.hc .cell.hit,html .where.hc .cell.hit::after{animation:none}}
 /* 10.24 home with more life: color tiles, a needs-attention strip, card rows.
    Every blue on it is one of two values: the footer's navy (--brand) or --wnblue (the link blue). */
+/* 10.25 home: a sign-style ticker under the header, a row of categories to swipe through, plain tiles, the one-line needs-attention strip */
+.hw-tick{display:none;overflow:hidden;margin:11px 0 0;padding:8px 0;border-radius:11px;background:var(--brand);-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+html.rt-home .hw-tick{display:block}
+.hw-tick .tk{display:flex;width:max-content;animation:wntick var(--tkd,40s) linear infinite;will-change:transform}
+.hw-tick .tk span{flex:none;white-space:nowrap;font:700 12px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#ffd98a}
+.hw-tick .tk i{font-style:normal;color:rgba(255,255,255,.45);margin:0 14px}
+@keyframes wntick{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@media (prefers-reduced-motion:reduce){.hw-tick .tk{animation:none}}
+.hcats{display:flex;gap:8px;align-items:flex-start;overflow-x:auto;overflow-y:hidden;box-sizing:border-box;width:100vw;margin:0 0 0 calc(50% - 50vw);padding:2px 16px 0;scroll-snap-type:x proximity;scroll-padding-left:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.hcats::-webkit-scrollbar{display:none}
+@media (min-width:760px){.hcats{width:auto;margin-left:0;padding-left:0;padding-right:0;scroll-padding-left:0}}
+.hcat{flex:none;width:70px;min-height:calc(56px + 2.4em);border:0;background:none;padding:0;margin:0;font:inherit;font-size:11px;font-weight:600;line-height:1.15;color:var(--ink);display:flex;flex-direction:column;align-items:center;text-align:center;scroll-snap-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.hcat img{width:56px;height:56px;display:block;pointer-events:none;-webkit-user-drag:none}
+.hcat:active{transform:scale(.93)}
+.htile .top{align-items:center;margin-bottom:8px}
+.htile .top .tl{font-size:15px}
+.hfeed .attstrip{border:0;border-radius:16px}
 :root{--wnblue:#1565a5}
 html header.hw,html.dark header.hw{background:transparent!important}
 header.hw .htop{align-items:center;gap:10px}
@@ -455,7 +472,7 @@ html.dark .sbar{background:var(--card)}
 @keyframes wnfill{from{transform:scaleX(0)}to{transform:none}}
 </style>
 </head>
-<body><script src="js/login.js?v=20261109b"></script>
+<body><script src="js/login.js?v=20261110a"></script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <linearGradient id="hg-brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe09a"/><stop offset="1" stop-color="#e08f1a"/></linearGradient>
 <linearGradient id="hg-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe5ec"/><stop offset="1" stop-color="#76828f"/></linearGradient>
@@ -467,7 +484,7 @@ html.dark .sbar{background:var(--card)}
 <symbol id="hi-tool" viewBox="0 0 48 48"><g transform="rotate(-42 24 24)"><rect x="21" y="13" width="6" height="30" rx="3" fill="url(#hg-steel)"/><path d="M21 2.6V9a3 3 0 0 0 6 0V2.6a8 8 0 1 1-6 0Z" fill="url(#hg-steel)"/></g><g transform="rotate(42 24 24)"><rect x="22.4" y="18" width="3.2" height="20" fill="#aab5c1"/><rect x="21.4" y="37" width="5.2" height="6.5" rx="1.2" fill="#8e9aa8"/><rect x="19.6" y="3" width="8.8" height="17" rx="3.4" fill="url(#hg-red)"/><path d="M21.6 6v11M24 6v11M26.4 6v11" stroke="#fff" stroke-width=".9" opacity=".35"/></g></symbol>
 <symbol id="hi-tape" viewBox="0 0 48 48"><path d="M24 38h18a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H24Z" fill="#6fd6c4"/><circle cx="23" cy="25" r="19" fill="url(#hg-teal)"/><circle cx="23" cy="25" r="9" fill="#0b5a52"/><circle cx="23" cy="25" r="5.4" fill="#e9fbf7"/><path d="M9.5 20a14.5 14.5 0 0 1 10-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></symbol>
 </svg>
-<header class="hw"><div class="wrap"><div class="htop"><span class="hw-av" aria-hidden="true">E</span><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator · v10.24<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
+<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator · v10.25<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hw-tick" id="tick" aria-hidden="true"></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
 <div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="part, tool, drawer, or A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button><button type="button" class="sscan" id="qScan" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></svg></button></label></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
@@ -632,7 +649,7 @@ function deepLink() {
 }
 
 // ---------------------------------------------------------------- views
-const TAB_OF = { home: 'home', attention: 'home', parts: 'parts', supplies: 'parts', storage: 'storage', unplaced: 'storage', tools: 'tools' };
+const TAB_OF = { home: 'home', cat: 'home', attention: 'home', parts: 'parts', supplies: 'parts', storage: 'storage', unplaced: 'storage', tools: 'tools' };
 function markTab() { if (window.WNShell && WNShell.on()) return; const t = TAB_OF[route().v] || 'home'; document.querySelectorAll('.tabbar a').forEach(a => { const on = a.dataset.tab === t; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); }
 function render() { markTab(); migrateNames();
   IDX = null;
@@ -642,10 +659,12 @@ function render() { markTab(); migrateNames();
   try { $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)(); }
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
+  { const hc = $('hcats'); if (hc && CAT_X) hc.scrollLeft = CAT_X; }
   if (q) { const hit = $('view').querySelector('.cell.hit'); if (hit) hit.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
   const hc = q ? $('view').querySelector('.where.hc .cell.hit') : null, hcode = hc ? hc.dataset.slot : '';
   if (hcode && hcode !== HAP_LAST) hapticTap('light'); HAP_LAST = hcode;
 }
+$('view').addEventListener('scroll', (e) => { if (e.target && e.target.id === 'hcats') CAT_X = e.target.scrollLeft; }, true);
 const refresh = () => { render(); if ($('sheet').open && !$('sheet').classList.contains('closing') && !sheetTyping()) paintSheet(); };
 const head = (title, back, extra) => `<div class="vhead"><button type="button" class="back" data-go="${back}" aria-label="Back">‹</button><h2>${title}</h2>${extra ? `<div style="display:flex;gap:8px;flex-wrap:wrap">${extra}</div>` : ''}</div>`;
 
@@ -664,7 +683,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.24 · Nov 9</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.25 · Nov 10</span></p>`;
 const attRow = (tab, label, n, cls) => `<button type="button" class="attr" data-go="#/attention/${tab}"><span>${label}</span><b class="${n ? cls : ''}">${n}</b></button>`;
 const attRows = (D) => attRow('tobuy', 'To buy', D.tobuy.length, 'r') + attRow('low', 'Running low', D.low.length, 'w') + attRow('home', 'Need a home', D.homeN, 'b') + (D.exp.length ? attRow('expiring', 'Expiring', D.exp.length, 'r') : '') + (D.lent.length ? attRow('lent', 'Lent out', D.lent.length, '') : '') + (D.c.putaway ? attRow('putaway', 'Bought, not stocked', D.c.putaway, '') : '');
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
@@ -707,19 +726,19 @@ const WN_SEARCH = (() => {
 // only searches that found something are kept (a half-typed "1/4-" isn't)
 function noteSearch(v) {
   try { v = String(v || '').trim(); if (v.length < 2) return; const t = searchTerms(v), n = normS(v);
-    const ok = S.find(doc(), S.norm(v)) || items().some(x => matchesSearch(x, t)) || things().some(x => normS([x.name, x.brand, x.model].join(' ')).includes(n));
+    const ok = S.find(doc(), S.norm(v)) || !findParts(items(), t, partHay).near || things().some(x => matchHay(hayOf([x.name, x.brand, x.model].join(' ')), t));
     if (ok) WN_SEARCH.push(v); } catch (e) { }
 }
 // what a saved search finds now: the drawer code + the part's name
 function searchBest(v) {
   try { const slot = S.find(doc(), S.norm(v)); if (slot) return { code: slot.slot.code, name: slot.unit.name };
-    const l = sortedParts(items().filter(x => matchesSearch(x, searchTerms(v)))), b = l.find(x => loc1(x)) || l[0]; if (!b) return {};
+    const fp = findParts(items(), searchTerms(v), partHay), l = fp.near ? [] : sortedParts(fp.list), b = l.find(x => loc1(x)) || l[0]; if (!b) return {};
     const f = loc1(b) && S.find(doc(), loc1(b)); return { code: f ? f.slot.code : '', name: b.name }; } catch (e) { return {}; }
 }
 // 10.24 home: four color tiles (same doorways as before), a needs-attention strip, recent searches
 const HARROW = '<svg viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></svg>';
 const hSeg = (parts, total) => { const used = parts.reduce((n, p) => n + p[0], 0), rest = Math.max(0, total - used); return `<span class="hbar2">${parts.filter(p => p[0] > 0).map(p => `<i style="flex:${p[0]};background:${p[1]}"></i>`).join('')}${rest ? `<i style="flex:${rest}"></i>` : ''}</span>`; };
-const hTile = (cls, go, pic, label, num, sub, bar) => `<button type="button" class="htile${cls ? ' ' + cls : ''}" data-go="${go}"><span class="top"><svg class="pic" aria-hidden="true"><use href="#hi-${pic}"/></svg><span class="go">${HARROW}</span></span><span class="tl">${label}</span><span class="tn">${num}</span>${bar || ''}<span class="ts">${sub}</span></button>`;
+const hTile = (cls, go, pic, label, num, sub, bar) => `<button type="button" class="htile${cls ? ' ' + cls : ''}" data-go="${go}"><span class="top"><span class="tl">${label}</span><span class="go">${HARROW}</span></span><span class="tn">${num}</span>${bar || ''}<span class="ts">${sub}</span></button>`;
 function homeTiles(D) {
   const lv = D.lv, supBuy = D.sup.filter(x => x.need).length;
   const pSub = lv.low && lv.out ? `${lv.ok} in · ${lv.low} low · ${lv.out} out` : [lv.ok + ' in stock', lv.low ? lv.low + ' low' : '', lv.out ? lv.out + ' out' : ''].filter(Boolean).join(' · ');
@@ -731,10 +750,15 @@ function homeTiles(D) {
     + '</div>';
 }
 const hAx = (tab, cls, icon, label, n) => `<button type="button" class="hax" data-go="#/attention/${tab}"><span class="hdot ${cls}"><svg viewBox="0 0 24 24">${icon}</svg></span><span class="hxt"><small>${label}</small><b>${n}</b></span></button>`;
-const homeAtt = (D) => '<div class="hsec"><b>Needs attention</b><button type="button" class="hlink" data-go="#/attention">See all</button></div><div class="hatt">'
-  + hAx('tobuy', 'r', '<path d="M3 4h2.5l2.2 10.5h10l2-7.5H7"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="16.5" cy="19" r="1.4"/>', 'To buy', D.tobuy.length)
-  + hAx('low', 'w', '<path d="M12 6v7"/><path d="M12 17.5h.01"/>', 'Running low', D.low.length)
-  + hAx('home', 'b', '<path d="M4 11l8-7 8 7"/><path d="M6.5 10v9h11v-9"/>', 'Need a home', D.homeN) + '</div>';
+const homeAtt = (D) => {
+  const bits = [];
+  if (D.tobuy.length) bits.push(`<b>${D.tobuy.length}</b> to buy`);
+  if (D.low.length) bits.push(`<b>${D.low.length}</b> running low`);
+  if (D.homeN) bits.push(`<b>${D.homeN}</b> <i>need a home</i>`);
+  if (!bits.length) return '';
+  const hot = D.tobuy.length || D.low.length;
+  return `<button type="button" class="attstrip" data-go="#/attention"><span class="ad ${hot ? 'r' : 'b'}"></span><span class="at">${bits.join(' <i>·</i> ')}</span><svg class="astchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>`;
+};
 let HOME_KEY = '', HOME_FRESH = false;   // tiles rise in only when you arrive on Home, not on every background refresh
 const CLOCK = '<svg class="rsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
 const recSearchRow = (v) => { const r = searchBest(v); return `<div class="rsr"><button type="button" class="rsq" data-rsq="${esc(v)}">${CLOCK}<span class="rt"><b>${esc(v)}</b>${r.name ? `<small>${esc(r.name)}</small>` : ''}</span>${r.code ? `<span class="loc">${esc(r.code)}</span>` : ''}</button><button type="button" class="rsx" data-rsx="${esc(v)}" aria-label="Remove ${esc(v)} from recent searches">×</button></div>`; };
@@ -774,9 +798,43 @@ function hapticTap(style) {
     const r = h.postMessage({ cmd: 'haptic', style: style || 'light' }); if (r && r.catch) r.catch(() => { }); } catch (e) { }
 }
 let HAP_LAST = '';
+// 10.25 — categories to swipe through under the search bar. Each is [id, label, what it matches, what it leaves out]; the picture is img/cat/<id>.png.
+const CATS = [['bolts','Bolts',/hex bolts|\bbolt/i,/carriage|toggle|j-bolt|eye bolt|hanger|lag|anchor/i],['machine-screws','Machine screws',/machine screw/i,null],['screws','Wood screws',/wood screw|construction|deck screw|structural|drywall screw/i,/lag/i],['lag-screws','Lag screws',/\blags?\b/i,null],['tek-screws','Sheet metal',/sheet metal|\btek\b|self.drilling/i,/anchor/i],['set-screws','Set screws',/set screw/i,null],['carriage-bolts','Carriage bolts',/carriage/i,null],['metric','Metric',/\bmetric\b|\bm\d+(\.\d+)? ?[×x]/i,null],['nuts','Nuts',/\bnuts?\b/i,/wire nut|nut driver/i],['lock-nuts','Lock nuts',/nyloc|lock ?nut|nylon.insert/i,null],['cap-nuts','Cap nuts',/cap nut|acorn/i,null],['wing-nuts','Wing nuts',/\bwing/i,null],['t-nuts','T-nuts',/t-nut|tee nut/i,null],['washers','Washers',/washer/i,null],['lock-washers','Lock washers',/lock washer/i,null],['anchors','Anchors',/anchor/i,null],['toggle-bolts','Toggle bolts',/toggle/i,null],['rivets','Rivets',/rivet/i,null],['threaded-rod','Threaded rod',/threaded rod|all.?thread/i,null],['hanger-bolts','Hanger bolts',/hanger/i,null],['j-bolts','J-bolts',/j-bolt|u-bolt|\bhooks?\b/i,null],['eye-bolts','Eye bolts',/\beye\b/i,null],['nails','Nails',/\bnails?\b|\bbrads?\b|staple/i,null],['nylon','Nylon',/nylon/i,/nylon.insert|nyloc/i],['springs','Springs',/spring/i,null],['pins-clips','Pins & clips',/cotter|\bpins?\b|\bclips?\b|retaining/i,/shelf/i],['o-rings','O-rings',/o-ring|gasket/i,null],['clamps','Clamps',/clamp/i,null],['chain','Chain',/chain/i,null],['brackets','Brackets',/bracket|\bbrace|corner/i,null],['hinges','Hinges',/hinge/i,null],['magnets','Magnets',/magnet/i,null],['electrical','Electrical',/electrical/i,null],['wire','Wire',/\bwire\b|\bcable\b/i,/wire nut|connector|tie/i],['connectors','Connectors',/connector|terminal|wire nut|splice|crimp/i,null],['fuses','Fuses',/fuse/i,null],['batteries','Batteries',/batter/i,null],['lighting','Lighting',/bulb|\blamp|\bled\b|\blight/i,null],['zip-ties','Zip ties',/zip tie|cable tie/i,null],['plumbing','Plumbing',/plumb|\bpipe|ptfe|teflon|faucet|\bhose/i,null],['automotive','Automotive',/automotive|\bauto\b|\btrim\b|spark/i,null],['hand-tools','Hand tools',/hammer|plier|chisel|pry bar|mallet|hand tool|snips|cutter|hand ?saw/i,null],['wrenches','Wrenches',/wrench|ratchet|socket set|hex key|allen/i,null],['screwdrivers','Screwdrivers',/screwdriver|driver bit/i,/drill/i],['power-tools','Power tools',/\bdrill\b|impact|sander|grinder|router|circular saw|jig ?saw|cordless|power tool/i,/drill bit|self.drilling/i],['drill-bits','Drill bits',/drill bit|step bit|countersink|\bbits\b/i,null],['blades','Blades',/blade|cut.?off|cutting dis/i,null],['measuring','Measuring',/tape measure|measur|\blevel\b|\bsquare\b|caliper|ruler/i,null],['paint','Paint',/paint|primer|\bstain|brush|roller/i,null],['tape-glue','Tape',/\btape\b/i,/tape measure/i],['glue','Glue',/glue|adhesive|epoxy|threadlock|loctite/i,null],['sealants','Sealants',/sealant|caulk|silicone|ptfe|teflon/i,null],['safety','Safety',/safety|glove|goggle|glasses|\bmask|respirator|ear plug|hearing/i,null]];
+let CAT_X = 0;   // where the row was scrolled to, kept across redraws
+const homeCats = () => `<div class="hcats" id="hcats" role="list" aria-label="Browse by kind">${CATS.map(c => `<button type="button" class="hcat" role="listitem" data-go="#/cat/${c[0]}"><img src="img/cat/${c[0]}.png" width="56" height="56" alt="" loading="lazy" decoding="async"><span>${esc(c[1])}</span></button>`).join('')}</div>`;
+function catView() {
+  const c = CATS.find(x => x[0] === route().a); if (!c) return home();
+  const ok = (h) => c[2].test(h) && !(c[3] && c[3].test(h));
+  const ps = sortedParts(items().filter(x => ok([x.name, x.category, x.stype].filter(Boolean).join(' | ')))), ts = things().filter(t => ok([t.name, t.type, t.brand, t.model].filter(Boolean).join(' | ')));
+  const body = (ps.length ? `<div class="h3">Parts &amp; supplies <span class="c">${ps.length}</span></div><div class="rows">${ps.map(partRow).join('')}</div>` : '')
+    + (ts.length ? `<div class="h3">Tools &amp; other items <span class="c">${ts.length}</span></div><div class="rows">${ts.map(t => thingRow(t)).join('')}</div>` : '');
+  return head(esc(c[1]), '#/') + (body || `<div class="rows"><div class="empty">Nothing filed under ${esc(c[1])} yet.</div></div>`);
+}
+// the sign under the header: a few live facts, passing left to right, forever
+function paintTick(D) {
+  const el = $('tick'); if (!el) return;
+  const lv = D.lv, day = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const m = ['Welcome back, Ed', day, `${D.n} parts on file`, `${lv.ok} in stock`, D.tobuy.length ? `${D.tobuy.length} to buy` : '', D.low.length ? `${D.low.length} running low` : '', D.homeN ? `${D.homeN} need a home` : '', `${D.placed} of ${D.spots} storage spots used`, D.tools ? `${D.tools} tools & gear` : ''].filter(Boolean);
+  const key = m.join('|'); if (el.dataset.k === key) return; el.dataset.k = key;
+  const run = m.map(t => `<span>${esc(t)}</span><i>✦</i>`).join('');
+  el.innerHTML = `<div class="tk" style="--tkd:${Math.max(20, Math.round(key.length * .34))}s">${run}${run}</div>`;
+}
+// 10.25 — parts Ed asked to have added as "to buy" (Bolt Depot order + three from the home store). One tap adds them; nothing is added twice.
+const Q1025 = [["Lag Screws", "1/4 × 1-1/2 in Lag", "A4-E01", "Bolt Depot #1046 · order 25"], ["Lag Screws", "1/4 × 2-1/2 in Lag", "A4-E02", "Bolt Depot #1049 · order 25"], ["Lag Screws", "5/16 × 2 in Lag", "A4-E03", "Bolt Depot #1061 · order 15"], ["Lag Screws", "5/16 × 4 in Lag", "A4-E04", "Bolt Depot #1065 · order 15"], ["Lag Screws", "3/8 × 3 in Lag", "A4-E05", "Bolt Depot #1076 · order 10"], ["Lag Screws", "3/8 × 4 in Lag", "A4-E06", "Bolt Depot #1078 · order 10"], ["J-Bolts & Hanger Bolts", "1/4-20 × 2-5/16 in J-Bolt", "A4-E07", "Bolt Depot #12524 · order 6"], ["J-Bolts & Hanger Bolts", "5/16-18 × 5 in J-Bolt", "A4-E08", "Bolt Depot #12528 · order 4 · close fit lengthwise"], ["Hot-Dip Galvanized", "1/4 × 2 in Lag, galvanized", "A4-F01", "Bolt Depot #965 · order 20"], ["Hot-Dip Galvanized", "5/16 × 3 in Lag, galvanized", "A4-F02", "Bolt Depot #978 · order 10"], ["Hot-Dip Galvanized", "3/8 × 4 in Lag, galvanized", "A4-F03", "Bolt Depot #991 · order 10"], ["Hot-Dip Galvanized", "3/8-16 × 4 in Carriage Bolt, galvanized", "A4-F04", "Bolt Depot #896 · order 6"], ["Hot-Dip Galvanized", "3/8-16 × 6 in Carriage Bolt, galvanized", "", "Bolt Depot #900 · order 6 · too long for an Akro-Mils drawer"], ["Hot-Dip Galvanized", "3/8-16 Hex Nuts, galvanized", "A4-F05", "Bolt Depot #2616 · order 20"], ["Hot-Dip Galvanized", "1/4 in Flat Washers, galvanized", "A4-F06", "Bolt Depot #2987 · order 20"], ["Hot-Dip Galvanized", "5/16 in Flat Washers, galvanized", "A4-F07", "Bolt Depot #2988 · order 20"], ["Hot-Dip Galvanized", "3/8 in Flat Washers, galvanized", "A4-F08", "Bolt Depot #2989 · order 25"], ["J-Bolts & Hanger Bolts", "1/4-20 × 2 in Hanger Bolt", "A4-D04", "Bolt Depot #12176 · order 10"], ["J-Bolts & Hanger Bolts", "5/16-18 × 3 in Hanger Bolt", "A4-D05", "Bolt Depot #12187 · order 10"], ["J-Bolts & Hanger Bolts", "3/8-16 × 3 in Hanger Bolt", "A4-D06", "Bolt Depot #12195 · order 4"], ["Furniture Hardware", "1/4-20 T-Nuts", "A3-H04", "Bolt Depot #7306 · order 20"], ["Furniture Hardware", "5/16-18 T-Nuts", "A3-H05", "Bolt Depot #7307 · order 10"], ["Furniture Hardware", "1/4-20 Threaded Inserts (wood)", "A3-H06", "Bolt Depot #23854 · order 20"], ["Furniture Hardware", "M6 Threaded Inserts (wood)", "A3-H07", "Bolt Depot #23876 · order 10"], ["Furniture Hardware", "M6 × 50 mm Connector Bolts", "A3-H08", "Bolt Depot #28513 · order 10"], ["Furniture Hardware", "M6 Barrel Nuts", "A3-G07", "Bolt Depot #28543 · order 10"], ["Anchors & Mounting", "1/4-20 Strap Toggles", "A4-D07", "Home Depot · order 10"], ["Construction & Wood Screws", "#6 × 1-1/4 in Drywall Screws, coarse", "", "Home Depot · order 1 lb box · box is too big for a drawer"], ["Construction & Wood Screws", "#6 × 1-5/8 in Drywall Screws, coarse", "", "Home Depot · order 1 lb box · box is too big for a drawer"], ["Set Screws", "#6-32 × 1/8 in Set Screw, cup point", "A4-G01", "Bolt Depot #8543 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#6-32 × 3/16 in Set Screw, cup point", "A4-G02", "Bolt Depot #8545 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#6-32 × 1/4 in Set Screw, cup point", "A4-G03", "Bolt Depot #8547 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#8-32 × 1/8 in Set Screw, cup point", "A4-G04", "Bolt Depot #8455 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#8-32 × 1/4 in Set Screw, cup point", "A4-G05", "Bolt Depot #8458 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#8-32 × 3/8 in Set Screw, cup point", "A4-G06", "Bolt Depot #8460 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#10-32 × 3/16 in Set Screw, cup point", "A4-G07", "Bolt Depot #8486 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#10-32 × 1/4 in Set Screw, cup point", "A4-G08", "Bolt Depot #8487 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#10-32 × 3/8 in Set Screw, cup point", "A4-H01", "Bolt Depot #8489 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "1/4-20 × 1/4 in Set Screw, cup point", "A4-H02", "Bolt Depot #8507 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "1/4-20 × 3/8 in Set Screw, cup point", "A4-H03", "Bolt Depot #8509 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "1/4-20 × 1/2 in Set Screw, cup point", "A4-H04", "Bolt Depot #8511 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "5/16-18 × 1/4 in Set Screw, cup point", "A4-H05", "Bolt Depot #8525 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "5/16-18 × 3/8 in Set Screw, cup point", "A4-H06", "Bolt Depot #8527 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "5/16-18 × 1/2 in Set Screw, cup point", "A4-H07", "Bolt Depot #8529 · order 25 · Allen drive, alloy steel, black oxide"], ["SAE Nuts & Washers", "#8 Finishing Washers, stainless", "A4-H08", "Bolt Depot #2938 · order 100 · for #8 wood screws"], ["SAE Nuts & Washers", "#10-24 Cap Nuts, stainless", "A3-F04", "Bolt Depot #2544 · order 25"], ["SAE Nuts & Washers", "#10-32 Cap Nuts, stainless", "A3-F05", "Bolt Depot #2545 · order 25"], ["SAE Nuts & Washers", "1/4-20 Cap Nuts, stainless", "A3-F06", "Bolt Depot #2546 · order 25"], ["SAE Nuts & Washers", "5/16-18 Cap Nuts, stainless", "A3-F07", "Bolt Depot #2547 · order 25"], ["SAE Nuts & Washers", "3/8-16 Cap Nuts, stainless", "A3-F08", "Bolt Depot #2548 · order 25"]];
+let Q1025_HIDE = false;
+const q1025Card = () => { if (freshState().q1025 || Q1025_HIDE) return '';
+  return `<div class="card wide col" style="cursor:default"><div class="k">${ic('box')}${Q1025.length} new parts to buy</div><div class="s">Lag screws, galvanized, set screws, cap nuts, hanger bolts, furniture hardware and drywall fasteners. They go on your list as “To buy”, with drawers held in Cabinets #3 and #4.</div><div class="btns" style="margin-top:10px"><button type="button" class="pbtn2" data-act="q1025add">Add them</button><button type="button" class="gbtn" data-act="q1025skip">Not now</button></div></div>`; };
+function q1025Add() {
+  const d = doc(), have = new Set(d.items.filter(x => !x.archived).map(x => normS(x.name).trim())), taken = new Set(); let n = 0;
+  d.items.forEach(x => { if (!x.archived) codesOf(x).forEach(c => taken.add(c)); });
+  for (const [category, name, loc, notes] of Q1025) { if (have.has(normS(name).trim())) continue;
+    const code = loc ? canon(loc) : ''; const location = code && !taken.has(code) ? code : ''; if (location) taken.add(location);
+    d.items.push({ id: newItemId('HW-'), category, name, buy: false, store: false, need: true, qty: '', location, notes }); n++; }
+  const st = (d.app = d.app || {}).state = d.app.state || {}; st.fresh = { ...(st.fresh || {}), q1025: Date.now() }; commit(); render(); toast(n ? `Added ${n} parts to buy` : 'Those parts are already on your list');
+}
 function home() {
-  const D = HD();
-  return `<div class="hfeed${HOME_FRESH ? ' in' : ''}">${freshCard()}${homeTiles(D)}${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
+  const D = HD(); paintTick(D);
+  return `<div class="hfeed${HOME_FRESH ? ' in' : ''}">${homeCats()}${freshCard()}${q1025Card()}${homeTiles(D)}${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
 }
 const SUP_IC = { 'Tape': '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', 'Glue & sealants': '<path d="M10 2h4v4l2 3v12H8V9l2-3z"/><path d="M8 13h8"/>', 'Painting': '<rect x="3" y="3" width="14" height="6" rx="2"/><path d="M17 6h3v5h-8v3"/><rect x="10.5" y="14" width="3" height="7" rx="1"/>', 'Printing & paper': '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>', 'Cleaning': '<path d="M9 3h5v4l3 3v11H7V10l2-3z"/><path d="M14 5h3"/>', 'Electrical': '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>' };
 const supIc = (x) => `<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SUP_IC[x.category] || ICO.box}</svg></span>`;
@@ -1040,8 +1098,16 @@ function unitView(id) {
 }
 function searchView(q) {
   const raw = S.norm(q), slotHit = S.find(doc(), raw), unitHits = S.units(doc()).filter(u => normS(u.name + ' ' + u.model).includes(normS(q)) || u.id === raw);
-  const found = items().filter(x => matchesSearch(x, terms)), list = sortedParts(found);
-  const tHits = terms.length ? things().filter(t => { const hay = normS([t.id, t.name, t.type, t.brand, t.model, t.serial, t.voltage, t.platform, t.notes, t.location].join(' ')); return terms.every(w => hay.includes(w)); }) : [];
+  const fp = findParts(items(), terms, partHay), found = fp.near ? [] : fp.list, list = sortedParts(found);
+  const thingHay = (t) => hayOf([t.id, t.name, t.type, t.brand, t.model, t.serial, t.voltage, t.platform, t.notes, t.location].join(' '));
+  const tHits = terms.length ? things().filter(t => matchHay(thingHay(t), terms)) : [];
+  // 10.25: nothing matches every word → offer the closest parts instead of a dead end (typos and near-misses land here)
+  if (terms.length && !found.length && !tHits.length && !slotHit && !unitHits.length) {
+    const near = fp.list, nearT = closestMatches(things(), terms, thingHay);
+    if (near.length || nearT.length) return `<div class="empty nearmiss">Nothing matches “${esc(q)}” exactly. Here are the closest.</div>`
+      + (near.length ? `<div class="h3">Closest parts <span class="c">${near.length}</span></div><div class="rows">${near.slice(0, 40).map(partRow).join('')}</div>` : '')
+      + (nearT.length ? `<div class="h3">Closest tools &amp; other items <span class="c">${nearT.length}</span></div><div class="rows">${nearT.slice(0, 20).map(t => thingRow(t)).join('')}</div>` : '');
+  }
   const best = list.find(x => loc1(x)) || tHits.find(x => canon(x.location));
   let top = '';
   if (slotHit) { const ps = index().by.get(slotHit.slot.code) || []; top = `<div class="where"><div class="wc">${esc(slotHit.slot.code)}</div><div class="wd">${esc(slotHit.unit.name)} · ${esc(slotHit.slot.where)} · ${ps.length ? esc(ps.map(x => x.name).join(', ')) : 'empty'}</div>${mapHtml(slotHit.unit, slotHit.slot.code, true)}<div class="btns"><button type="button" class="gbtn" data-slot="${esc(slotHit.slot.code)}">Open this spot</button></div></div>`; }
@@ -1080,7 +1146,7 @@ function toolsView() {
     `<div class="h3">Gear <span class="c">${gear.length}</span>${small('gear')}</div>${gear.length ? gGroups.map(g => `${gGroups.length > 1 ? `<p class="note" style="margin:10px 4px 6px;font-weight:700">${esc(g)}</p>` : ''}<div class="rows">${gear.filter(t => (t.group || 'Other gear') === g).map(t => thingRow(t)).join('')}</div>`).join('') : '<div class="rows"><div class="empty">Cameras, tripods, audio, computer parts, printers — with serial, warranty, what comes in the kit and who you lent it to.</div></div>'}` +
     `<div class="h3">Other items <span class="c">${other.length}</span>${small('item')}</div><div class="rows">${other.map(t => thingRow(t)).join('') || '<div class="empty">Anything that isn’t a part, a supply, a tool or gear.</div>'}</div>`;
 }
-const VIEWS = { supplies: suppliesView, tools: toolsView, unplaced, home, fresh: freshView, parts: () => route().a ? family(route().a) : parts(), attention, storage: () => route().a ? unitView(route().a) : storage() };
+const VIEWS = { cat: catView, supplies: suppliesView, tools: toolsView, unplaced, home, fresh: freshView, parts: () => route().a ? family(route().a) : parts(), attention, storage: () => route().a ? unitView(route().a) : storage() };
 
 // ---------------------------------------------------------------- sheets: a part, a spot, picking a spot, editing a unit
 const sheet = $('sheet'), shBody = $('shBody');
@@ -1897,6 +1963,8 @@ document.addEventListener('click', (e) => {
     const x = { id: newItemId('HW-'), name, category: String(d.category || '').trim() || 'Other parts', qty: q, full: q || 0, location: String(d.location || '').trim(), notes: String(d.notes || '').trim(), store: true, buy: true, need: false };
     if (!x.notes) delete x.notes; x.stock = q === '' ? 'plenty' : (countLevel(x) || 'plenty'); doc().items.push(x); commit(); render();
     if (!t.dataset.next) toast('Added ' + name + (canon(x.location) ? ' · ' + canon(x.location) : '')); top.draft.category = x.category; afterSave(t, name); return; }
+  if (act === 'q1025add') { q1025Add(); return; }
+  if (act === 'q1025skip') { Q1025_HIDE = true; render(); return; }
   if (act === 'loclabels') { openSheet('locs', t.dataset.unit || '', false); return; }
   if (act === 'locpick') { const top = stack[stack.length - 1]; top.sel[t.dataset.k] = !top.sel[t.dataset.k]; paintSheet(); return; }
   if (act === 'locgo') { const top = stack[stack.length - 1], us = S.units(doc()).filter(u => !top.a || u.id === top.a); const codes = [...new Set(us.flatMap(u => locOpts(u).filter(o => top.sel[o.key]).flatMap(o => o.codes)))]; if (codes.length) openSheet('print', { codes }, true); return; }

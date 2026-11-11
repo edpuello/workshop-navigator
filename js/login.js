@@ -143,7 +143,7 @@ html.wl-open,html.wl-open body{overflow:hidden!important}
     if (el) return el;
     if (!document.getElementById('wl-css')) { const st = document.createElement('style'); st.id = 'wl-css'; st.textContent = CSS; document.head.appendChild(st); }
     el = document.createElement('div'); el.className = 'wl'; el.id = 'wnlogin'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Log in');
-    el.innerHTML = `<div class="wl-box"><p class="wl-v">Workshop Navigator · v10.24</p><h1 class="wl-h"></h1><p class="wl-s"></p>
+    el.innerHTML = `<div class="wl-box"><p class="wl-v">Workshop Navigator · v10.25</p><h1 class="wl-h"></h1><p class="wl-s"></p>
 <div class="wl-stage" aria-live="polite"><div class="wl-pop">${WHEEL}<p class="wl-msg"></p></div></div>
 <form class="wl-form" autocomplete="on" novalidate>
 <label class="wl-lbl" for="wl-u">Username</label>
