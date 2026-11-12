@@ -449,6 +449,11 @@ html header.hw .htop .hw-bell .bdot{top:7px;right:7px;box-shadow:0 0 0 2px var(-
 header.hw .htop{gap:2px}
 .hcats{display:flex;gap:8px;align-items:flex-start;overflow-x:auto;overflow-y:hidden;box-sizing:border-box;width:100vw;margin:0 0 0 calc(50% - 50vw);padding:2px 16px 0;scroll-snap-type:x proximity;scroll-padding-left:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 .hcats::-webkit-scrollbar{display:none}
+.hcat.fs{margin-left:12px}
+.hcw{position:relative;min-width:0}
+.hca{display:none;position:absolute;top:12px;z-index:3;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font:400 24px/1 system-ui,sans-serif;padding:0 0 3px;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.hca.l{left:-8px}.hca.r{right:-8px}
+@media (hover:hover) and (pointer:fine){.hca{display:grid}.hcw.at0 .hca.l,.hcw.at1 .hca.r{display:none}.hcats{cursor:grab}.hcats.drag{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}.hcats.drag .hcat{pointer-events:none}}
 @media (min-width:760px){.hcats{width:auto;margin-left:0;padding-left:0;padding-right:0;scroll-padding-left:0}}
 .hcat{flex:none;width:70px;min-height:calc(56px + 2.4em);border:0;background:none;padding:0;margin:0;font:inherit;font-size:11px;font-weight:600;line-height:1.15;color:var(--ink);display:flex;flex-direction:column;align-items:center;text-align:center;scroll-snap-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
 .hcat img{width:56px;height:56px;display:block;pointer-events:none;-webkit-user-drag:none}
@@ -518,6 +523,8 @@ html.dark .sbar{background:var(--card)}
 @keyframes wnrise{from{transform:translateY(10px) scale(.97)}to{transform:none}}
 @keyframes wnfill{from{transform:scaleX(0)}to{transform:none}}
 </style>
+
+
 
 
 
@@ -732,12 +739,21 @@ function render() { markTab(); migrateNames();
   try { $('view').innerHTML = q ? searchView(q) : SRCH ? searchHome() : (VIEWS[route().v] || home)(); }
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
-  { const hc = $('hcats'); if (hc && CAT_X) hc.scrollLeft = CAT_X; }
+  { const hc = $('hcats'); if (hc && CAT_X) hc.scrollLeft = CAT_X; catEnds(); }
   if (q) { const hit = $('view').querySelector('.cell.hit'); if (hit) hit.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
   const hc = q ? $('view').querySelector('.where.hc .cell.hit') : null, hcode = hc ? hc.dataset.slot : '';
   if (hcode && hcode !== HAP_LAST) hapticTap('light'); HAP_LAST = hcode;
 }
-$('view').addEventListener('scroll', (e) => { if (e.target && e.target.id === 'hcats') CAT_X = e.target.scrollLeft; }, true);
+$('view').addEventListener('scroll', (e) => { if (e.target && e.target.id === 'hcats') { CAT_X = e.target.scrollLeft; catEnds(); } }, true);
+// 10.26: on a computer the row also moves with the two arrow buttons and by dragging it with the mouse
+function catEnds() { const hc = $('hcats'), w = $('hcw'); if (!hc || !w) return; w.classList.toggle('at0', hc.scrollLeft < 4); w.classList.toggle('at1', hc.scrollLeft > hc.scrollWidth - hc.clientWidth - 4); }
+{ let dr = null, moved = false;
+  $('view').addEventListener('pointerdown', (e) => { const hc = e.target.closest && e.target.closest('#hcats'); if (!hc || e.pointerType !== 'mouse' || e.button !== 0) return; dr = { hc, x: e.clientX, s: hc.scrollLeft }; moved = false; });
+  window.addEventListener('pointermove', (e) => { if (!dr) return; const dx = e.clientX - dr.x; if (!moved && Math.abs(dx) < 6) return; moved = true; dr.hc.classList.add('drag'); dr.hc.scrollLeft = dr.s - dx; e.preventDefault(); });
+  const end = () => { if (!dr) return; const hc = dr.hc; dr = null; hc.classList.remove('drag'); if (moved) setTimeout(() => { moved = false; }, 0); };
+  window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+  $('view').addEventListener('click', (e) => { if (moved && e.target.closest && e.target.closest('#hcw')) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+  $('view').addEventListener('dragstart', (e) => { if (e.target.closest && e.target.closest('#hcats')) e.preventDefault(); }); }
 const refresh = () => { render(); if ($('sheet').open && !$('sheet').classList.contains('closing') && !sheetTyping()) paintSheet(); };
 const head = (title, back, extra) => `<div class="vhead"><button type="button" class="back" data-go="${back}" aria-label="Back">‹</button><h2>${title}</h2>${extra ? `<div style="display:flex;gap:8px;flex-wrap:wrap">${extra}</div>` : ''}</div>`;
 
@@ -844,7 +860,7 @@ function flipDock(before) { const d = document.querySelector('.dock'); if (!d ||
   if (Math.abs(dy) > 1) d.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' });
   $('view').animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'ease-out' }); }
 function enterSearch() { if (SRCH) return; const d = document.querySelector('.dock'), before = d ? d.getBoundingClientRect().top : 0;
-  SRCH = true; SRCH_Y = window.scrollY || 0; SH_MORE = false; document.documentElement.classList.add('srch'); sphReset(); render(); window.scrollTo(0, 0); flipDock(before); }
+  SRCH = true; SRCH_Y = window.scrollY || 0; SH_MORE = false; CAT_X = 0;   /* a new search starts the category row from the beginning again */ document.documentElement.classList.add('srch'); sphReset(); render(); window.scrollTo(0, 0); flipDock(before); }
 function exitSearch() { const e = $('q'); if (e.value) { noteSearch(e.value); e.value = ''; $('qClear').hidden = true; } if (document.activeElement === e) e.blur();
   if (!SRCH) { render(); return; } const d = document.querySelector('.dock'), before = d ? d.getBoundingClientRect().top : 0;
   leaveSearch(); render(); window.scrollTo(0, SRCH_Y); flipDock(before); }
@@ -907,13 +923,24 @@ function hapticTap(style) {
 }
 let HAP_LAST = '';
 // 10.25 — categories to swipe through under the search bar. Each is [id, label, what it matches, what it leaves out]; the picture is img/cat/<id>.png.
-const CATS = [['bolts','Bolts',/hex bolts|\bbolt/i,/carriage|toggle|j-bolt|eye bolt|hanger|lag|anchor/i],['machine-screws','Machine screws',/machine screw/i,null],['screws','Wood screws',/wood screw|construction|deck screw|structural|drywall screw/i,/lag/i],['lag-screws','Lag screws',/\blags?\b/i,null],['tek-screws','Sheet metal',/sheet metal|\btek\b|self.drilling/i,/anchor/i],['set-screws','Set screws',/set screw/i,null],['carriage-bolts','Carriage bolts',/carriage/i,null],['metric','Metric',/\bmetric\b|\bm\d+(\.\d+)? ?[×x]/i,null],['nuts','Nuts',/\bnuts?\b/i,/wire nut|nut driver/i],['lock-nuts','Lock nuts',/nyloc|lock ?nut|nylon.insert/i,null],['cap-nuts','Cap nuts',/cap nut|acorn/i,null],['wing-nuts','Wing nuts',/\bwing/i,null],['t-nuts','T-nuts',/t-nut|tee nut/i,null],['washers','Washers',/washer/i,null],['lock-washers','Lock washers',/lock washer/i,null],['anchors','Anchors',/anchor/i,null],['toggle-bolts','Toggle bolts',/toggle/i,null],['rivets','Rivets',/rivet/i,null],['threaded-rod','Threaded rod',/threaded rod|all.?thread/i,null],['hanger-bolts','Hanger bolts',/hanger/i,null],['j-bolts','J-bolts',/j-bolt|u-bolt|\bhooks?\b/i,null],['eye-bolts','Eye bolts',/\beye\b/i,null],['nails','Nails',/\bnails?\b|\bbrads?\b|staple/i,null],['nylon','Nylon',/nylon/i,/nylon.insert|nyloc/i],['springs','Springs',/spring/i,null],['pins-clips','Pins & clips',/cotter|\bpins?\b|\bclips?\b|retaining/i,/shelf/i],['o-rings','O-rings',/o-ring|gasket/i,null],['clamps','Clamps',/clamp/i,null],['chain','Chain',/chain/i,null],['brackets','Brackets',/bracket|\bbrace|corner/i,null],['hinges','Hinges',/hinge/i,null],['magnets','Magnets',/magnet/i,null],['electrical','Electrical',/electrical/i,null],['wire','Wire',/\bwire\b|\bcable\b/i,/wire nut|connector|tie/i],['connectors','Connectors',/connector|terminal|wire nut|splice|crimp/i,null],['fuses','Fuses',/fuse/i,null],['batteries','Batteries',/batter/i,null],['lighting','Lighting',/bulb|\blamp|\bled\b|\blight/i,null],['zip-ties','Zip ties',/zip tie|cable tie/i,null],['plumbing','Plumbing',/plumb|\bpipe|ptfe|teflon|faucet|\bhose/i,null],['automotive','Automotive',/automotive|\bauto\b|\btrim\b|spark/i,null],['hand-tools','Hand tools',/hammer|plier|chisel|pry bar|mallet|hand tool|snips|cutter|hand ?saw/i,null],['wrenches','Wrenches',/wrench|ratchet|socket set|hex key|allen/i,null],['screwdrivers','Screwdrivers',/screwdriver|driver bit/i,/drill/i],['power-tools','Power tools',/\bdrill\b|impact|sander|grinder|router|circular saw|jig ?saw|cordless|power tool/i,/drill bit|self.drilling/i],['drill-bits','Drill bits',/drill bit|step bit|countersink|\bbits\b/i,null],['blades','Blades',/blade|cut.?off|cutting dis/i,null],['measuring','Measuring',/tape measure|measur|\blevel\b|\bsquare\b|caliper|ruler/i,null],['paint','Paint',/paint|primer|\bstain|brush|roller/i,null],['tape-glue','Tape',/\btape\b/i,/tape measure/i],['glue','Glue',/glue|adhesive|epoxy|threadlock|loctite/i,null],['sealants','Sealants',/sealant|caulk|silicone|ptfe|teflon/i,null],['safety','Safety',/safety|glove|goggle|glasses|\bmask|respirator|ear plug|hearing/i,null]];
+const CATS = [['bolts','Bolts',/hex bolts|\bbolt/i,/carriage|toggle|j-bolt|eye bolt|hanger|lag|anchor/i],['machine-screws','Machine screws',/machine screw/i,null],['screws','Wood screws',/wood screw|construction|deck screw|structural|drywall screw/i,/lag/i],['lag-screws','Lag screws',/\blags?\b/i,null],['tek-screws','Sheet metal',/sheet metal|\btek\b|self.drilling/i,/anchor/i],['set-screws','Set screws',/set screw/i,null],['carriage-bolts','Carriage bolts',/carriage/i,null],['metric','Metric',/\bmetric\b|\bm\d+(\.\d+)? ?[×x]/i,null],['nuts','Nuts',/\bnuts?\b/i,/wire nut|nut driver/i],['lock-nuts','Lock nuts',/nyloc|lock ?nut|nylon.insert/i,null],['cap-nuts','Cap nuts',/cap nut|acorn/i,null],['wing-nuts','Wing nuts',/\bwing/i,null],['t-nuts','T-nuts',/t-nut|tee nut/i,null],['washers','Washers',/washer/i,null],['lock-washers','Lock washers',/lock washer/i,null],['anchors','Anchors',/anchor/i,null],['toggle-bolts','Toggle bolts',/toggle/i,null],['rivets','Rivets',/rivet/i,null],['threaded-rod','Threaded rod',/threaded rod|all.?thread/i,null],['hanger-bolts','Hanger bolts',/hanger/i,null],['j-bolts','J-bolts',/j-bolt|u-bolt|\bhooks?\b/i,null],['eye-bolts','Eye bolts',/\beye\b/i,null],['nails','Nails',/\bnails?\b|\bbrads?\b|staple/i,null],['nylon','Nylon',/nylon/i,/nylon.insert|nyloc/i],['springs','Springs',/spring/i,null],['pins-clips','Pins & clips',/cotter|\bpins?\b|\bclips?\b|retaining/i,/shelf/i],['o-rings','O-rings',/o-ring|gasket/i,null],['clamps','Clamps',/clamp/i,null],['chain','Chain',/chain/i,null],['brackets','Brackets',/bracket|\bbrace|corner/i,null],['hinges','Hinges',/hinge/i,null],['magnets','Magnets',/magnet/i,null],['electrical','Electrical',/electrical/i,null],['wire','Wire',/\bwire\b|\bcable\b/i,/wire nut|connector|tie/i],['connectors','Connectors',/connector|terminal|wire nut|splice|crimp/i,null],['fuses','Fuses',/fuse/i,null],['batteries','Batteries',/batter/i,null],['lighting','Lighting',/bulb|\blamp|\bled\b|\blight/i,null],['zip-ties','Zip ties',/zip tie|cable tie/i,null],['plumbing','Plumbing',/plumb|\bpipe|ptfe|teflon|faucet|\bhose/i,null],['automotive','Automotive',/automotive|\bauto\b|\btrim\b|spark/i,null],['hand-tools','Hand tools',/hammer|plier|chisel|pry bar|mallet|hand tool|snips|cutter|hand ?saw/i,null],['wrenches','Wrenches',/wrench|ratchet|socket set|hex key|allen/i,null],['screwdrivers','Screwdrivers',/screwdriver|driver bit/i,/drill/i],['power-tools','Power tools',/\bdrill\b|impact|sander|grinder|router|circular saw|jig ?saw|cordless|power tool/i,/drill bit|self.drilling/i],['drill-bits','Drill bits',/drill bit|step bit|countersink|\bbits\b/i,null],['blades','Blades',/blade|cut.?off|cutting dis/i,null],['measuring','Measuring',/tape measure|measur|\blevel\b|\bsquare\b|caliper|ruler/i,null],['paint','Paint',/paint|primer|\bstain|brush|roller/i,null],['tape-glue','Tape',/\btape\b/i,/tape measure/i],['glue','Glue',/glue|adhesive|epoxy|threadlock|loctite/i,null],['sealants','Sealants',/sealant|caulk|silicone|ptfe|teflon/i,null],['safety','Safety',/safety|glove|goggle|glasses|\bmask|respirator|ear plug|hearing/i,null],
+  // 10.26: gear. These also match a gear item's group ("Camera & video", "Audio", "Computer", "Phones & tablets", "Printers & office")
+  ['tech','Tech',/phones? &|printers? &|\bphone|tablet|ipad|laptop|macbook|printer|router|modem|charger|\busb\b|hdmi|smart ?home|\bgps\b|scanner/i,null],
+  ['pc-parts','PC parts',/\bcomputer\b|\bpc\b|\bgpu\b|graphics card|\bcpu\b|processor|motherboard|\bram\b|\bssd\b|hard drive|\bhdd\b|nvme|power supply|\bpsu\b|keyboard|\bmouse\b|heatsink/i,/computer desk/i],
+  ['audio','Audio',/\baudio\b|microphone|\bmic\b|speaker|headphone|earbud|headset|amplifier|\bamp\b|recorder|soundbar|subwoofer/i,/speaker wire/i],
+  ['video','Video',/camera|\bvideo\b|\blens\b|tripod|gimbal|gopro|drone|projector|webcam|capture card/i,null]];
+// 10.26: the row runs family by family — the plain kind first, then A to Z inside each family. A '|' starts a new family (a little gap in the row).
+const CAT_ORDER = ('bolts carriage-bolts eye-bolts hanger-bolts j-bolts toggle-bolts | lag-screws machine-screws set-screws tek-screws screws | nuts cap-nuts lock-nuts t-nuts wing-nuts | washers lock-washers'
+  + ' | anchors metric nails nylon rivets threaded-rod | brackets chain clamps hinges magnets o-rings pins-clips springs | electrical batteries connectors fuses lighting wire zip-ties | automotive plumbing'
+  + ' | hand-tools blades drill-bits measuring power-tools screwdrivers wrenches | glue paint safety sealants tape-glue | tech audio pc-parts video').split(' ');
+const CAT_FIRST = new Set(CAT_ORDER.map((id, i) => CAT_ORDER[i - 1] === '|' ? id : '').filter(Boolean));
+{ const pos = new Map(CAT_ORDER.filter(x => x !== '|').map((id, i) => [id, i])); CATS.sort((a, b) => (pos.has(a[0]) ? pos.get(a[0]) : 999) - (pos.has(b[0]) ? pos.get(b[0]) : 999)); }
 let CAT_X = 0;   // where the row was scrolled to, kept across redraws
-const homeCats = () => `<div class="hcats" id="hcats" role="list" aria-label="Browse by kind">${CATS.map(c => `<button type="button" class="hcat" role="listitem" data-go="#/cat/${c[0]}"><img src="img/cat/${c[0]}.png" width="56" height="56" alt="" loading="lazy" decoding="async"><span>${esc(c[1])}</span></button>`).join('')}</div>`;
+const homeCats = () => `<div class="hcw at0" id="hcw"><button type="button" class="hca l" data-act="catscroll" data-d="-1" aria-label="Scroll the row back">‹</button><button type="button" class="hca r" data-act="catscroll" data-d="1" aria-label="Scroll the row on">›</button><div class="hcats" id="hcats" role="list" aria-label="Browse by kind">${CATS.map(c => `<button type="button" class="hcat${CAT_FIRST.has(c[0]) ? ' fs' : ''}" role="listitem" data-go="#/cat/${c[0]}"><img src="img/cat/${c[0]}.png" width="56" height="56" alt="" loading="lazy" decoding="async"><span>${esc(c[1])}</span></button>`).join('')}</div></div>`;
 function catView() {
   const c = CATS.find(x => x[0] === route().a); if (!c) return home();
   const ok = (h) => c[2].test(h) && !(c[3] && c[3].test(h));
-  const ps = sortedParts(items().filter(x => ok([x.name, x.category, x.stype].filter(Boolean).join(' | ')))), ts = things().filter(t => ok([t.name, t.type, t.brand, t.model].filter(Boolean).join(' | ')));
+  const ps = sortedParts(items().filter(x => ok([x.name, x.category, x.stype].filter(Boolean).join(' | ')))), ts = things().filter(t => ok([t.name, t.type, t.group, t.brand, t.model].filter(Boolean).join(' | ')));
   const body = (ps.length ? `<div class="h3">Parts &amp; supplies <span class="c">${ps.length}</span></div><div class="rows">${ps.map(partRow).join('')}</div>` : '')
     + (ts.length ? `<div class="h3">Tools &amp; other items <span class="c">${ts.length}</span></div><div class="rows">${ts.map(t => thingRow(t)).join('')}</div>` : '');
   return head(esc(c[1]), '#/') + (body || `<div class="rows"><div class="empty">Nothing filed under ${esc(c[1])} yet.</div></div>`);
@@ -2162,6 +2189,7 @@ document.addEventListener('click', (e) => {
   if (act === 'roll' || act === 'only') { const top = stack[stack.length - 1]; if (act === 'roll') { top.roll = t.dataset.v; if (top.roll !== 'both') LS.set('wn-roll', top.roll); top.only = top.a.unit ? t.dataset.v !== 'side' : false; } else top.only = t.dataset.v === '1'; paintSheet(); return; }
   if (act === 'locstyle') { L.setLocStyle(t.dataset.v); LS.set('wn-locstyle', t.dataset.v); paintSheet(); return; }
   if (act === 'shmore') { SH_MORE = !SH_MORE; render(); return; }
+  if (act === 'catscroll') { const hc = $('hcats'); if (hc) hc.scrollBy({ left: Number(t.dataset.d) * Math.max(240, hc.clientWidth * .8), behavior: 'smooth' }); return; }
   if (loadoutTap(act, t)) return;
   if (act === 'binlabels') { openSheet('print', { bins: t.dataset.unit }, sheet.open && !!t.closest('#shBody')); return; }
   if (act === 'binkind' || act === 'binstyle' || act === 'binsec') { const top = stack[stack.length - 1]; if (act === 'binkind') top.bk = t.dataset.v; else if (act === 'binstyle') top.bst = t.dataset.v; else top.sec = +t.dataset.v || 0; paintSheet(); return; }
