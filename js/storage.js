@@ -1,5 +1,5 @@
 // Storage units and location codes. Units are saved in the shared list (doc.locations, kind:'unit') so every device has them.
-// A code is UNIT-SLOT, e.g. A2-C05 (Akro #2, row C, drawer 5), T1-D07, M1-2-07, S1-B12. Letters I and O are never used.
+// A code is UNIT-SLOT, e.g. A2-C05 (Akro #2, row C, drawer 5), T1-D07, MOB1-2-07, S1-B12. Letters I and O are never used in one-letter codes.
 (function () {
   const ROWS = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I, no O (they look like 1 and 0)
   const p2 = (n) => String(n).padStart(2, '0');
@@ -20,14 +20,19 @@
   const T1_LAYOUT = { type: 'sections', extras: [{ key: 'T', name: 'Lid tray' }], sections: [
     { name: 'Top chest', blocks: [{ cols: [{ w: 28, hs: [1, 1, 2] }, { w: 72, hs: [1, 1, 2] }] }] },
     { name: 'Cabinet', blocks: [{ full: 1.6 }, { cols: [{ w: 40, hs: [1, 1, 1, 2.6] }, { w: 60, hs: [1, 1, 1, 2.6] }] }] }] };
+  // 10.26: the Husky Connect rolling cart is "Mobius 1" (MOB1), from the owner's photos (2026-11-12): six sections, top → bottom.
+  // The top organizer holds two trays: the top tray (12 bins around an open centre = spot 13) and the lower tray (10 bins).
+  // Then two identical 10-bin organizers, and two open boxes. Bins are numbered like reading a page, back row first.
+  const MOB1_MODEL = 'Husky Connect rolling system · #1002 091 132';
+  const MOB1_MODS = [{ name: 'Top tray', bins: 13, cols: 6 }, { name: 'Lower tray', bins: 10, cols: 6 }, { name: 'Organizer 3', bins: 10, cols: 6 }, { name: 'Organizer 4', bins: 10, cols: 6 }, { name: 'Tool box', bins: 0, cols: 6 }, { name: 'Rolling bin', bins: 0, cols: 6 }];
+  // the old M1 drawing (5 boxes) → the new sections: box 1 = top tray, boxes 2 and 3 = organizers 3 and 4, boxes 4 and 5 = the two open boxes
+  const M1_TO_MOB1 = (code) => { const m = String(code || '').toUpperCase().match(/^M1-([1-5])(?:-(\d\d))?$/); if (!m) return ''; const k = { 1: 1, 2: 3, 3: 4, 4: 5, 5: 6 }[m[1]]; return 'MOB1-' + k + (m[2] ? '-' + m[2] : ''); };
   // The owner's storage (2026-11-02). Order = how they're listed on the Storage page.
   const MY_UNITS = [
     ...[1, 2, 3, 4].map(n => ({ id: 'A' + n, type: 'grid', rows: 8, cols: 8, name: 'Akro-Mils Cabinet #' + n, model: 'Akro-Mils 10164 · wall mounted' })),
     { id: 'T1', ...T1_LAYOUT, name: 'Husky 52″ chest + cabinet', model: 'Husky 15-drawer combo · #1007 590 888' },
     { id: 'C1', type: 'stack', count: 15, name: 'Husky 61″ rolling cabinet', model: 'Husky 61″ · 15 drawers' },
-    { id: 'M1', type: 'modules', name: 'Husky Connect rolling system', model: 'Husky Connect · #1002 091 132', modules: [
-      { name: '12-bin organizer', bins: 12, cols: 6 }, { name: '12-bin organizer', bins: 12, cols: 6 },
-      { name: 'Deep pro organizer', bins: 12, cols: 6 }, { name: 'Mid tool box', bins: 0 }, { name: 'Rolling cart tool box', bins: 0 }] },
+    { id: 'MOB1', type: 'modules', name: 'Mobius 1', model: MOB1_MODEL, modules: MOB1_MODS.map(m => ({ ...m })) },
     { id: 'W1', type: 'stack', count: 2, name: 'Husky 52″ work desk', model: 'Husky adjustable desk · 2 drawers' },
     { id: 'S1', type: 'bins', count: 6, cols: 6, name: 'Outdoor shed bins', model: 'Numbered bins' },
   ];
@@ -67,7 +72,8 @@
       (u.modules || []).forEach((m, i) => {
         const k = i + 1;
         if (!(m.bins > 0)) out.push({ code: `${u.id}-${k}`, label: String(k), where: `${m.name || 'module ' + k} (module ${k})`, m: k });
-        else for (let b = 1; b <= m.bins; b++) out.push({ code: `${u.id}-${k}-${p2(b)}`, label: p2(b), where: `${m.name || 'module ' + k} (module ${k}), bin ${b}`, m: k, b });
+        else { const nm = (MODLOOKS[u.id] && MODLOOKS[u.id].binNames && MODLOOKS[u.id].binNames[k]) || {};
+          for (let b = 1; b <= m.bins; b++) out.push({ code: `${u.id}-${k}-${p2(b)}`, label: p2(b), where: `${m.name || 'module ' + k} (module ${k}), ${nm[b] && m.bins === nm.n ? nm[b] : 'bin ' + b}`, m: k, b }); }
       });
     }
     return out;
@@ -98,9 +104,12 @@
   const UPDATES = [
     { id: 'T1', text: 'Husky 52″: chest + cabinet columns from your photo, plus the lid tray (T1-T)', when: u => u.type === 'stack' && u.count === 15, to: u => ({ ...u, ...T1_LAYOUT, count: undefined }) },
     { id: 'S1', text: 'Shed: 6 bins instead of 12', when: u => u.type === 'bins' && u.count === 12, to: u => ({ ...u, count: 6 }) },
+    // 10.26: a new code for the whole unit, so everything filed in it moves with it (map: old spot → new spot, '' = no match)
+    { id: 'M1', rename: 'MOB1', text: 'Husky Connect cart becomes Mobius 1 (MOB1): six sections with a photo of each tray', when: u => u.type === 'modules', to: u => ({ ...u, id: 'MOB1', name: 'Mobius 1', model: u.model || MOB1_MODEL, spots: undefined, modules: MOB1_MODS.map(m => ({ ...m })) }), map: M1_TO_MOB1 },
   ];
-  function pendingUpdates(doc) { const us = units(doc); return UPDATES.map(x => ({ ...x, unit: us.find(u => u.id === x.id) })).filter(x => x.unit && x.when(x.unit)); }
-  const validId = (id) => /^[A-HJ-NP-Z][1-9]$/.test(String(id || ''));
+  function pendingUpdates(doc) { const us = units(doc); return UPDATES.map(x => ({ ...x, unit: us.find(u => u.id === x.id) })).filter(x => x.unit && x.when(x.unit) && !(x.rename && us.some(u => u.id === x.rename))); }
+  // one letter (not I or O) and a digit (A5, T2), or a short name and a digit (MOB1)
+  const validId = (id) => /^([A-HJ-NP-Z]|[A-Z]{2,4})[1-9]$/.test(String(id || ''));
   // Photo maps: a real picture of the unit, with each drawer's spot measured on it (left/right and top/bottom
   // edges in % of the picture). Akro-Mils 10164 (64 drawers, 8 × 8), from the owner's photo (2026-11-04).
   const LOOKS = {
@@ -110,5 +119,18 @@
   };
   const PHOTO_UNITS = { A1: 'akro10164' };   // which units show their photo map (more Akro-Mils can be added here)
   function look(u) { const L = u && u.type === 'grid' && LOOKS[PHOTO_UNITS[u.id]]; return L && u.rows === L.ys.length && u.cols === L.xs.length ? L : null; }
-  window.WNStore = { BOXES, ROOMS, roomOf, ROWS, TYPES, MY_UNITS, T1_LAYOUT, units, slots, find, describe, suggest, detail, norm, validId, pendingUpdates, look };
+  // 10.26: photo maps for stacked organizers. front = the whole unit with each section's box; trays = one picture per section
+  // (null = an open box, no picture) with every bin's box [left, top, width, height] in % of the picture, in bin order.
+  const TRAY10 = { img: 'img/mob1-tray10.jpg', w: 900, h: 600, rects: [[0.6, 1, 48.4, 27.6], [50.6, 1, 48.8, 27.6],
+    [0.6, 29.6, 24, 32.2], [25.4, 29.6, 24.2, 32.2], [50.2, 29.6, 24.3, 32.2], [75, 29.6, 24.4, 32.2],
+    [0.6, 63.4, 24, 35.6], [25.4, 63.4, 24.2, 35.6], [50.2, 63.4, 24.3, 35.6], [75, 63.4, 24.4, 35.6]] };
+  const TRAY13 = { img: 'img/mob1-top.jpg', w: 900, h: 600, rects: [[0.4, 1, 19.2, 23.5], [20.6, 1, 19, 23.5], [40.4, 1, 19.6, 23.5], [60.6, 1, 18.6, 23.5], [80, 1, 19.6, 23.5],
+    [0.4, 26.8, 19.6, 44], [80.6, 25.2, 19, 44],
+    [0.4, 73, 19.6, 26], [20.6, 73, 19, 26], [40.4, 73, 19.6, 26], [60.6, 73, 19, 26], [80.6, 73, 19, 26], [21.6, 26.8, 57.4, 44]] };
+  const MODLOOKS = { MOB1: { front: { img: 'img/mob1-front.jpg', w: 560, h: 655, secs: [[6.7, 7.6, 86.6, 11.8], [6.7, 19.8, 86.6, 11.2], [14.4, 32.3, 73.4, 11.4], [16.7, 44.3, 68.9, 10.6], [20, 55.3, 62.2, 15.4], [23.3, 71.1, 56.7, 23.6]] },
+    trays: [TRAY13, TRAY10, TRAY10, TRAY10, null, null], binNames: { 1: { n: 13, 13: 'open centre (spot 13)' } } } };
+  // the photo map of a modules unit, only while its sections still match the pictures (same count; a tray shows when its bin count matches)
+  function modLook(u) { const L = u && u.type === 'modules' && MODLOOKS[u.id]; if (!L || (u.modules || []).length !== L.trays.length) return null;
+    return { front: L.front, tray: (k) => { const t = L.trays[k - 1], m = u.modules[k - 1]; return t && m && t.rects.length === m.bins ? t : null; } }; }
+  window.WNStore = { modLook, BOXES, ROOMS, roomOf, ROWS, TYPES, MY_UNITS, T1_LAYOUT, units, slots, find, describe, suggest, detail, norm, validId, pendingUpdates, look };
 })();

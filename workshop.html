@@ -3,7 +3,7 @@
 <title>Workshop Navigator</title><script>if(/^#cl/.test(location.hash)){window.__wnCL=location.hash.slice(3).replace(/^-/,"#");history.replaceState(null,"","#/");}</script><style id="wn-bg0">html{background:#f2f2f5}html.dark{background:#0d0f12}</style>
 <script>if (window.WNNative) document.documentElement.classList.add('native');</script>
 <script src="js/vendor/supabase.min.js"></script>
-<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261110a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261109a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261108a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261109a"></script><script src="js/notify.js?v=20261107a"></script>
+<script src="js/seed.js?v=20261103d"></script><script src="js/parts.js?v=20261107b"></script><script src="js/sync.js?v=20261109a"></script><script src="js/model.js?v=20261110a"></script><script src="js/sets.js?v=20261105a"></script><script src="js/storage.js?v=20261112a"></script><script src="js/organize.js?v=20261103d"></script><script src="js/datamatrix.js?v=20261103d"></script><script src="js/qrcode.js?v=20261104a"></script><script src="js/labels.js?v=20261112a"></script><script src="js/printers.js?v=20261108b"></script><script src="js/webscan.js?v=20261108a"></script><script src="js/tabbar.js?v=20261109a"></script><script src="js/notify.js?v=20261107a"></script>
 <style>
 :root{--brand:#173a5c;--accent:#1565a5;--card:#fff;--ink:#111114;--ink2:#6e6e78;--ink3:#a1a1aa;--line:#e8e8ee;--pill:#f1f1f4;--bg:#f2f2f5;--good:#1f9d55;--warn:#e8a10c;--bad:#e5484d;--hit:#1565a5;
  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
@@ -110,6 +110,34 @@ html.native .wgrid{grid-template-columns:minmax(0,1fr)}html.native .wcab:not(.se
 .pmap .cell .d{top:2px;right:2px;width:clamp(5px,.8cqw,8px);height:clamp(5px,.8cqw,8px)}.pmap .cell .k2{bottom:1px;right:3px;font-size:clamp(7px,1cqw,10px)}
 .pmap .cell.hit{background:#fff;border-color:var(--hit);box-shadow:0 0 0 2px #1e88ff,0 0 16px 5px rgba(30,136,255,.75);z-index:2}
 @container (max-width:560px){.pmap .cell .cn{display:none}.pmap .cell{align-items:center}}
+/* 10.26 tray photos (Mobius 1): each bin is outlined on the real picture, with its number in the corner.
+   The colours sit in variables so the dark theme leaves them alone: they are drawn on a photo, not on the page. */
+html .pmap.tray{--tw:rgba(255,255,255,.9);--tw2:rgba(255,255,255,.45);--tk:rgba(10,14,20,.82);--tk2:rgba(0,0,0,.6);--tf:rgba(255,255,255,.1);--th:#ffb020;--thb:rgba(245,166,35,.24);--thr:rgba(245,166,35,.4);--thi:#3a2600;--t2:#7db4f5;--t2b:rgba(91,139,208,.28);--tg:#58d68d;--tx:#fff}
+html .map .pmap.tray .pd{display:block}
+html .map .pmap.tray .cell{width:100%;height:100%;margin:0;min-height:0;border-radius:7px;padding:0;background:transparent;border:2px solid var(--tw);box-shadow:0 0 0 1px var(--tk2),inset 0 0 0 1px var(--tk2);color:var(--tx);overflow:visible;animation:none}
+html .map .pmap.tray .cell .cl{position:absolute;left:3px;top:3px;font-size:clamp(9px,2.7cqw,13px);line-height:1;background:var(--tk);color:var(--tx);border-radius:5px;padding:3px 4px}
+html .map .pmap.tray .cell .cn,html .map .pmap.tray .cell .k2{display:none}
+html .map .pmap.tray .cell.has{background:var(--tf);border-color:var(--tw);color:var(--tx)}
+html .map .pmap.tray .cell.pur{background:transparent;border:2px dashed var(--tw)}
+html .map .pmap.tray .cell .d{top:4px;right:4px;width:8px;height:8px;box-shadow:0 0 0 1.5px var(--tk2)}
+html .map .pmap.tray .cell .d.g{background:var(--tg)}
+html .map .pmap.tray.dim .cell:not(.hit):not(.hit2){border-color:var(--tw2)}
+html .map .pmap.tray .cell.hit,html .where.hc .map .pmap.tray .cell.hit{border:3px solid var(--th);background:var(--thb);color:var(--tx);box-shadow:0 0 0 2px var(--tk2),0 0 0 6px var(--thr);z-index:2;animation:none}
+html .map .pmap.tray .cell.hit .cl,html .where.hc .map .pmap.tray .cell.hit .cl{background:var(--th);color:var(--thi)}
+html .map .pmap.tray .cell.hit2,html .where.hc .map .pmap.tray .cell.hit2{border:2px solid var(--t2);background:var(--t2b);box-shadow:0 0 0 2px var(--tk2);color:var(--tx);z-index:1}
+html .where.hc .map .pmap.tray .cell.hit::after{border-color:var(--th);border-radius:9px}
+html .map .pmap.cart{max-width:360px;margin:0 auto 12px}
+html .map .pmap.cart .cell{border-radius:9px}
+html .map .pmap.cart .cell .cl{left:auto;right:5px;top:50%;transform:translateY(-50%);font-size:12px;padding:4px 6px}
+html .map .pmap.cart .cell .d{right:auto;left:5px;top:5px}
+.lo-row{display:flex;align-items:center;gap:11px;padding:11px 12px;border:0;border-bottom:1px solid var(--line);width:100%;background:none;font:inherit;color:var(--ink);text-align:left;box-sizing:border-box}
+.lo-row:last-child{border-bottom:0}.lo-row .t{flex:1;min-width:0}.lo-row .t b{display:block;font-size:15px;line-height:1.25}.lo-row .t span{display:block;font-size:12.5px;color:var(--ink2);margin-top:1px}
+.lo-row input[type=checkbox]{width:22px;height:22px;flex:none;margin:0;accent-color:var(--brand)}
+.lo-ck{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink3);display:grid;place-items:center;color:transparent;font-size:15px;font-weight:900;line-height:1}
+.lo-row.on .lo-ck{background:var(--good);border-color:var(--good);color:#fff}.lo-row.on .t b{color:var(--ink2)}
+.lo-row .loc{flex:none}.lo-sm{flex:none;height:34px;padding:0 12px;border:0;border-radius:10px;background:var(--pill);font:inherit;font-size:13.5px;font-weight:700;color:var(--ink)}
+.lo-bar{position:sticky;bottom:-1px;display:flex;align-items:center;gap:12px;background:var(--card);padding:12px 2px 6px;margin-top:10px;border-top:1px solid var(--line)}.lo-bar span{flex:1;font-size:14.5px;color:var(--ink2)}.lo-bar .tk-go{width:auto;padding:0 22px;height:50px;margin:0;font-size:16px}
+.mod[data-mod]{scroll-margin-top:84px}.mod h4 .loc{margin-left:6px;font-size:11px;vertical-align:1px}
 .where{background:#fff;border-radius:20px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:12px}
 .where .wc{font:800 22px ui-monospace,Menlo,monospace;color:var(--brand)}.where .wd{font-size:14px;color:var(--ink2);margin:2px 0 10px}
 @media (max-width:600px){.cards{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px;min-height:124px}.card .n{font-size:30px}.cell .cn{display:none}.cell{min-height:34px}.stack .cell .cn{display:-webkit-box}}
@@ -320,21 +348,6 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))!important}
 
 
 
-<style id="wn-dark">/* generated by ios/darkgen.py — dark theme (Menu + → Theme) */html.dark{--bg:#0d0f12;--card:#1a1d22;--pill:#262a31;--line:#2e333b;--ink:#eceef2;--ink2:#a3a9b4;--ink3:#6f7681;--accent:#6aaef0;--hit:#6aaef0}html.dark{color-scheme:dark}
-html.dark .pthumb,html.dark .pphoto,html.dark .tk-p .pthumb{background:#e9ecf0!important}
-html.dark img{color-scheme:light}
-html.dark input,html.dark select,html.dark textarea{background-color:#14171b;color:var(--ink);border-color:var(--line)}
-html.dark .nf-att{background:#3a2e10;color:#f3d48b}html.dark .nf-ok{background:#12301f;color:#7fd3a0}
-html.dark .wnbub{background:var(--brand)}
-html.dark .faith,html.dark .faith .fr{background:#000!important}html.dark .faith figcaption{color:#f2f2f2!important}html.dark .faith{box-shadow:0 0 0 1px rgba(255,255,255,.09)}
-html.dark .wmini .wc.g,html.dark .wc.g,html.dark .hmini i.g,html.dark .hk i.g,html.dark .whd .k i.g,html.dark .lv i.g{background:#3f9e66}
-html.dark .wmini .wc.w,html.dark .wc.w,html.dark .hmini i.w,html.dark .hk i.w,html.dark .whd .k i.w,html.dark .lv i.w{background:#d9a640}
-html.dark .wmini .wc.r,html.dark .wc.r,html.dark .hmini i.r,html.dark .hk i.r,html.dark .whd .k i.r,html.dark .lv i.r{background:#d2483e}
-html.dark .wmini .wc.g,html.dark .wmini .wc.w,html.dark .wmini .wc.r{color:#fff}
-html.dark .wnplus:not(.open),html.dark #ckScan,html.dark .scanfab{background:var(--brand)!important;color:#fff!important}html.dark .wnplus.open{color:#fff!important}
-html.dark .wnmenu .mi,html.dark .wnmenu .seg button{background:none!important}html.dark .wnmenu .seg button.on{background:#fff!important;color:var(--brand)!important}html.dark .wnmenu{background:var(--brand)!important;color:#fff!important}
-html.dark .wnbar .tabbar a{background:none!important}
-html.dark header.hw,html.dark body.hdr-a header{background:var(--card)!important}html.dark{background:#121214}html.dark .chip{border:1px solid rgba(56,56,56,0.22)}html.dark .chip .dot{background:#4b5865}html.dark .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .dock{background:rgba(18,18,20,0.92)}html.dark .sbar{background:#1c1c1c}html.dark .ic{background:#1b242c;color:#9cc3ea}html.dark .att .w{color:#fec767}html.dark .soon{background:#19232e}html.dark .back{background:#1c1c1c}html.dark .rows{background:#1c1c1c}html.dark .row:active{background:#121214}html.dark .st-instock{background:#273f30;color:#83ebb1}html.dark .st-tobuy{background:#311717;color:#dd888a}html.dark .st-putaway{background:#4d3e1a;color:#ffd475}html.dark .loc{background:#19232e;color:#9cc3ea}html.dark .loc.old{background:#4d3e1a;color:#ffd475}html.dark .q-half{color:#fecd67}html.dark mark{background:#5b511e}html.dark .ucard .code{color:#9cc3ea;background:#19232e}html.dark .map{background:#1c1c1c}html.dark .cell.pur{border-color:#34373c}html.dark .cell.has{background:#233241;border-color:#2c3744;color:#9cc3ea}html.dark .cell .k2{color:#9cc3ea}html.dark .cell.hit{background:#203349}html.dark .wall{background:#1c1c1c}html.dark .whd .k i{background:#303339}html.dark .wseg button.on{background:#1c1c1c;color:#9cc3ea}html.dark .wcab .wt b{color:#9cc3ea}html.dark .wmini .wc{background:#303339}html.dark .wc.has,html.dark .whd .k i.has{background:#283747}html.dark.native .wmini .wc{color:#caced4}@media (max-width:700px){html.dark .wmini .wc{color:#caced4}}html.dark .pmap .cell{background:rgba(28,28,28,0.42);border:1px solid rgba(56,56,56,0.55);color:#caced4}html.dark .pmap .cell.has{background:#1c1c1c;border-color:#383838;color:#9cc3ea}html.dark .pmap .cell.pur{background:rgba(28,28,28,0.72)}html.dark .pmap .cell.hit{background:#1c1c1c}html.dark .where{background:#1c1c1c}html.dark .where .wc{color:#9cc3ea}html.dark .menu{background:#1c1c1c}html.dark .sh-grab span{background:#38383d}html.dark .fld input,html.dark .fld select{background:#121214}html.dark .ubtn{background:#1c1c1c}html.dark .ubtn b{color:#9cc3ea}html.dark .ubtn.on{background:#19232e}html.dark .rtag{color:#ced2d8}html.dark .oc{background:#131313}html.dark .oc b{color:#b2b2b2}html.dark .oc i{color:#fec767}html.dark .lprev{background:#2d3138}html.dark header .chip{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .att .b{color:#9cc3ea}html.dark .hcta{color:#9cc3ea;background:#1b242c}html.dark .hk i{background:#283747}html.dark .hct b{color:#9cc3ea}html.dark .hmini i{background:#303339}html.dark .hmini i.h{background:#283747}html.dark .hchip b{color:#9cc3ea}html.dark .hrow b.b{color:#9cc3ea}html.dark .hrow b.w{color:#fec767}html.dark .hmore{color:#9cc3ea}html.dark .hline em.w{color:#fec767}html.dark .hline em.b{color:#9cc3ea}html.dark .hpc{background:#1c1c1c}html.dark .hpc em{color:#9cc3ea}html.dark .utr b{color:#9cc3ea}html.dark .prow em.w{color:#fec767}html.dark .prow em.b{color:#9cc3ea}html.dark .tk-code{background:#19232e;color:#9cc3ea}html.dark .tk-stats b.q-low{color:#ffd475}html.dark .tk-seg button{color:#b5bdc8}html.dark .tk-pm{background:#19232e;color:#9cc3ea}html.dark .tk-chips button{border:1px solid #34383c;background:#1c1c1c}html.dark .tk-chips button.on{background:#19232e;color:#9cc3ea}html.dark .tk-chips button.neg{color:#f07e75;border-color:#462d2a;background:#341714}html.dark .tk-chips button.pos{color:#97eabc;border-color:#2f4136;background:#1c2b20}html.dark .tk-after{color:#b5bdc8}html.dark .tk-after .warn{color:#ffd475}html.dark .tk-gr .x{color:#9cc3ea}html.dark .tk-gr.alt{background:#202428}html.dark .tk-ask{background:#19232e}html.dark .tk-ask b{color:#9cc3ea}html.dark .tk-ask span{color:#98b4d1}html.dark .tk-in{background:#1c1c1c}html.dark .tk-rough .r1{border:1px solid #314036;background:#273f30;color:#83ebb1}html.dark .tk-rough .r2{background:#4d3e1a;color:#ffd475}html.dark .tk-rough .r3{border:1px solid #462b2b;background:#311717;color:#dd888a}html.dark .tk-done i{background:#273f30;color:#83ebb1}html.dark .tk-low{background:#4d3e1a;color:#ffe2a3}html.dark .tk-low .bb button.n{color:#ffe2a3}html.dark .tk-ok{background:#273f30;color:#83ebb1}html.dark .dr-row .t span.w{color:#ffd475}html.dark .dr-pm{background:#19232e;color:#9cc3ea}html.dark .dr-n.on{color:#9cc3ea}html.dark .dr-seg button{color:#b5bdc8}html.dark .dr-bar{background:#1c1c1c}html.dark .dr-bar span{color:#b5bdc8}html.dark .gw-grid button.r{background:#311717}html.dark .gw-grid button.w small{color:#ffd475}html.dark .cell.hit2{background:#19232e}html.dark .pmap .cell.hit2{background:#293d56}html.dark .tk-pc button{background:#19232e;color:#9cc3ea}html.dark .tk-pc b{color:#9cc3ea}html.dark .lvsum{background:#1c1c1c}html.dark .lcode{color:#9cc3ea;background:#19232e}html.dark .lcode.old{color:#ffd475;background:#493c1c}html.dark .dock{background:rgba(18,18,20,0.98)!important}html.dark .cathead{background:#121214!important}</style>
 <style id="wn-home2">
 /* 10.22 search-first home */
 .hw-h{font-size:22px!important;font-weight:700!important}
@@ -393,13 +406,47 @@ html .where.hc .cell.hit::after{content:"";position:absolute;inset:-3px;border-r
 /* 10.24 home with more life: color tiles, a needs-attention strip, card rows.
    Every blue on it is one of two values: the footer's navy (--brand) or --wnblue (the link blue). */
 /* 10.25 home: a sign-style ticker under the header, a row of categories to swipe through, plain tiles, the one-line needs-attention strip */
-.hw-tick{display:none;overflow:hidden;margin:11px 0 0;padding:8px 0;border-radius:11px;background:var(--brand);-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-html.rt-home .hw-tick{display:block}
-.hw-tick .tk{display:flex;width:max-content;animation:wntick var(--tkd,40s) linear infinite;will-change:transform}
-.hw-tick .tk span{flex:none;white-space:nowrap;font:700 12px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#ffd98a}
-.hw-tick .tk i{font-style:normal;color:rgba(255,255,255,.45);margin:0 14px}
-@keyframes wntick{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-@media (prefers-reduced-motion:reduce){.hw-tick .tk{animation:none}}
+/* 10.26: no ticker and no second headline. Home opens with a modest "Welcome, Ed" and the search bar right under it. */
+html.rt-home .hw-t{flex-direction:column}
+html.rt-home .hw-h{font-size:22px!important;font-weight:700!important;line-height:1.15;letter-spacing:-.2px}
+html.rt-home .hw-v{margin:2px 0 0}
+html.rt-home .hero-q{display:none}
+html.rt-home header.hw{padding-bottom:2px!important}
+html.rt-home .dock{margin-top:2px;padding-top:8px}
+/* 10.26 search: the bar reads "Search Workshop Navigator" and the last word rolls upward through other things to look for.
+   Tapping it opens the search screen: the bar rides to the top, the magnifier becomes a back arrow, the page turns plain. */
+.sbar{position:relative}
+.sbar .sback{display:none;flex:none;width:34px;height:34px;margin:0 2px 0 -8px;border:0;border-radius:50%;background:none;padding:0;place-items:center;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.sbar .sback svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round}
+.sbar .sback:active{color:var(--ink3)}
+.sph{position:absolute;left:45px;right:56px;top:0;bottom:0;display:flex;align-items:center;pointer-events:none;color:var(--ink2);font-size:16px;line-height:22px;white-space:nowrap;overflow:hidden}
+.sph[hidden]{display:none}
+.sph-w{position:relative;display:block;flex:1;min-width:0;height:22px;overflow:hidden}
+.sph-w b{position:absolute;left:0;top:0;font-weight:500;line-height:22px;white-space:nowrap}
+html.srch .sph{left:54px}
+html.srch header.hw{display:none}
+html.srch,html.srch body{background:var(--card)}
+html.srch body .dock{background:var(--card)!important;margin-top:0;padding-top:max(10px,calc(env(safe-area-inset-top) + 6px))}
+html.srch .sbar .sico{display:none}html.srch .sbar .sback{display:grid}
+html.srch .sbar{background:var(--pill);border-color:transparent;box-shadow:none}
+html.srch .wnplus{display:none!important}
+.shome{display:flex;flex-direction:column;gap:14px;padding-top:4px}
+.shome .hsec{margin:6px 2px -6px}
+.shome .rlist{gap:0}
+.shome .rsr{background:transparent;border-radius:0;box-shadow:none;border-bottom:1px solid var(--line)}
+.shome .rsr:last-child{border-bottom:0}
+.shome .rempty{background:none;padding:8px 2px 0}
+.srec{display:flex;flex-wrap:wrap;gap:8px}
+.srec button{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 8px;border:0;border-radius:22px;background:var(--pill);font:inherit;font-size:14.5px;font-weight:600;color:var(--ink)}
+.srec button img{width:30px;height:30px;flex:none}
+.smore{align-self:flex-start;border:0;background:none;padding:6px 2px;font:inherit;font-size:14.5px;font-weight:700;color:var(--accent)}
+/* 10.26: the two buttons at the top right are plain line icons: no round plate, a thinner line, grey while pressed */
+html header.hw .htop .chip{width:40px;height:40px;background:transparent;border:0;border-radius:10px;color:var(--ink);-webkit-tap-highlight-color:transparent;transition:color .12s}
+html header.hw .htop .chip svg{width:24px;height:24px;stroke:currentColor;stroke-width:1.5}
+html header.hw .htop .chip:active{color:var(--ink3)}
+html header.hw .htop .chip .dot{top:6px;right:5px;border-color:var(--bg)}
+html header.hw .htop .hw-bell .bdot{top:7px;right:7px;box-shadow:0 0 0 2px var(--bg)}
+header.hw .htop{gap:2px}
 .hcats{display:flex;gap:8px;align-items:flex-start;overflow-x:auto;overflow-y:hidden;box-sizing:border-box;width:100vw;margin:0 0 0 calc(50% - 50vw);padding:2px 16px 0;scroll-snap-type:x proximity;scroll-padding-left:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 .hcats::-webkit-scrollbar{display:none}
 @media (min-width:760px){.hcats{width:auto;margin-left:0;padding-left:0;padding-right:0;scroll-padding-left:0}}
@@ -471,8 +518,33 @@ html.dark .sbar{background:var(--card)}
 @keyframes wnrise{from{transform:translateY(10px) scale(.97)}to{transform:none}}
 @keyframes wnfill{from{transform:scaleX(0)}to{transform:none}}
 </style>
+
+
+
+
+
+
+
+
+
+
+<style id="wn-dark">/* generated by ios/darkgen.py — dark theme (Menu + → Theme) */html.dark{--bg:#0d0f12;--card:#1a1d22;--pill:#262a31;--line:#2e333b;--ink:#eceef2;--ink2:#a3a9b4;--ink3:#6f7681;--accent:#6aaef0;--hit:#6aaef0}html.dark{color-scheme:dark}
+html.dark .pthumb,html.dark .pphoto,html.dark .tk-p .pthumb{background:#e9ecf0!important}
+html.dark img{color-scheme:light}
+html.dark input,html.dark select,html.dark textarea{background-color:#14171b;color:var(--ink);border-color:var(--line)}
+html.dark .nf-att{background:#3a2e10;color:#f3d48b}html.dark .nf-ok{background:#12301f;color:#7fd3a0}
+html.dark .wnbub{background:var(--brand)}
+html.dark .faith,html.dark .faith .fr{background:#000!important}html.dark .faith figcaption{color:#f2f2f2!important}html.dark .faith{box-shadow:0 0 0 1px rgba(255,255,255,.09)}
+html.dark .wmini .wc.g,html.dark .wc.g,html.dark .hmini i.g,html.dark .hk i.g,html.dark .whd .k i.g,html.dark .lv i.g{background:#3f9e66}
+html.dark .wmini .wc.w,html.dark .wc.w,html.dark .hmini i.w,html.dark .hk i.w,html.dark .whd .k i.w,html.dark .lv i.w{background:#d9a640}
+html.dark .wmini .wc.r,html.dark .wc.r,html.dark .hmini i.r,html.dark .hk i.r,html.dark .whd .k i.r,html.dark .lv i.r{background:#d2483e}
+html.dark .wmini .wc.g,html.dark .wmini .wc.w,html.dark .wmini .wc.r{color:#fff}
+html.dark .wnplus:not(.open),html.dark #ckScan,html.dark .scanfab{background:var(--brand)!important;color:#fff!important}html.dark .wnplus.open{color:#fff!important}
+html.dark .wnmenu .mi,html.dark .wnmenu .seg button{background:none!important}html.dark .wnmenu .seg button.on{background:#fff!important;color:var(--brand)!important}html.dark .wnmenu{background:var(--brand)!important;color:#fff!important}
+html.dark .wnbar .tabbar a{background:none!important}
+html.dark header.hw,html.dark body.hdr-a header{background:var(--card)!important}html.dark{background:#121214}html.dark .chip{border:1px solid rgba(56,56,56,0.22)}html.dark .chip .dot{background:#4b5865}html.dark .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .dock{background:rgba(18,18,20,0.92)}html.dark .sbar{background:#1c1c1c}html.dark .ic{background:#1b242c;color:#9cc3ea}html.dark .att .w{color:#fec767}html.dark .soon{background:#19232e}html.dark .back{background:#1c1c1c}html.dark .rows{background:#1c1c1c}html.dark .row:active{background:#121214}html.dark .seg2{background:#313137}html.dark .seg2 button.on{background:#1c1c1c}html.dark .lvl3 button.on.plenty{color:#80e5aa}html.dark .lvl3 button.on.low{color:#ffcf75}html.dark .pill.lo{background:#4a3919;color:#ffcf75}html.dark .pill.ex{background:#341714;color:#f07e75}html.dark .pill.lent{background:#18222f;color:#7dabe8}html.dark .fld textarea{background:var(--card,#1c1c1c)}html.dark .chipb.on{color:#9cc3ea}html.dark .addto .k{color:#9cc3ea}html.dark .st-instock{background:#273f30;color:#83ebb1}html.dark .st-tobuy{background:#311717;color:#dd888a}html.dark .st-putaway{background:#4d3e1a;color:#ffd475}html.dark .loc{background:#19232e;color:#9cc3ea}html.dark .loc.old{background:#4d3e1a;color:#ffd475}html.dark .q-half{color:#fecd67}html.dark mark{background:#5b511e}html.dark .ucard .code{color:#9cc3ea;background:#19232e}html.dark .map{background:#1c1c1c}html.dark .cell.pur{border-color:#34373c}html.dark .cell.has{background:#233241;border-color:#2c3744;color:#9cc3ea}html.dark .cell .k2{color:#9cc3ea}html.dark .cell.hit{background:#203349}html.dark .wall{background:#1c1c1c}html.dark .whd .k i{background:#303339}html.dark .wseg button.on{background:#1c1c1c;color:#9cc3ea}html.dark .wcab .wt b{color:#9cc3ea}html.dark .wmini .wc{background:#303339}html.dark .wc.has,html.dark .whd .k i.has{background:#283747}html.dark.native .wmini .wc{color:#caced4}@media (max-width:700px){html.dark .wmini .wc{color:#caced4}}html.dark .pmap .cell{background:rgba(28,28,28,0.42);border:1px solid rgba(56,56,56,0.55);color:#caced4}html.dark .pmap .cell.has{background:#1c1c1c;border-color:#383838;color:#9cc3ea}html.dark .pmap .cell.pur{background:rgba(28,28,28,0.72)}html.dark .pmap .cell.hit{background:#1c1c1c}html.dark .where{background:#1c1c1c}html.dark .where .wc{color:#9cc3ea}html.dark .menu{background:#1c1c1c}html.dark .sh-grab span{background:#38383d}html.dark .fld input,html.dark .fld select{background:#121214}html.dark .ubtn{background:#1c1c1c}html.dark .ubtn b{color:#9cc3ea}html.dark .ubtn.on{background:#19232e}html.dark .rtag{color:#ced2d8}html.dark .oc{background:#131313}html.dark .oc b{color:#b2b2b2}html.dark .oc i{color:#fec767}html.dark .lprev{background:#2d3138}html.dark header .chip{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch{border:1px solid rgba(56,56,56,0.28)}html.dark header .pageswitch a.on{background:#1c1c1c;color:#9cc3ea}html.dark .att .b{color:#9cc3ea}html.dark .hcta{color:#9cc3ea;background:#1b242c}html.dark .hk i{background:#283747}html.dark .hct b{color:#9cc3ea}html.dark .hmini i{background:#303339}html.dark .hmini i.h{background:#283747}html.dark .hchip b{color:#9cc3ea}html.dark .hrow b.b{color:#9cc3ea}html.dark .hrow b.w{color:#fec767}html.dark .hmore{color:#9cc3ea}html.dark .hline em.w{color:#fec767}html.dark .hline em.b{color:#9cc3ea}html.dark .hpc{background:#1c1c1c}html.dark .hpc em{color:#9cc3ea}html.dark .utr b{color:#9cc3ea}html.dark .prow em.w{color:#fec767}html.dark .prow em.b{color:#9cc3ea}html.dark .tk-code{background:#19232e;color:#9cc3ea}html.dark .tk-stats b.q-low{color:#ffd475}html.dark .tk-seg button{color:#b5bdc8}html.dark .tk-pm{background:#19232e;color:#9cc3ea}html.dark .tk-chips button{border:1px solid #34383c;background:#1c1c1c}html.dark .tk-chips button.on{background:#19232e;color:#9cc3ea}html.dark .tk-chips button.neg{color:#f07e75;border-color:#462d2a;background:#341714}html.dark .tk-chips button.pos{color:#97eabc;border-color:#2f4136;background:#1c2b20}html.dark .tk-after{color:#b5bdc8}html.dark .tk-after .warn{color:#ffd475}html.dark .tk-gr .x{color:#9cc3ea}html.dark .tk-gr.alt{background:#202428}html.dark .tk-ask{background:#19232e}html.dark .tk-ask b{color:#9cc3ea}html.dark .tk-ask span{color:#98b4d1}html.dark .tk-in{background:#1c1c1c}html.dark .tk-rough .r1{border:1px solid #314036;background:#273f30;color:#83ebb1}html.dark .tk-rough .r2{background:#4d3e1a;color:#ffd475}html.dark .tk-rough .r3{border:1px solid #462b2b;background:#311717;color:#dd888a}html.dark .tk-done i{background:#273f30;color:#83ebb1}html.dark .tk-low{background:#4d3e1a;color:#ffe2a3}html.dark .tk-low .bb button.n{color:#ffe2a3}html.dark .tk-ok{background:#273f30;color:#83ebb1}html.dark .dr-row .t span.w{color:#ffd475}html.dark .dr-pm{background:#19232e;color:#9cc3ea}html.dark .dr-n.on{color:#9cc3ea}html.dark .dr-seg button{color:#b5bdc8}html.dark .dr-bar{background:#1c1c1c}html.dark .dr-bar span{color:#b5bdc8}html.dark .gw-grid button.r{background:#311717}html.dark .gw-grid button.w small{color:#ffd475}html.dark .cell.hit2{background:#19232e}html.dark .pmap .cell.hit2{background:#293d56}html.dark .tk-pc button{background:#19232e;color:#9cc3ea}html.dark .tk-pc b{color:#9cc3ea}html.dark .lvsum{background:#1c1c1c}html.dark .lcode{color:#9cc3ea;background:#19232e}html.dark .lcode.old{color:#ffd475;background:#493c1c}html.dark .dock{background:rgba(18,18,20,0.98)!important}html.dark .cathead{background:#121214!important}html.dark .htile.hero .go{background:#1c1c1c;color:#9cc3ea}</style>
 </head>
-<body><script src="js/login.js?v=20261110a"></script>
+<body><script src="js/login.js?v=20261112a"></script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <linearGradient id="hg-brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe09a"/><stop offset="1" stop-color="#e08f1a"/></linearGradient>
 <linearGradient id="hg-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe5ec"/><stop offset="1" stop-color="#76828f"/></linearGradient>
@@ -484,8 +556,8 @@ html.dark .sbar{background:var(--card)}
 <symbol id="hi-tool" viewBox="0 0 48 48"><g transform="rotate(-42 24 24)"><rect x="21" y="13" width="6" height="30" rx="3" fill="url(#hg-steel)"/><path d="M21 2.6V9a3 3 0 0 0 6 0V2.6a8 8 0 1 1-6 0Z" fill="url(#hg-steel)"/></g><g transform="rotate(42 24 24)"><rect x="22.4" y="18" width="3.2" height="20" fill="#aab5c1"/><rect x="21.4" y="37" width="5.2" height="6.5" rx="1.2" fill="#8e9aa8"/><rect x="19.6" y="3" width="8.8" height="17" rx="3.4" fill="url(#hg-red)"/><path d="M21.6 6v11M24 6v11M26.4 6v11" stroke="#fff" stroke-width=".9" opacity=".35"/></g></symbol>
 <symbol id="hi-tape" viewBox="0 0 48 48"><path d="M24 38h18a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H24Z" fill="#6fd6c4"/><circle cx="23" cy="25" r="19" fill="url(#hg-teal)"/><circle cx="23" cy="25" r="9" fill="#0b5a52"/><circle cx="23" cy="25" r="5.4" fill="#e9fbf7"/><path d="M9.5 20a14.5 14.5 0 0 1 10-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></symbol>
 </svg>
-<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Hi, Ed</h1><p class="hw-v">Workshop Navigator · v10.25<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hw-tick" id="tick" aria-hidden="true"></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
-<div class="dock"><div class="wrap"><label class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><input id="q" type="search" placeholder="part, tool, drawer, or A2-C05…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Find a part or drawer"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button><button type="button" class="sscan" id="qScan" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></svg></button></label></div></div>
+<header class="hw"><div class="wrap"><div class="htop"><div class="hw-t"><h1 class="hw-h">Welcome, Ed</h1><p class="hw-v">Workshop Navigator · v10.26<span id="today" hidden></span></p></div><button type="button" class="chip" id="syncChip" aria-label="Account and sync"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.5 4.25 4.25 0 0 0 7 18z"/></svg><span class="dot" id="syncDot"></span></button><button type="button" class="chip hw-bell" id="bellBtn" aria-label="Needs attention" title="Needs attention"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="bdot" id="bellDot" hidden></span></button><button type="button" class="chip" id="menuBtn" hidden aria-label="Settings" title="Settings" aria-haspopup="true" aria-expanded="false"><svg class="hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="hero-q" aria-hidden="true">What do you need today?</div></div></header>
+<div class="dock"><div class="wrap"><label class="sbar"><button type="button" class="sback" id="qBack" aria-label="Close search"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><svg class="sico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span class="sph" id="sph" aria-hidden="true"><span>Search&nbsp;</span><span class="sph-w" id="sphW"><b>Workshop Navigator</b></span></span><input id="q" type="search" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Search Workshop Navigator"><button type="button" class="sclear" id="qClear" aria-label="Clear search" hidden>×</button><button type="button" class="sscan" id="qScan" aria-label="Scan a label"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></svg></button></label></div></div>
 <main><div class="wrap" id="view"></div></main>
 <div class="menu" id="menu" role="menu">
  <a href="#/storage" role="menuitem">Storage map</a>
@@ -632,10 +704,10 @@ function saveUnit(u) {
 function route() { const h = location.hash.replace(/^#\/?/, ''); const [a, b] = h.split('/'); let d = ''; try { d = b ? decodeURIComponent(b) : ''; } catch (e) { d = b; } return { v: a || 'home', a: d }; }
 // 10.21: leaving a search (tab bar, Home, Back, any link) empties the search box, so Home is never stuck showing old results
 function clearQ() { const e = $('q'); if (!e || !e.value) return false; noteSearch(e.value); e.value = ''; $('qClear').hidden = true; if (document.activeElement === e) e.blur(); return true; }
-function go(h) { clearQ(); if (location.hash === h) render(); else location.hash = h; }
-window.addEventListener('hashchange', () => { clearQ(); deepLink(); render(); window.scrollTo(0, 0); });
+function go(h) { leaveSearch(); clearQ(); if (location.hash === h) render(); else location.hash = h; }
+window.addEventListener('hashchange', () => { leaveSearch(); clearQ(); deepLink(); render(); window.scrollTo(0, 0); });
 window.addEventListener('wn-labelfont', () => { if ($('sheet').open && $('shBody').querySelector('.zlabel')) paintSheet(); });   // the label font arrived: redraw previews with it
-document.addEventListener('click', (e) => { const a = e.target.closest('.tabbar a'); if (a && clearQ()) setTimeout(render, 0); }, true);
+document.addEventListener('click', (e) => { const a = e.target.closest('.tabbar a'); if (!a) return; const l = leaveSearch(), c = clearQ(); if (l || c) setTimeout(render, 0); }, true);
 function deepLink() {
   const h = location.hash; if ((h === '#scan' || /^#(part|loc)=/.test(h)) && window.WNShell && WNShell.on()) WNShell.hide();   // a scan / link while the Checklist is showing: back to the Workshop
   if (h === '#scan') { history.replaceState(null, '', '#/'); render(); setTimeout(() => window.WNScan(), 300); return true; }
@@ -654,9 +726,10 @@ function markTab() { if (window.WNShell && WNShell.on()) return; const t = TAB_O
 function render() { markTab(); migrateNames();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
-  document.documentElement.classList.toggle('rt-home', route().v === 'home' && !q);
-  { const vk = q ? 'search' : (route().v || 'home'); HOME_FRESH = vk === 'home' && HOME_KEY !== 'home'; HOME_KEY = vk; }
-  try { $('view').innerHTML = q ? searchView(q) : (VIEWS[route().v] || home)(); }
+  document.documentElement.classList.toggle('rt-home', route().v === 'home' && !q && !SRCH);
+  { const ph = $('sph'); if (ph) ph.hidden = !!$('q').value; }
+  { const vk = q ? 'search' : SRCH ? 'shome' : (route().v || 'home'); HOME_FRESH = vk === 'home' && HOME_KEY !== 'home'; HOME_KEY = vk; }
+  try { $('view').innerHTML = q ? searchView(q) : SRCH ? searchHome() : (VIEWS[route().v] || home)(); }
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
   hydrate($('view'));
   { const hc = $('hcats'); if (hc && CAT_X) hc.scrollLeft = CAT_X; }
@@ -683,7 +756,7 @@ const hBar = (parts, total) => `<div class="hbar">${parts.filter(p => p[0] > 0).
 const hRow = (name, meta, cls, go) => `<span class="hrow"${go ? ` data-part="${esc(go)}"` : ''}><span class="hn">${esc(name)}</span><b class="${cls || ''}">${meta}</b></span>`;
 const miniWall = (D, big) => `<div class="hwall${big ? ' big' : ''}">${D.akro.map(a => `<span class="hcab" data-go="#/storage/${esc(a.u.id)}"><span class="hct"><b>${esc(a.u.id)}</b><small>${a.used}/${a.n}</small></span><span class="hmini">${a.cells}</span></span>`).join('')}</div>`;
 const others = (D) => D.us.filter(u => !O.CABS.includes(u.id)).map(u => `<span class="hchip" data-go="#/storage/${esc(u.id)}"><b>${esc(u.id)}</b>${esc(u.name.replace(/^Husky\s/, '').replace(/ \+ cabinet| rolling cabinet| rolling system| work desk/, ''))}</span>`).join('');
-const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.25 · Nov 10</span></p>`;
+const foot = `<p class="foot">Search finds any part and shows its drawer on the map.<br><span style="opacity:.7">Version 10.26 · Nov 12</span></p>`;
 const attRow = (tab, label, n, cls) => `<button type="button" class="attr" data-go="#/attention/${tab}"><span>${label}</span><b class="${n ? cls : ''}">${n}</b></button>`;
 const attRows = (D) => attRow('tobuy', 'To buy', D.tobuy.length, 'r') + attRow('low', 'Running low', D.low.length, 'w') + attRow('home', 'Need a home', D.homeN, 'b') + (D.exp.length ? attRow('expiring', 'Expiring', D.exp.length, 'r') : '') + (D.lent.length ? attRow('lent', 'Lent out', D.lent.length, '') : '') + (D.c.putaway ? attRow('putaway', 'Bought, not stocked', D.c.putaway, '') : '');
 const partsCard = (D) => `<button type="button" class="card" data-go="#/parts">${chev}<div class="k">${ic('box')}Parts</div><div class="n">${D.n}</div><div class="s">${D.cats} families</div>${lvlBar(D.lv, D.n)}<div class="s xs lvs">${lvlLine(D.lv)}</div></button>`;
@@ -762,6 +835,41 @@ const homeAtt = (D) => {
 let HOME_KEY = '', HOME_FRESH = false;   // tiles rise in only when you arrive on Home, not on every background refresh
 const CLOCK = '<svg class="rsi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
 const recSearchRow = (v) => { const r = searchBest(v); return `<div class="rsr"><button type="button" class="rsq" data-rsq="${esc(v)}">${CLOCK}<span class="rt"><b>${esc(v)}</b>${r.name ? `<small>${esc(r.name)}</small>` : ''}</span>${r.code ? `<span class="loc">${esc(r.code)}</span>` : ''}</button><button type="button" class="rsx" data-rsx="${esc(v)}" aria-label="Remove ${esc(v)} from recent searches">×</button></div>`; };
+// ---- 10.26 search screen. SRCH = the search screen is up (the bar at the top, back arrow, plain page). It opens when the bar is tapped
+// from anywhere on any page, and the back arrow puts you back exactly where you were (same page, same scroll position).
+let SRCH = false, SRCH_Y = 0, SH_MORE = false;
+const noMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+function leaveSearch() { if (!SRCH) return false; SRCH = false; SH_MORE = false; document.documentElement.classList.remove('srch'); sphReset(); return true; }
+function flipDock(before) { const d = document.querySelector('.dock'); if (!d || noMotion() || !d.animate) return; const dy = before - d.getBoundingClientRect().top;
+  if (Math.abs(dy) > 1) d.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  $('view').animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'ease-out' }); }
+function enterSearch() { if (SRCH) return; const d = document.querySelector('.dock'), before = d ? d.getBoundingClientRect().top : 0;
+  SRCH = true; SRCH_Y = window.scrollY || 0; SH_MORE = false; document.documentElement.classList.add('srch'); sphReset(); render(); window.scrollTo(0, 0); flipDock(before); }
+function exitSearch() { const e = $('q'); if (e.value) { noteSearch(e.value); e.value = ''; $('qClear').hidden = true; } if (document.activeElement === e) e.blur();
+  if (!SRCH) { render(); return; } const d = document.querySelector('.dock'), before = d ? d.getBoundingClientRect().top : 0;
+  leaveSearch(); render(); window.scrollTo(0, SRCH_Y); flipDock(before); }
+// what to offer before anything is typed: the categories you have the most of, each only if searching its name really finds parts
+function recSearches() { const its = items(), out = [];
+  const ranked = CATS.map(c => ({ c, n: its.filter(x => { const s = [x.name, x.category, x.stype].join(' '); return c[2].test(s) && !(c[3] && c[3].test(s)); }).length })).filter(e => e.n).sort((a, b) => b.n - a.n);
+  for (const e of ranked) { if (out.length >= 8) break; let ok = false; try { const r = findParts(its, searchTerms(e.c[1]), partHay); ok = r.list.length > 0 && !r.near; } catch (err) { } if (ok) out.push(e.c); }
+  return out; }
+function searchHome() {
+  const list = WN_SEARCH.get(), show = SH_MORE ? list : list.slice(0, 5), rec = recSearches();
+  return `<div class="shome"><div class="hsec"><b>Recent searches</b>${list.length ? '<button type="button" class="hlink" data-rsclear>Clear</button>' : ''}</div>
+    ${list.length ? `<div class="rlist">${show.map(recSearchRow).join('')}</div>${list.length > 5 ? `<button type="button" class="smore" data-act="shmore">${SH_MORE ? 'See less' : `See more (${list.length - 5})`}</button>` : ''}` : '<div class="rempty">What you search for shows up here, so you can find it again with one tap.</div>'}
+    ${rec.length ? `<div class="hsec"><b>Recommended searches</b></div><div class="srec">${rec.map(c => `<button type="button" data-rsq="${esc(c[1])}"><img src="img/cat/${esc(c[0])}.png" width="30" height="30" alt="">${esc(c[1])}</button>`).join('')}</div>` : ''}</div>`;
+}
+// the rolling word in the bar: "Search Workshop Navigator" → "Search Screws" → … each new word comes up from below. It stands still on
+// "Workshop Navigator" while the search screen is up, and starts rolling again from there when you leave.
+const SPH_WORDS = ['Workshop Navigator', 'Screws', 'Bolts', 'Nuts', 'Washers', 'Anchors', 'Tools', 'Drill bits', 'Drawers', 'Supplies', 'Zip ties', 'Gear'];
+let SPH_I = 0, SPH_T = 0;
+function sphSet(i, roll) { const w = $('sphW'); if (!w) return; SPH_I = i; const cur = w.lastElementChild, txt = SPH_WORDS[i];
+  if (!roll || noMotion() || !w.animate || !cur) { w.innerHTML = `<b>${esc(txt)}</b>`; return; }
+  const nx = document.createElement('b'); nx.textContent = txt; w.appendChild(nx); const o = { duration: 420, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'forwards' };
+  cur.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(-100%)', opacity: 0 }], o); const a = nx.animate([{ transform: 'translateY(100%)', opacity: 0 }, { transform: 'none', opacity: 1 }], o);
+  a.onfinish = () => { if (nx.isConnected) [...w.children].forEach(c => { if (c !== nx) c.remove(); }); }; }
+function sphReset() { clearInterval(SPH_T); sphSet(0, false); if (SRCH) return;
+  SPH_T = setInterval(() => { if (SRCH || document.hidden || $('q').value || document.activeElement === $('q')) return; sphSet((SPH_I + 1) % SPH_WORDS.length, true); }, 2600); }
 function recentBlock() {
   const list = WN_SEARCH.get();
   const label = `<div class="hsec"><b>Recent searches</b>${list.length ? '<button type="button" class="hlink" data-rsclear>Clear</button>' : ''}</div>`;
@@ -811,14 +919,6 @@ function catView() {
   return head(esc(c[1]), '#/') + (body || `<div class="rows"><div class="empty">Nothing filed under ${esc(c[1])} yet.</div></div>`);
 }
 // the sign under the header: a few live facts, passing left to right, forever
-function paintTick(D) {
-  const el = $('tick'); if (!el) return;
-  const lv = D.lv, day = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-  const m = ['Welcome back, Ed', day, `${D.n} parts on file`, `${lv.ok} in stock`, D.tobuy.length ? `${D.tobuy.length} to buy` : '', D.low.length ? `${D.low.length} running low` : '', D.homeN ? `${D.homeN} need a home` : '', `${D.placed} of ${D.spots} storage spots used`, D.tools ? `${D.tools} tools & gear` : ''].filter(Boolean);
-  const key = m.join('|'); if (el.dataset.k === key) return; el.dataset.k = key;
-  const run = m.map(t => `<span>${esc(t)}</span><i>✦</i>`).join('');
-  el.innerHTML = `<div class="tk" style="--tkd:${Math.max(20, Math.round(key.length * .34))}s">${run}${run}</div>`;
-}
 // 10.25 — parts Ed asked to have added as "to buy" (Bolt Depot order + three from the home store). One tap adds them; nothing is added twice.
 const Q1025 = [["Lag Screws", "1/4 × 1-1/2 in Lag", "A4-E01", "Bolt Depot #1046 · order 25"], ["Lag Screws", "1/4 × 2-1/2 in Lag", "A4-E02", "Bolt Depot #1049 · order 25"], ["Lag Screws", "5/16 × 2 in Lag", "A4-E03", "Bolt Depot #1061 · order 15"], ["Lag Screws", "5/16 × 4 in Lag", "A4-E04", "Bolt Depot #1065 · order 15"], ["Lag Screws", "3/8 × 3 in Lag", "A4-E05", "Bolt Depot #1076 · order 10"], ["Lag Screws", "3/8 × 4 in Lag", "A4-E06", "Bolt Depot #1078 · order 10"], ["J-Bolts & Hanger Bolts", "1/4-20 × 2-5/16 in J-Bolt", "A4-E07", "Bolt Depot #12524 · order 6"], ["J-Bolts & Hanger Bolts", "5/16-18 × 5 in J-Bolt", "A4-E08", "Bolt Depot #12528 · order 4 · close fit lengthwise"], ["Hot-Dip Galvanized", "1/4 × 2 in Lag, galvanized", "A4-F01", "Bolt Depot #965 · order 20"], ["Hot-Dip Galvanized", "5/16 × 3 in Lag, galvanized", "A4-F02", "Bolt Depot #978 · order 10"], ["Hot-Dip Galvanized", "3/8 × 4 in Lag, galvanized", "A4-F03", "Bolt Depot #991 · order 10"], ["Hot-Dip Galvanized", "3/8-16 × 4 in Carriage Bolt, galvanized", "A4-F04", "Bolt Depot #896 · order 6"], ["Hot-Dip Galvanized", "3/8-16 × 6 in Carriage Bolt, galvanized", "", "Bolt Depot #900 · order 6 · too long for an Akro-Mils drawer"], ["Hot-Dip Galvanized", "3/8-16 Hex Nuts, galvanized", "A4-F05", "Bolt Depot #2616 · order 20"], ["Hot-Dip Galvanized", "1/4 in Flat Washers, galvanized", "A4-F06", "Bolt Depot #2987 · order 20"], ["Hot-Dip Galvanized", "5/16 in Flat Washers, galvanized", "A4-F07", "Bolt Depot #2988 · order 20"], ["Hot-Dip Galvanized", "3/8 in Flat Washers, galvanized", "A4-F08", "Bolt Depot #2989 · order 25"], ["J-Bolts & Hanger Bolts", "1/4-20 × 2 in Hanger Bolt", "A4-D04", "Bolt Depot #12176 · order 10"], ["J-Bolts & Hanger Bolts", "5/16-18 × 3 in Hanger Bolt", "A4-D05", "Bolt Depot #12187 · order 10"], ["J-Bolts & Hanger Bolts", "3/8-16 × 3 in Hanger Bolt", "A4-D06", "Bolt Depot #12195 · order 4"], ["Furniture Hardware", "1/4-20 T-Nuts", "A3-H04", "Bolt Depot #7306 · order 20"], ["Furniture Hardware", "5/16-18 T-Nuts", "A3-H05", "Bolt Depot #7307 · order 10"], ["Furniture Hardware", "1/4-20 Threaded Inserts (wood)", "A3-H06", "Bolt Depot #23854 · order 20"], ["Furniture Hardware", "M6 Threaded Inserts (wood)", "A3-H07", "Bolt Depot #23876 · order 10"], ["Furniture Hardware", "M6 × 50 mm Connector Bolts", "A3-H08", "Bolt Depot #28513 · order 10"], ["Furniture Hardware", "M6 Barrel Nuts", "A3-G07", "Bolt Depot #28543 · order 10"], ["Anchors & Mounting", "1/4-20 Strap Toggles", "A4-D07", "Home Depot · order 10"], ["Construction & Wood Screws", "#6 × 1-1/4 in Drywall Screws, coarse", "", "Home Depot · order 1 lb box · box is too big for a drawer"], ["Construction & Wood Screws", "#6 × 1-5/8 in Drywall Screws, coarse", "", "Home Depot · order 1 lb box · box is too big for a drawer"], ["Set Screws", "#6-32 × 1/8 in Set Screw, cup point", "A4-G01", "Bolt Depot #8543 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#6-32 × 3/16 in Set Screw, cup point", "A4-G02", "Bolt Depot #8545 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#6-32 × 1/4 in Set Screw, cup point", "A4-G03", "Bolt Depot #8547 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#8-32 × 1/8 in Set Screw, cup point", "A4-G04", "Bolt Depot #8455 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#8-32 × 1/4 in Set Screw, cup point", "A4-G05", "Bolt Depot #8458 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#8-32 × 3/8 in Set Screw, cup point", "A4-G06", "Bolt Depot #8460 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#10-32 × 3/16 in Set Screw, cup point", "A4-G07", "Bolt Depot #8486 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#10-32 × 1/4 in Set Screw, cup point", "A4-G08", "Bolt Depot #8487 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "#10-32 × 3/8 in Set Screw, cup point", "A4-H01", "Bolt Depot #8489 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "1/4-20 × 1/4 in Set Screw, cup point", "A4-H02", "Bolt Depot #8507 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "1/4-20 × 3/8 in Set Screw, cup point", "A4-H03", "Bolt Depot #8509 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "1/4-20 × 1/2 in Set Screw, cup point", "A4-H04", "Bolt Depot #8511 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "5/16-18 × 1/4 in Set Screw, cup point", "A4-H05", "Bolt Depot #8525 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "5/16-18 × 3/8 in Set Screw, cup point", "A4-H06", "Bolt Depot #8527 · order 25 · Allen drive, alloy steel, black oxide"], ["Set Screws", "5/16-18 × 1/2 in Set Screw, cup point", "A4-H07", "Bolt Depot #8529 · order 25 · Allen drive, alloy steel, black oxide"], ["SAE Nuts & Washers", "#8 Finishing Washers, stainless", "A4-H08", "Bolt Depot #2938 · order 100 · for #8 wood screws"], ["SAE Nuts & Washers", "#10-24 Cap Nuts, stainless", "A3-F04", "Bolt Depot #2544 · order 25"], ["SAE Nuts & Washers", "#10-32 Cap Nuts, stainless", "A3-F05", "Bolt Depot #2545 · order 25"], ["SAE Nuts & Washers", "1/4-20 Cap Nuts, stainless", "A3-F06", "Bolt Depot #2546 · order 25"], ["SAE Nuts & Washers", "5/16-18 Cap Nuts, stainless", "A3-F07", "Bolt Depot #2547 · order 25"], ["SAE Nuts & Washers", "3/8-16 Cap Nuts, stainless", "A3-F08", "Bolt Depot #2548 · order 25"]];
 let Q1025_HIDE = false;
@@ -833,7 +933,7 @@ function q1025Add() {
   const st = (d.app = d.app || {}).state = d.app.state || {}; st.fresh = { ...(st.fresh || {}), q1025: Date.now() }; commit(); render(); toast(n ? `Added ${n} parts to buy` : 'Those parts are already on your list');
 }
 function home() {
-  const D = HD(); paintTick(D);
+  const D = HD();
   return `<div class="hfeed${HOME_FRESH ? ' in' : ''}">${homeCats()}${freshCard()}${q1025Card()}${homeTiles(D)}${homeAtt(D)}${recentBlock()}</div>${pcMore(D)}${foot}`;
 }
 const SUP_IC = { 'Tape': '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', 'Glue & sealants': '<path d="M10 2h4v4l2 3v12H8V9l2-3z"/><path d="M8 13h8"/>', 'Painting': '<rect x="3" y="3" width="14" height="6" rx="2"/><path d="M17 6h3v5h-8v3"/><rect x="10.5" y="14" width="3" height="7" rx="1"/>', 'Printing & paper': '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>', 'Cleaning': '<path d="M9 3h5v4l3 3v11H7V10l2-3z"/><path d="M14 5h3"/>', 'Electrical': '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>' };
@@ -1030,7 +1130,7 @@ function wallHtml(cabs) {
       <div class="wmini">${c.cells}</div><div class="wsub">${esc(c.sub)}</div><button type="button" class="gbtn wopen" data-go="#/storage/${esc(c.u.id)}">Open ${esc(c.u.id)} map</button></div>`).join('')}</div></div>`;
 }
 // Draw a unit. hit = code to highlight. compact = no names (used inside sheets).
-function mapHtml(u, hit, compact) {
+function mapHtml(u, hit, compact, onlyK) {
   const ix = index(), spots = u.spots || {}, cell = (s, list) => { const ps = [...(ix.by.get(s.code) || []), ...(ix.th.get(s.code) || [])], f = flag(ix.by.get(s.code) || []), hs = Array.isArray(hit) ? hit : [hit], h = s.code === hs[0], h2 = !h && hs.includes(s.code), tall = s.h > 1 ? ` style="min-height:${Math.round(40 * s.h)}px"` : '', pur = spots[s.code] || '';
     const empty = pur ? `<span style="color:var(--ink3);font-style:italic">For: ${esc(pur)}</span>` : '<span style="color:var(--ink3)">Empty</span>';
     const names = list ? `<span class="cn">${ps.length ? esc(ps.map(shortName).join(' · ')) : empty}</span>` : (!compact && (ps.length || pur) ? `<span class="cn"${ps.length ? '' : ' style="font-style:italic;color:var(--ink3)"'}>${esc(ps.length ? shortName(ps[0]) : pur)}</span>` : '');
@@ -1055,7 +1155,20 @@ function mapHtml(u, hit, compact) {
     ? `<div class="map"><div class="mgrid" style="grid-template-columns:repeat(${u.per},minmax(0,1fr))">${sl.map(s => cell(s)).join('')}</div><div class="mapcap"><span>Row A = top shelf</span><span>Spot 1 = left</span></div></div>`
     : `<div class="map stack">${grid(sl.map(s => cell(s, true)).join(''), 1)}<div class="mapcap"><span>S01 = top shelf</span></div></div>`;
   if (u.type === 'box') return `<div class="map stack">${grid(sl.map(s => cell(s, true)).join(''), 1)}</div>`;
-  if (u.type === 'modules') return `<div class="map">${(u.modules || []).map((m, i) => { const ms = sl.filter(s => s.m === i + 1), many = m.bins > 0; return `<div class="mod${many ? '' : ' stack'}"><h4>${i + 1} · ${esc(m.name || 'Module')}</h4>${grid(ms.map(s => cell(s, !many)).join(''), many ? Math.min(m.cols || 6, m.bins) : 1)}</div>`; }).join('')}<div class="mapcap"><span>1 = top module</span></div></div>`;
+  if (u.type === 'modules') { const mods = u.modules || [], ML = S.modLook && S.modLook(u), hs = (Array.isArray(hit) ? hit : [hit]).filter(Boolean), rbox = (r) => `left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%`;
+    // 10.26: with photos (Mobius 1) each organizer is its real tray picture, every bin outlined and numbered on it
+    const modHtml = (m, i) => { const k = i + 1, ms = sl.filter(s => s.m === k), many = m.bins > 0, T = ML && ML.tray(k);
+      const inner = T ? `<div class="pmap tray${hs.length ? ' dim' : ''}"><img src="${esc(T.img)}" width="${T.w}" height="${T.h}" alt="${esc(m.name || 'Organizer')} from above">${ms.map((s, j) => `<div class="pd" style="${rbox(T.rects[j])}">${cell(s)}</div>`).join('')}</div>` : grid(ms.map(s => cell(s, !many)).join(''), many ? Math.min(m.cols || 6, m.bins) : 1);
+      return `<div class="mod${many ? '' : ' stack'}" data-mod="${k}"><h4>${k} · ${esc(m.name || 'Module')}${ML ? `<span class="loc">${esc(u.id)}-${k}</span>` : ''}</h4>${inner}</div>`; };
+    if (!ML) return `<div class="map">${mods.map(modHtml).join('')}<div class="mapcap"><span>1 = top module</span></div></div>`;
+    // the whole cart: tap an organizer to jump to its tray; an open box is a spot of its own
+    const cart = () => `<div class="pmap tray cart${hs.length ? ' dim' : ''}"><img src="${esc(ML.front.img)}" width="${ML.front.w}" height="${ML.front.h}" alt="${esc(u.name)}">${mods.map((m, i) => { const k = i + 1, ms = sl.filter(s => s.m === k), st = `<div class="pd" style="${rbox(ML.front.secs[i])}">`;
+      if (!(m.bins > 0)) { const c = cell(ms[0]); return st + (ridersIn(ms[0].code).length && !/class="cell[^"]* has/.test(c) ? c.replace('class="cell', 'class="cell has') : c) + '</div>'; }
+      const n = ms.filter(s => occupied(s.code)).length, h = ms.some(s => s.code === hs[0]), h2 = !h && ms.some(s => hs.includes(s.code));
+      return st + `<button type="button" class="cell${n ? ' has' : ''}${h ? ' hit' : h2 ? ' hit2' : ''}" data-act="modjump" data-k="${k}" aria-label="${esc(u.id)}-${k}, ${esc(m.name || 'organizer')}, ${n} of ${ms.length} bins used"><span class="cl">${k}</span></button></div>`; }).join('')}</div>`;
+    if (onlyK) return `<div class="map">${modHtml(mods[onlyK - 1], onlyK - 1)}</div>`;
+    if (compact && hs.length) { const f = sl.find(s => s.code === hs[0]); if (f && mods[f.m - 1] && mods[f.m - 1].bins > 0) return `<div class="map">${modHtml(mods[f.m - 1], f.m - 1)}</div>`; if (f) return `<div class="map">${cart()}</div>`; }
+    return `<div class="map">${compact ? '' : cart()}${mods.map(modHtml).join('')}<div class="mapcap"><span>1 = top · bins are numbered like reading a page, back row first</span></div></div>`; }
   return '';
 }
 // every spot in a list that holds something: code, what's in it, where it is
@@ -1065,13 +1178,14 @@ function insideList(codes, title) {
   return rows.length ? `<div class="h3">${title} <span class="c">${rows.length}</span></div><div class="rows">${rows.join('')}</div>` : '';
 }
 // an organizer of a modules unit (e.g. M1-2): its own QR label opens all of its bins
-function moduleOf(code) { const m = String(code || '').trim().toUpperCase().match(/^([A-Z]\d)-(\d{1,2})$/); if (!m) return null; const u = S.units(doc()).find(x => x.id === m[1]); if (!u || u.type !== 'modules') return null; const k = +m[2], mod = (u.modules || [])[k - 1]; if (!mod) return null;
+function moduleOf(code) { const m = String(code || '').trim().toUpperCase().match(/^([A-Z]{1,4}\d)-(\d{1,2})$/); if (!m) return null; const u = S.units(doc()).find(x => x.id === m[1]); if (!u || u.type !== 'modules') return null; const k = +m[2], mod = (u.modules || [])[k - 1]; if (!mod) return null;
   return { u, k, m: mod, code: `${u.id}-${k}`, codes: S.slots(u).filter(x => x.m === k).map(x => x.code) }; }
 // the name printed under a location's QR code
-function locName(code) { const us = S.units(doc()), u = us.find(x => x.id === code); if (u) return u.name; const mo = moduleOf(code); if (mo && mo.m.bins > 0) return `${mo.m.name || 'Organizer'} · organizer ${mo.k}`;
+function locName(code) { const us = S.units(doc()), u = us.find(x => x.id === code); if (u) return u.name; const mo = moduleOf(code); if (mo && S.modLook && S.modLook(mo.u)) return mo.m.name || 'Section ' + mo.k; if (mo && mo.m.bins > 0) return `${mo.m.name || 'Organizer'} · organizer ${mo.k}`;
   const f = S.find(doc(), code); return f ? f.unit.name.replace(/^(Husky|Akro-Mils)\s/, '') : ''; }
 function groupSheet(t) { const mo = moduleOf(t.a); if (!mo) return null; const body = insideList(mo.codes, 'What’s inside');
-  return { title: `${mo.m.name || 'Organizer'} · ${mo.code}`, body: `<p class="note" style="margin-top:-4px">${esc(mo.u.name)} · organizer ${mo.k} · ${mo.codes.length} bins</p>` + (body || '<div class="rows"><div class="empty">Nothing in this organizer yet.</div></div>') + `<div class="btns"><button type="button" class="gbtn" data-go="#/storage/${esc(mo.u.id)}">Open ${esc(mo.u.id)} map</button></div>` }; }
+  const pic = S.modLook && S.modLook(mo.u) && S.modLook(mo.u).tray(mo.k) ? mapHtml(mo.u, '', true, mo.k) : '';
+  return { title: `${mo.m.name || 'Organizer'} · ${mo.code}`, body: `<p class="note" style="margin-top:-4px">${esc(mo.u.name)} · organizer ${mo.k} · ${mo.codes.length} bins</p>` + pic + (body || '<div class="rows"><div class="empty">Nothing in this organizer yet.</div></div>') + `<div class="btns"><button type="button" class="gbtn" data-go="#/storage/${esc(mo.u.id)}">Open ${esc(mo.u.id)} map</button></div>` }; }
 // Storage → Location labels: one QR label per cabinet, drawer, organizer, bin, tote or shelf
 function locOpts(u) {
   const out = [], sl = S.slots(u), noun = u.type === 'box' ? (u.box || 'container').toLowerCase() : u.type === 'shelves' ? 'shelf unit' : u.type === 'bins' ? 'set of bins' : 'cabinet';
@@ -1094,7 +1208,7 @@ function locSheet(t) {
 function unitView(id) {
   const u = S.units(doc()).find(x => x.id === id); if (!u) return head('Storage', '#/storage') + '<div class="rows"><div class="empty">That unit isn’t on your map.</div></div>';
   const sl = S.slots(u), used = sl.filter(s => occupied(s.code)).length;
-  return head(`${esc(u.name)}`, '#/storage', `${O.CABS.includes(u.id) ? `<button type="button" class="gbtn" data-act="organize" data-unit="${esc(u.id)}">Organize</button>` : ''}<button type="button" class="gbtn" data-act="print" data-unit="${esc(u.id)}">Labels</button><button type="button" class="gbtn" data-act="loclabels" data-unit="${esc(u.id)}">QR label</button><button type="button" class="gbtn" data-act="editunit" data-unit="${esc(u.id)}">Edit</button>`) + `<p class="note" style="margin-top:-6px"><span class="loc">${esc(u.id)}</span> ${esc(u.model || '')} · ${used} of ${sl.length} used · tap a spot to see or add parts</p>` + mapHtml(u, '') + insideList(sl.map(x => x.code), 'What’s inside');
+  return head(`${esc(u.name)}`, '#/storage', `${O.CABS.includes(u.id) ? `<button type="button" class="gbtn" data-act="organize" data-unit="${esc(u.id)}">Organize</button>` : ''}<button type="button" class="gbtn" data-act="print" data-unit="${esc(u.id)}">Labels</button>${u.type === 'modules' && (u.modules || []).some(m => m.bins > 0) ? `<button type="button" class="gbtn" data-act="binlabels" data-unit="${esc(u.id)}">Bin labels</button>` : ''}${u.type === 'modules' && (u.modules || []).some(m => !(m.bins > 0)) ? `<button type="button" class="gbtn" data-act="loadouts">Loadouts</button>` : ''}<button type="button" class="gbtn" data-act="loclabels" data-unit="${esc(u.id)}">QR label</button><button type="button" class="gbtn" data-act="editunit" data-unit="${esc(u.id)}">Edit</button>`) + `<p class="note" style="margin-top:-6px"><span class="loc">${esc(u.id)}</span> ${esc(u.model || '')} · ${used} of ${sl.length} used · tap a spot to see or add parts</p>` + mapHtml(u, '') + insideList(sl.map(x => x.code), 'What’s inside');
 }
 function searchView(q) {
   const raw = S.norm(q), slotHit = S.find(doc(), raw), unitHits = S.units(doc()).filter(u => normS(u.name + ' ' + u.model).includes(normS(q)) || u.id === raw);
@@ -1156,12 +1270,13 @@ function openSheet(k, a, push, extra) {
   if (!sheet.open && qEl && qEl.value.trim()) fromSearch = location.hash || '#/';   // opened from search results: closing it goes Home (unless it took you somewhere)
   const ent = { k, a, ...(extra || {}) };
   if (push && stack.length) stack.push(ent); else stack = [ent];
-  if (!sheet.open) { sheet.classList.remove('closing'); sheet.showModal(); shBody.focus({ preventScroll: true }); }
+  if (!sheet.open) { if (qEl && document.activeElement === qEl) qEl.blur();   // or closing the sheet hands the focus back to the search box and reopens the search screen
+    sheet.classList.remove('closing'); sheet.showModal(); shBody.focus({ preventScroll: true }); }
   paintSheet(true);
 }
 // Finishing (Save, Done) goes straight Home. The ‹ back arrow still goes back one step; Save & next keeps you adding.
 let fromSearch = false;
-function goHome() { clearQ(); if (window.WNShell && WNShell.on()) WNShell.hide(); if (location.hash && location.hash !== '#/' && location.hash !== '#') location.hash = '#/'; else render(); window.scrollTo(0, 0); }
+function goHome() { leaveSearch(); clearQ(); if (window.WNShell && WNShell.on()) WNShell.hide(); if (location.hash && location.hash !== '#/' && location.hash !== '#') location.hash = '#/'; else render(); window.scrollTo(0, 0); }
 function finish() { ADDING = null; fromSearch = false; closeSheet(); goHome(); }
 // after saving a new item: Save & next → a fresh form, same place and type; Done / editing → Home
 function afterSave(btn, name) {
@@ -1180,7 +1295,7 @@ function sheetTyping() { const a = document.activeElement; return !!(a && shBody
 function paintSheet(fresh) {
   const top = stack[stack.length - 1]; if (!top) return closeSheet();
   $('shBack').hidden = stack.length < 2;
-  let r; try { r = ({ organize: organizeSheet, part: (t) => isSupply(itemById(t.a)) ? supplySheet(t) : partSheet(t), supply: supplySheet, additem: addItemSheet, newpart: newPartSheet, locs: locSheet, group: groupSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet })[top.k](top); }
+  let r; try { r = ({ organize: organizeSheet, part: (t) => isSupply(itemById(t.a)) ? supplySheet(t) : partSheet(t), supply: supplySheet, additem: addItemSheet, newpart: newPartSheet, locs: locSheet, group: groupSheet, slot: slotSheet, pick: pickSheet, addto: addSheet, unit: unitSheet, print: printSheet, printer: printerSheet, custom: customSheet, addwhat: addWhatSheet, thing: thingSheet, purpose: purposeSheet, take: takeSheet, drawer: drawerSheet, loadouts: loadoutsSheet, loadedit: loadEditSheet, loadrun: loadRunSheet, unload: unloadSheet })[top.k](top); }
   catch (e) { console.error(e); r = { title: 'Something went wrong', body: `<p class="note">Pull down to reload the page — that usually fixes it after an update.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button></div>` }; }
   if (!r) return closeSheet();
   $('shTitle').textContent = r.title; shBody.innerHTML = r.body; hydrate(shBody);
@@ -1205,14 +1320,15 @@ const toolIc = '<span class="pthumb ico" style="color:var(--brand)"><svg viewBox
 const gearIc = '<span class="pthumb ico" style="color:var(--brand)"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.5l2-3h7l2 3H21v11H3z"/><circle cx="12" cy="13" r="3.6"/></svg></span>';
 const itemIc = '<span class="pthumb ico" style="color:var(--ink2)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>';
 const warnPill = (t) => { if (!t.warranty) return ''; const d = dayDiff(t.warranty); return d != null && d >= 0 && d <= 30 ? `<span class="pill lo">Warranty ends ${d === 0 ? 'today' : 'in ' + d + ' days'}</span>` : ''; };
-function thingRow(t, inSpot) { const pills = (t.lent ? `<span class="pill lent">Lent to ${esc(t.lent)}</span>` : '') + warnPill(t); return `<div class="row"><button type="button" class="nozoom" data-act="thing" data-id="${esc(t.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${t.kind === 'tool' ? toolIc : t.kind === 'gear' ? gearIc : itemIc}<div class="t"><b>${hl(t.name)}</b><span>${esc(thingSub(t))}</span>${pills ? `<div class="pills">${pills}</div>` : ''}</div>${inSpot ? '' : (canon(t.location) ? `<span class="loc">${esc(canon(t.location))}</span>` : '<span class="loc no">No spot</span>')}</button>${inSpot ? `<button type="button" class="xbtn" data-act="unplacething" data-id="${esc(t.id)}" aria-label="Take ${esc(t.name)} out of this spot">×</button>` : ''}</div>`; }
+function thingRow(t, inSpot) { const pills = (t.ride ? `<span class="pill lent">Riding in ${esc(canon(t.ride) || t.ride)}</span>` : '') + (t.lent ? `<span class="pill lent">Lent to ${esc(t.lent)}</span>` : '') + warnPill(t); return `<div class="row"><button type="button" class="nozoom" data-act="thing" data-id="${esc(t.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${t.kind === 'tool' ? toolIc : t.kind === 'gear' ? gearIc : itemIc}<div class="t"><b>${hl(t.name)}</b><span>${esc(thingSub(t))}</span>${pills ? `<div class="pills">${pills}</div>` : ''}</div>${inSpot ? '' : (canon(t.location) ? `<span class="loc">${esc(canon(t.location))}</span>` : '<span class="loc no">No spot</span>')}</button>${inSpot ? `<button type="button" class="xbtn" data-act="unplacething" data-id="${esc(t.id)}" aria-label="Take ${esc(t.name)} out of this spot">×</button>` : ''}</div>`; }
 function slotSheet(t) {
   const f = S.find(doc(), t.a); if (!f) return null;
   const ix = index(), ps = sortedParts(ix.by.get(f.slot.code) || []), ts = (ix.th.get(f.slot.code) || []).slice().sort((a, b) => a.name.localeCompare(b.name)), pur = (f.unit.spots || {})[f.slot.code] || '';
   const rows = ps.map(x => `<div class="row"><button type="button" class="nozoom" data-part="${esc(x.id)}" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left">${photo(x)}<div class="t"><b>${esc(x.name)}</b><span>Part · ${ST_LABEL[itemStatus(x)]}</span></div>${countHtml(x)}</button><button type="button" class="xbtn" data-act="unplace" data-part="${esc(x.id)}" data-from="${esc(f.slot.code)}" aria-label="Take ${esc(x.name)} out of this drawer">×</button></div>`).join('') + ts.map(x => thingRow(x, true)).join('');
   return { title: f.slot.code, body: `<p class="note" style="margin-top:0">${esc(f.unit.name)} · ${esc(f.slot.where)}</p>
     <div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink2)">What this spot is for</div><div style="font-size:15px;margin-top:2px;${pur ? '' : 'color:var(--ink3)'}">${pur ? esc(pur) : 'Not set'}</div></div><button type="button" class="gbtn" data-act="purpose" data-slot="${esc(f.slot.code)}">${pur ? 'Change' : 'Set'}</button></div>
-    <div class="rows" style="box-shadow:none;border:1px solid var(--line)">${rows || '<div class="empty">Nothing here yet.</div>'}</div>
+    ${isCarry(f) && rows ? '<div class="h3">Lives here</div>' : ''}<div class="rows" style="box-shadow:none;border:1px solid var(--line)">${rows || `<div class="empty">${isCarry(f) ? 'Nothing lives here yet.' : 'Nothing here yet.'}</div>`}</div>
+    ${carryHtml(f)}
     <div class="btns"><button type="button" class="pbtn2" data-act="addwhat" data-slot="${esc(f.slot.code)}">Add to this spot</button><button type="button" class="gbtn" data-act="print" data-codes="${esc(f.slot.code)}">Print labels</button></div>` };
 }
 // ---------------------------------------------------------------- scan a drawer → take out / put back · what's in a drawer · goes with
@@ -1356,16 +1472,19 @@ function drawerSheet(t) {
   const pRow = (x) => { const q = qtyNum(x), lv = stockLevel(x), d = t.d[x.id] || 0;
     const st = q != null ? `${q} ${unitW(x, q)} ${f.unit.type === 'box' ? 'inside' : f.unit.type === 'shelves' ? 'here' : 'in the drawer'}` : lv ? STOCK_LABEL[lv] : 'no count yet', cls = lv === 'out' ? 'r' : lv === 'low' ? 'w' : '';
     return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + x.category))}">${photo(x)}<span class="t"><button type="button" data-act="tkopen" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${cls}">${esc(st)}</span></span><button type="button" class="dr-pm" data-act="drd" data-id="${esc(x.id)}" data-v="-1" aria-label="Take one ${esc(x.name)}">−</button><span class="dr-n${d ? ' on' : ''}">${d > 0 ? '+' + d : d < 0 ? '−' + (-d) : 0}</span><button type="button" class="dr-pm" data-act="drd" data-id="${esc(x.id)}" data-v="1" aria-label="Put back one ${esc(x.name)}">+</button></div>`; };
+  const carry = isCarry(f), riders = carry ? ridersIn(f.slot.code) : [], pulled = carry ? ts.filter(x => x.out).length : 0;
   const tRow = (x) => { const out = x.id in t.out ? t.out[x.id] : !!x.out;
+    if (x.ride && canon(x.ride) !== f.slot.code) return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + (x.type || '')))}">${x.kind === 'tool' ? toolIc : x.kind === 'gear' ? gearIc : itemIc}<span class="t"><button type="button" data-act="thing" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="w">Riding in ${esc(canon(x.ride) || x.ride)}${x.rideFor ? ' · ' + esc(x.rideFor) : ''}</span></span><button type="button" class="lo-sm" data-act="rideback" data-id="${esc(x.id)}">Back home</button></div>`;
     return `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + (x.type || '')))}">${x.kind === 'tool' ? toolIc : x.kind === 'gear' ? gearIc : itemIc}<span class="t"><button type="button" data-act="thing" data-id="${esc(x.id)}">${esc(x.name)}</button><span class="${out ? 'r' : ''}">${out ? (x.out ? 'Out since ' + esc(fmtDay(x.out)) : 'Out') : 'Here'}</span></span><div class="dr-seg" role="group" aria-label="${esc(x.name)} here or out"><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="here" class="${out ? '' : 'here'}">Here</button><button type="button" data-act="drtool" data-id="${esc(x.id)}" data-v="out" class="${out ? 'out' : ''}">Out</button></div></div>`; };
   const n = ps.length + ts.length, changes = Object.values(t.d).filter(Boolean).length + Object.keys(t.out).filter(k => { const th = thingById(k); return th && !!th.out !== t.out[k]; }).length;
   const firstCh = Object.entries(t.d).find(([, v]) => v); let sum = 'Tap − to take out, + to put back';
   if (changes) { const [id, v] = firstCh || []; const x = id && itemById(id); sum = `<b>${changes} change${changes > 1 ? 's' : ''}</b>${x ? ` · ${v < 0 ? 'took' : 'put back'} ${esc(plural(Math.abs(v), x))}` : ''}`; }
-  return { title: f.unit.type === 'box' ? 'Inside ' + f.unit.name : f.unit.type === 'shelves' ? 'On this shelf' : 'In this drawer', body: headH + `<p class="note" style="margin-top:-4px">${n ? `${n} thing${n > 1 ? 's' : ''}${ps.length && ts.length ? ` · ${ps.length} part${ps.length > 1 ? 's' : ''}, ${ts.length} tool${ts.length > 1 ? 's' : ''} &amp; items` : ''}` : 'Nothing here yet.'}</p>
+  return { title: f.unit.type === 'box' ? 'Inside ' + f.unit.name : f.unit.type === 'shelves' ? 'On this shelf' : 'In this drawer', body: headH + `<p class="note" style="margin-top:-4px">${n ? `${n} thing${n > 1 ? 's' : ''}${ps.length && ts.length ? ` · ${ps.length} part${ps.length > 1 ? 's' : ''}, ${ts.length} tool${ts.length > 1 ? 's' : ''} &amp; items` : ''}` : carry ? 'Nothing lives here yet.' : 'Nothing here yet.'}${riders.length ? ` · ${riders.length} riding along for a job` : ''}</p>
     ${n > 5 ? `<input id="drFind" type="search" class="sinput" placeholder="Find in this drawer" aria-label="Find in this drawer" style="width:100%;box-sizing:border-box;height:44px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:inherit;font-size:16px;margin-bottom:10px">` : ''}
     ${ps.length ? `<div class="h3" style="margin-top:4px">Parts</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${ps.map(pRow).join('')}</div>` : ''}
-    ${tools.length ? `<div class="h3">Tools</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${tools.map(tRow).join('')}</div>` : ''}
+    ${tools.length ? `<div class="h3">${carry ? 'Lives here' : 'Tools'}</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${tools.map(tRow).join('')}</div>` : ''}
     ${others.length ? `<div class="h3">Tools, gear &amp; other items</div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${others.map(x => thingRow(x, false)).join('')}</div>` : ''}
+    ${carryHtml(f)}
     <div class="btns"><button type="button" class="gbtn" data-act="drmanage" data-slot="${esc(f.slot.code)}">Manage this spot</button><button type="button" class="gbtn" data-act="print" data-codes="${esc(f.slot.code)}">Print labels</button></div>
     ${n ? `<div class="dr-bar"><span>${sum}</span><button type="button" class="tk-go" data-act="drsave"${changes ? '' : ' disabled'}>Save</button></div>` : ''}`,
     after: () => { const i = $('drFind'); if (i) i.addEventListener('input', () => { const q = normS(i.value).trim(); shBody.querySelectorAll('.dr-row').forEach(r => { r.style.display = !q || r.dataset.find.includes(q) ? '' : 'none'; }); }); } };
@@ -1453,7 +1572,7 @@ function thingSheet(t) {
     <div class="frow"><label class="fld"><span>Lent to</span><input data-tf="lent" value="${esc(d.lent || '')}" placeholder="Nobody" autocomplete="off"></label>${dt('lentOn', 'Since')}</div>${d.lent && !isNew ? '<div class="btns" style="margin:-4px 0 10px"><button type="button" class="gbtn" data-act="gotback">Got it back</button></div>' : ''}` : '';
   const inp = (k, label, ph) => `<label class="fld"><span>${label}</span><input data-tf="${k}" value="${esc(d[k] || '')}" placeholder="${ph || ''}" autocomplete="off"></label>`;
   const sel = (k, label, opts) => `<label class="fld"><span>${label}</span><select data-tf="${k}">${opts.map(o => `<option value="${esc(o)}"${(d[k] || '') === o ? ' selected' : ''}>${o || '—'}</option>`).join('')}</select></label>`;
-  const where = `<div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0">${f ? `<span class="loc">${esc(f.slot.code)}</span> <span class="note">${esc(f.unit.name)} · ${esc(f.slot.where)}</span>` : '<span class="note" style="margin:0">Not in a spot yet</span>'}</div><button type="button" class="gbtn" data-act="pickthing">${f ? 'Change' : 'Pick a spot'}</button></div>`;
+  const where = `<div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0">${f ? `<span class="loc">${esc(f.slot.code)}</span> <span class="note">${esc(f.unit.name)} · ${esc(f.slot.where)}</span>` : '<span class="note" style="margin:0">Not in a spot yet</span>'}</div><button type="button" class="gbtn" data-act="pickthing">${f ? 'Change' : 'Pick a spot'}</button></div>` + rideLine(t, d);
   return { title: (isNew ? 'New ' : '') + (tool ? 'tool' : gear ? 'gear' : 'item'), body: `${isNew ? addToBar(t) : ''}${inp('name', 'Name', tool ? 'e.g. Impact driver' : gear ? 'e.g. Sony A7 IV, Rode VideoMic' : 'e.g. Zip ties, 8 in')}
     ${gear ? `${sel('group', 'Group', [...new Set([...GEAR_GROUPS, d.group || GEAR_GROUPS[0]])])}<div class="frow">${inp('brand', 'Brand', 'e.g. Sony')}${inp('model', 'Model', 'e.g. ILCE-7M4')}</div>${inp('serial', 'Serial number', '')}` : ''}
     ${tool ? `<div class="frow">${sel('type', 'Type', ['', ...TOOL_TYPES])}${inp('brand', 'Brand', 'e.g. Milwaukee')}</div><div class="frow">${inp('model', 'Model', 'e.g. 2953-20')}${inp('serial', 'Serial number', '')}</div><div class="frow">${sel('voltage', 'Voltage', VOLTS)}${inp('platform', 'Battery platform', 'e.g. M18, 20V MAX')}</div>` : ''}
@@ -1679,6 +1798,7 @@ const paperTabs = (roll, act, both) => `<div class="h3" style="margin:2px 0 6px"
 const styleTabs = (roll) => { const st = L.style(roll); return `<div class="h3" style="margin:2px 0 6px">Print as</div><div class="tabsel">${L.STYLES.map(x => `<button type="button" class="${st === x ? 'on' : ''}" data-act="lstyle" data-v="${x}">${STYLE_NAMES[x]}</button>`).join('')}</div>`; };
 const jobs = () => (doc().app.alerts || []).filter(a => a && a.kind === 'print');
 function labelData(code) { if (String(code).startsWith('loc:')) { const c = String(code).slice(4); return L.location(c, locName(c)); }
+  { const bm = String(code).match(/^(bin|binq|num):(.+)$/); if (bm) return bm[1] === 'num' ? L.binNum(bm[2]) : L.binSpot(bm[2], bm[1] === 'binq' ? 'qr' : 'dm'); }   // 10.26: a bin's own sticker / the number on the lid
   const f = S.find(doc(), code), c = f ? f.slot.code : code, ix = index(), pur = purposeOf(c);
   const stuff = [...(ix.by.get(c) || []), ...(ix.th.get(c) || []).map(t => ({ name: t.name, category: t.kind === 'tool' ? (t.brand ? t.brand + ' · tool' : 'Tool') : 'Supplies' }))];
   return L.content(c, stuff.length ? stuff : pur ? [{ name: pur, category: 'Reserved' }] : [], f ? `${f.unit.name.replace(/^(Husky|Akro-Mils)\s/, '')} · ${f.slot.where}` : ''); }
@@ -1714,12 +1834,20 @@ async function printHere(roll, labels, copies, opts) {
   try { const r = await P.print(p, roll, labels, copies, opts); if (!P.chosenId()) P.choose(p.id); done(r, p); } catch (e) { toast(e.message); }
   return true;
 }
+// 10.26: Bin labels for an organizer unit (Mobius 1). Two stickers per bin, neither says what is inside so they never change:
+// 'bin' = on the bin itself (its code to scan + its number), 'num' = on the lid (just the number). t.sec = one organizer, 0 = all.
+function binCodes(t) { const u = S.units(doc()).find(x => x.id === t.a.bins); if (!u) return []; const pre = t.bk === 'num' ? 'num:' : t.bst === 'qr' ? 'binq:' : 'bin:'; return S.slots(u).filter(s => s.b && (!t.sec || s.m === t.sec)).map(s => pre + s.code); }
+function sheetCodes(t) { if (t.a.bins) return binCodes(t); const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null; return u ? S.slots(u).map(s => s.code) : (t.a.codes || []); }
 function printSheet(t) {
-  const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null;
-  const all = u ? S.slots(u).map(s => s.code) : (t.a.codes || []);
+  const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null, bu = t.a.bins ? S.units(doc()).find(x => x.id === t.a.bins) : null;
+  if (bu) { t.bk = t.bk || 'bin'; t.bst = t.bst || 'dm'; t.sec = t.sec || 0; }
+  const all = sheetCodes(t);
   const filled = all.filter(c => occupied(c) || purposeOf(c));
-  const isLoc = all.length && all.every(c => String(c).startsWith('loc:')), two = P.split() && !isLoc;
-  if (t.roll == null) t.roll = isLoc ? 'side' : loadedRoll();
+  const isBin = !!bu, isLoc = !isBin && all.length && all.every(c => String(c).startsWith('loc:')), two = P.split() && !isLoc && !isBin;
+  const binTabs = !isBin ? '' : `<div class="h3" style="margin:2px 0 6px">Which sticker</div><div class="tabsel"><button type="button" class="${t.bk === 'bin' ? 'on' : ''}" data-act="binkind" data-v="bin">On each bin · code + number</button><button type="button" class="${t.bk === 'num' ? 'on' : ''}" data-act="binkind" data-v="num">On the lid · number only</button></div>
+    ${t.bk === 'bin' ? `<div class="tabsel">${['dm', 'qr'].map(x => `<button type="button" class="${t.bst === x ? 'on' : ''}" data-act="binstyle" data-v="${x}">${STYLE_NAMES[x]}</button>`).join('')}</div><p class="note" style="margin:-2px 0 8px">${t.bst === 'dm' ? 'Data Matrix: big squares that scan fast on a small sticker. Read by the app’s Scan button (not the iPhone Camera).' : 'QR: the iPhone Camera opens the bin too, but the squares are much smaller at this size.'}</p>` : '<p class="note" style="margin:-2px 0 8px">Stick the part-name label (the Labels button) behind each number, inside the lid: flip the lid open and it is a map of the tray.</p>'}
+    <div class="h3" style="margin:2px 0 6px">Which organizer</div><div class="tabsel" style="flex-wrap:wrap"><button type="button" class="${!t.sec ? 'on' : ''}" data-act="binsec" data-v="0">All</button>${(bu.modules || []).map((m, i) => m.bins > 0 ? `<button type="button" class="${t.sec === i + 1 ? 'on' : ''}" data-act="binsec" data-v="${i + 1}">${i + 1} · ${esc(m.name || 'Organizer')}</button>` : '').join('')}</div>`;
+  if (t.roll == null) t.roll = isLoc ? 'side' : isBin ? 'front' : loadedRoll();
   if (t.roll === 'both' && !two) t.roll = 'front';
   if (t.only == null) t.only = !!u && t.roll !== 'side' && !isLoc;
   t.copies = t.copies || 1;
@@ -1728,7 +1856,7 @@ function printSheet(t) {
   const destLine = destHtml(t.roll, true), dlg = dest.local && dest.local.brand === 'other';
   const locTabs = `<div class="h3" style="margin:2px 0 6px">Print as</div><div class="tabsel">${['qr', 'dm'].map(x => `<button type="button" class="${L.locStyle() === x ? 'on' : ''}" data-act="locstyle" data-v="${x}">${STYLE_NAMES[x]}</button>`).join('')}</div><p class="note" style="margin:-2px 0 8px">${L.locStyle() === 'qr' ? 'QR: the iPhone Camera or the app’s Scan button opens the place.' : 'Data Matrix: smaller, read by the app’s Scan button only (not the iPhone Camera).'}</p>`;
   const bothNote = '<p class="note" style="margin:-2px 0 8px">Each spot gets its front label (1.5″ × 0.5″) and its Data Matrix side label (1″ × 1″), each on its own printer.</p>';
-  return { title: isLoc ? 'Location labels' : u ? 'Labels · ' + u.id : 'Labels · ' + (all[0] || ''), body: `${paperTabs(t.roll, 'roll', two)}${isLoc ? locTabs : t.roll === 'both' ? bothNote : styleTabs(t.roll)}
+  return { title: isBin ? 'Bin labels · ' + bu.id : isLoc ? 'Location labels' : u ? 'Labels · ' + u.id : 'Labels · ' + (all[0] || ''), body: `${paperTabs(t.roll, 'roll', two)}${isBin ? binTabs : isLoc ? locTabs : t.roll === 'both' ? bothNote : styleTabs(t.roll)}
     ${u ? `<div class="tabsel"><button type="button" class="${t.only ? 'on' : ''}" data-act="only" data-v="1">Spots with parts (${filled.length})</button><button type="button" class="${!t.only ? 'on' : ''}" data-act="only" data-v="0">All spots (${all.length})</button></div>` : ''}
     <div class="lprev">${show.map(c => t.roll === 'both' ? `<div style="display:flex;gap:8px;align-items:center">${L.preview('front', labelData(c), 150)}${L.preview('side', labelData(c), 75)}</div>` : L.preview(t.roll, labelData(c), 150)).join('') || '<div class="empty">No spots with parts yet.</div>'}</div>${codes.length > show.length ? `<p class="note">…and ${codes.length - show.length} more.</p>` : ''}
     <div class="frow" style="align-items:end;margin-top:12px"><label class="fld"><span>Copies of each</span><select data-act-sel="copies">${[1, 2, 3].map(k => `<option${k === t.copies ? ' selected' : ''}>${k}</option>`).join('')}</select></label><div class="fld"><button type="button" class="pbtn2" data-act="doprint" style="height:46px"${codes.length ? '' : ' disabled'}>Print ${n} label${n === 1 ? '' : 's'}</button></div></div>
@@ -1737,7 +1865,7 @@ function printSheet(t) {
     after: () => { P.warm(); const sel = shBody.querySelector('[data-act-sel="copies"]'); if (sel) sel.onchange = () => { t.copies = +sel.value; paintSheet(); }; if (!dest.checked) checkPrinter().then(() => { if (stack[stack.length - 1] === t) paintSheet(); }); } };
 }
 async function doPrint(t) {
-  const u = t.a.unit ? S.units(doc()).find(x => x.id === t.a.unit) : null, all = u ? S.slots(u).map(s => s.code) : (t.a.codes || []);
+  const all = sheetCodes(t);
   const codes = t.only ? all.filter(c => occupied(c) || purposeOf(c)) : all; if (!codes.length) return;
   let sent = 0;
   for (const roll of t.roll === 'both' ? ['front', 'side'] : [t.roll]) {
@@ -1853,6 +1981,140 @@ function previewCodes(u) { const s = S.slots(u); return s.length ? `${s.length} 
 function nextUnitId(type) { const have = new Set(S.units(doc()).map(u => u.id)), pref = { box: 'B', shelves: 'R', grid: 'A', stack: 'C', bins: 'S', modules: 'M' }[type]; if (pref) for (let n = 1; n <= 9; n++) if (!have.has(pref + n)) return pref + n; for (const L of 'ABCDEFGHJKLMNPQRSTUVWXYZ') for (let n = 1; n <= 9; n++) if (!have.has(L + n)) return L + n; return ''; }
 function cleanUnit(u) { const o = { id: u.id, kind: 'unit', type: u.type, name: (u.name || '').trim() || u.id, model: (u.model || '').trim() }; if (u.spots && Object.keys(u.spots).length) o.spots = { ...u.spots }; if (u.organized) o.organized = String(u.organized); if (u.rowTags && typeof u.rowTags === 'object') o.rowTags = JSON.parse(JSON.stringify(u.rowTags)); if (u.type === 'sections') { o.sections = JSON.parse(JSON.stringify(u.sections || [])); o.extras = JSON.parse(JSON.stringify(u.extras || [])); } else if (u.type === 'grid') { o.rows = u.rows; o.cols = u.cols; } else if (u.type === 'modules') o.modules = (u.modules || []).map(m => ({ name: (m.name || '').trim(), bins: m.bins || 0, cols: 6 })); else if (u.type === 'shelves') { o.count = u.count; o.per = u.per || 1; } else if (u.type === 'box') o.box = u.box || 'Tote'; else { o.count = u.count; if (u.type === 'bins') o.cols = 6; } if (String(u.room || '').trim()) o.room = String(u.room).trim(); return o; }
 
+// ---------------------------------------------------------------- 10.26 loadouts: job tools ride along in a cart's open box
+// A tool's home (its location) never changes. Loading it for a job only marks it as riding: t.ride = 'MOB1-6' (+ t.rideFor = the job).
+// A permanent tool pulled out to make room is simply "out" (t.out) — the same Here / Out flag the spot sheet already has.
+// Loadouts = saved lists per kind of job: doc().app.state.loadouts = [{id, name, box, tools: [thing ids], pull: [thing ids]}].
+const isCarry = (f) => !!(f && f.unit.type === 'modules' && !f.slot.b);
+const carrySpots = () => S.units(doc()).filter(u => u.type === 'modules').flatMap(u => S.slots(u).filter(s => !s.b).map(s => ({ code: s.code, name: (u.modules[s.m - 1] || {}).name || s.code, unit: u })));
+const loadouts = () => { const st = doc().app.state || {}; return Array.isArray(st.loadouts) ? st.loadouts.filter(l => l && l.id) : []; };
+const homeOf = (t) => canon(t.location) || '';
+const byHome = (a, b) => homeOf(a).localeCompare(homeOf(b)) || a.name.localeCompare(b.name);
+const ridersIn = (code) => things().filter(t => t.ride && canon(t.ride) === code).sort(byHome);
+const livesIn = (code) => things().filter(t => homeOf(t) === code).sort((a, b) => a.name.localeCompare(b.name));
+const today10 = () => new Date().toISOString().slice(0, 10);
+const thIc = (x) => x.kind === 'tool' ? toolIc : x.kind === 'gear' ? gearIc : itemIc;
+const homeText = (x) => { const f = S.find(doc(), x.location); return f ? `${f.slot.code} · ${f.unit.name.replace(/^Husky\s+/, '')}` : 'No home spot'; };
+function setRide(t, box, job) { if (box) { t.ride = box; if (job) t.rideFor = job; else delete t.rideFor; } else { delete t.ride; delete t.rideFor; } }
+const loSnap = (ids) => ids.map(id => { const x = thingById(id); return x ? [id, x.ride, x.rideFor, x.out] : null; }).filter(Boolean);
+function loRestore(snap) { snap.forEach(([id, ride, job, out]) => { const x = thingById(id); if (!x) return; setRide(x, ride, job); if (out) x.out = out; else delete x.out; }); commit(); render(); if (sheet.open) paintSheet(); }
+const loSaved = () => { commit(); render(); if (sheet.open) paintSheet(); };
+// in a cart box's sheet: what is riding along for a job, and the Load / Unload buttons
+function carryHtml(f) { if (!isCarry(f)) return ''; const code = f.slot.code, riders = ridersIn(code), pulled = livesIn(code).filter(x => x.out).length;
+  return (riders.length ? `<div class="h3">Riding along <span class="c">${riders.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${riders.map(x => `<div class="dr-row" data-find="${esc(normS(x.name + ' ' + (x.type || '')))}">${thIc(x)}<span class="t"><button type="button" data-act="thing" data-id="${esc(x.id)}">${esc(x.name)}</button><span>${homeOf(x) ? 'Home is ' + esc(homeOf(x)) : 'No home spot'}${x.rideFor ? ' · ' + esc(x.rideFor) : ''}</span></span><button type="button" class="lo-sm" data-act="rideback" data-id="${esc(x.id)}">Back home</button></div>`).join('')}</div>` : '') +
+    `<div class="btns"><button type="button" class="pbtn2" data-act="loadouts" data-box="${esc(code)}">Load for a job</button>${riders.length || pulled ? `<button type="button" class="gbtn" data-act="unload" data-box="${esc(code)}">Unload${riders.length ? ' (' + riders.length + ')' : ''}</button>` : ''}</div>`; }
+// in the tool's own sheet: where it is riding, or a button per open box to send it along (one-off, no loadout needed)
+function rideLine(t, d) {
+  if (!t.a) return ''; const cs = carrySpots(); if (!cs.length && !d.ride) return '';
+  if (d.ride) return `<div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:8px"><div style="flex:1;min-width:0"><span class="pill lent">Riding in ${esc(canon(d.ride) || d.ride)}</span>${d.rideFor ? ` <span class="note">${esc(d.rideFor)}</span>` : ''}</div><button type="button" class="gbtn" data-act="rideback" data-id="${esc(t.a)}">Back home</button></div>`;
+  const opts = cs.filter(c => c.code !== homeOf(d)); if (!opts.length) return '';
+  return `<div class="where" style="box-shadow:none;border:1px solid var(--line);padding:10px 14px;margin-top:8px"><div class="note" style="margin:0 0 8px">Taking it on a job? It keeps its home spot.</div><div class="btns" style="margin:0">${opts.map(c => `<button type="button" class="gbtn" data-act="rideset" data-id="${esc(t.a)}" data-box="${esc(c.code)}">Ride in ${esc(c.code)}</button>`).join('')}</div></div>`;
+}
+// the list of saved loadouts (t.a.box = the box it was opened from, used for a new one)
+function loadoutsSheet(t) {
+  const ls = loadouts().slice().sort((a, b) => String(a.name).localeCompare(String(b.name))), cs = carrySpots();
+  if (!cs.length) return { title: 'Loadouts', body: '<p class="note">Loadouts go into the open boxes of a rolling cart, and there is none on your storage map yet.</p>' };
+  const rows = ls.map(l => { const n = (l.tools || []).filter(id => thingById(id)).length, p = (l.pull || []).filter(id => thingById(id)).length, on = (l.tools || []).filter(id => { const x = thingById(id); return x && x.ride && canon(x.ride) === l.box; }).length;
+    return `<div class="lo-row"><span class="t"><b>${esc(l.name)}</b><span>${n} tool${n === 1 ? '' : 's'} into ${esc(l.box)}${p ? ` · ${p} come${p === 1 ? 's' : ''} out` : ''}${on ? ` · ${on} loaded now` : ''}</span></span><button type="button" class="lo-sm" data-act="loedit" data-id="${esc(l.id)}">Edit</button><button type="button" class="pbtn2" data-act="lorun" data-id="${esc(l.id)}" style="flex:none">Load</button></div>`; }).join('');
+  const un = cs.map(c => ({ c, n: ridersIn(c.code).length, p: livesIn(c.code).filter(x => x.out).length })).filter(e => e.n || e.p);
+  return { title: 'Loadouts', body: `<p class="note" style="margin-top:-4px">A loadout is the set of tools a kind of job needs. Loading one never changes where a tool lives — it only rides along until you unload.</p>
+    ${ls.length ? `<div class="rows" style="box-shadow:none;border:1px solid var(--line)">${rows}</div>` : '<div class="rows" style="box-shadow:none;border:1px solid var(--line)"><div class="empty">No loadouts yet. Make one per kind of job: Plumbing, Drywall, Electrical…</div></div>'}
+    <div class="btns"><button type="button" class="${ls.length ? 'gbtn' : 'pbtn2'}" data-act="lonew" data-box="${esc((t.a && t.a.box) || '')}">New loadout</button>${un.map(e => `<button type="button" class="gbtn" data-act="unload" data-box="${esc(e.c.code)}">Unload ${esc(e.c.code)} (${e.n + e.p})</button>`).join('')}</div>` };
+}
+// make or change a loadout. t.d = the draft; the checkboxes are read back from the page (loRead) before anything repaints or saves
+function loRead(top) { const d = top.d; if (!d) return; const n = shBody.querySelector('[data-lf="name"]'); if (n) d.name = n.value; if (shBody.querySelector('[data-lt],[data-lp]') || shBody.querySelector('#loNone')) { d.tools = [...shBody.querySelectorAll('[data-lt]:checked')].map(e => e.dataset.lt); d.pull = [...shBody.querySelectorAll('[data-lp]:checked')].map(e => e.dataset.lp); } }
+function loadEditSheet(t) {
+  const cs = carrySpots(); if (!cs.length) return null;
+  if (!t.d) { const ex = t.a && t.a.id ? loadouts().find(l => l.id === t.a.id) : null; if (t.a && t.a.id && !ex) return null;
+    t.d = ex ? JSON.parse(JSON.stringify(ex)) : { name: '', box: (t.a && cs.some(c => c.code === t.a.box) && t.a.box) || cs[cs.length - 1].code, tools: [], pull: [] }; }
+  const d = t.d; if (!cs.some(c => c.code === d.box)) d.box = cs[cs.length - 1].code;
+  const here = livesIn(d.box), hid = new Set(here.map(x => x.id)); d.pull = (d.pull || []).filter(id => hid.has(id)); d.tools = (d.tools || []).filter(id => !hid.has(id) && thingById(id));
+  const sel = new Set(d.tools), pl = new Set(d.pull), all = things().filter(x => !hid.has(x.id)).sort((a, b) => (sel.has(b.id) - sel.has(a.id)) || a.name.localeCompare(b.name));
+  const row = (x, attr, on) => `<label class="lo-row" data-find="${esc(normS(x.name + ' ' + (x.type || '') + ' ' + (x.brand || '')))}"><input type="checkbox" ${attr}="${esc(x.id)}"${on ? ' checked' : ''}><span class="t"><b>${esc(x.name)}</b><span>${esc(thingSub(x) || '')}</span></span>${homeOf(x) ? `<span class="loc">${esc(homeOf(x))}</span>` : '<span class="loc no">No spot</span>'}</label>`;
+  return { title: t.a && t.a.id ? 'Edit loadout' : 'New loadout', body: `<label class="fld"><span>Kind of job</span><input data-lf="name" value="${esc(d.name || '')}" placeholder="e.g. Plumbing, Drywall" autocomplete="off"></label>
+    <div class="h3" style="margin:2px 0 6px">Goes into</div><div class="tabsel" style="flex-wrap:wrap">${cs.map(c => `<button type="button" class="${c.code === d.box ? 'on' : ''}" data-act="lobox" data-v="${esc(c.code)}">${esc(c.code)} · ${esc(c.name)}</button>`).join('')}</div>
+    <div class="h3">Tools to bring <span class="c" id="loN">${sel.size}</span></div>
+    ${all.length > 6 ? `<input id="loFind" type="search" class="sinput" placeholder="Find a tool" aria-label="Find a tool" style="width:100%;box-sizing:border-box;height:44px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:inherit;font-size:16px;margin-bottom:10px">` : ''}
+    <div class="rows" id="loRows" style="box-shadow:none;border:1px solid var(--line)">${all.map(x => row(x, 'data-lt', sel.has(x.id))).join('') || `<div class="empty" id="loNone">No tools to pick from yet. Add them under Tools &amp; Gear, each with its home spot.</div>`}</div>
+    ${here.length ? `<div class="h3">Comes out of ${esc(d.box)} to make room <span class="c">${pl.size}</span></div><p class="note" style="margin:-2px 0 8px">Tick the permanent tools this job does not need. Leave them all unticked if everything stays.</p><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${here.map(x => row(x, 'data-lp', pl.has(x.id))).join('')}</div>` : `<p class="note">Nothing lives in ${esc(d.box)} yet, so nothing has to come out.</p>`}
+    <div class="err" id="loErr" style="color:var(--bad);font-size:13.5px;min-height:18px;margin-top:6px"></div>
+    <div class="btns"><button type="button" class="pbtn2" data-act="losave">Save loadout</button>${t.a && t.a.id ? '<button type="button" class="gbtn danger" data-act="lodel">Delete</button>' : ''}</div>`,
+    after: () => { const i = $('loFind'); if (i) i.addEventListener('input', () => { const q = normS(i.value).trim(); shBody.querySelectorAll('[data-lt]').forEach(c => { const r = c.closest('.lo-row'); r.style.display = !q || r.dataset.find.includes(q) ? '' : 'none'; }); });
+      const rs = $('loRows'); if (rs) rs.addEventListener('change', () => { const n = $('loN'); if (n) n.textContent = rs.querySelectorAll('[data-lt]:checked').length; }); } };
+}
+// running a loadout: two tick lists. Every tap saves at once, so you can walk away half-way and pick it up later.
+function loParts(l) { const box = l.box, pull = (l.pull || []).map(thingById).filter(x => x && homeOf(x) === box).sort((a, b) => a.name.localeCompare(b.name)), load = (l.tools || []).map(thingById).filter(x => x && homeOf(x) !== box).sort(byHome);
+  return { box, pull, load, pd: (x) => !!x.out, ld: (x) => !!x.ride && canon(x.ride) === box }; }
+function loadRunSheet(t) {
+  const l = loadouts().find(v => v.id === t.a); if (!l) return null; const P = loParts(l), total = P.pull.length + P.load.length, done = P.pull.filter(P.pd).length + P.load.filter(P.ld).length;
+  const tick = (x, kind, on, sub) => `<button type="button" class="lo-row${on ? ' on' : ''}" data-act="lotick" data-kind="${kind}" data-id="${esc(x.id)}" aria-pressed="${on}"><span class="lo-ck">✓</span><span class="t"><b>${esc(x.name)}</b><span>${sub}</span></span></button>`;
+  const lsub = (x) => esc(homeText(x)) + (x.lent ? ` · lent to ${esc(x.lent)}` : x.out ? ' · marked out' : x.ride && canon(x.ride) !== P.box ? ` · riding in ${esc(canon(x.ride) || x.ride)}` : '');
+  return { title: `${l.name} → ${P.box}`, body: `${!total ? '<p class="note">This loadout has no tools yet. Go back and tap Edit to pick them.</p>' : ''}
+    ${P.pull.length ? `<div class="h3" style="margin-top:2px">Take out of ${esc(P.box)} <span class="c">${P.pull.filter(P.pd).length}/${P.pull.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${P.pull.map(x => tick(x, 'pull', P.pd(x), P.pd(x) ? 'Out — goes back when you unload' : 'Lives in ' + esc(P.box))).join('')}</div>` : ''}
+    ${P.load.length ? `<div class="h3">Load in <span class="c">${P.load.filter(P.ld).length}/${P.load.length}</span></div><p class="note" style="margin:-2px 0 8px">In the order of where they live, so you walk each cabinet once.</p><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${P.load.map(x => tick(x, 'load', P.ld(x), lsub(x))).join('')}</div>` : ''}
+    ${total ? `<div class="lo-bar"><span>${done === total ? `<b>Loaded.</b> Unload ${esc(P.box)} when the job is done.` : `<b>${done} of ${total}</b> done`}</span>${done === total ? `<button type="button" class="tk-go" data-act="unload" data-box="${esc(P.box)}">Unload</button>` : '<button type="button" class="tk-go" data-act="loall">All done</button>'}</div>` : ''}` };
+}
+// unloading a box: riders go back home, pulled permanents go back in. t.b = what this sheet has sent back, so a tap can take it back
+function unloadSheet(t) {
+  const f = S.find(doc(), t.a); if (!f) return null; const box = f.slot.code; t.b = t.b || {};
+  const riders = things().filter(x => (x.ride && canon(x.ride) === box) || (t.b[x.id] && t.b[x.id].k === 'ride')).sort(byHome), back = things().filter(x => homeOf(x) === box && (x.out || (t.b[x.id] && t.b[x.id].k === 'out'))).sort((a, b) => a.name.localeCompare(b.name));
+  const rd = (x) => !(x.ride && canon(x.ride) === box), bd = (x) => !x.out, total = riders.length + back.length, done = riders.filter(rd).length + back.filter(bd).length;
+  const tick = (x, kind, on, sub) => `<button type="button" class="lo-row${on ? ' on' : ''}" data-act="untick" data-kind="${kind}" data-id="${esc(x.id)}" aria-pressed="${on}"><span class="lo-ck">✓</span><span class="t"><b>${esc(x.name)}</b><span>${sub}</span></span></button>`;
+  return { title: 'Unload ' + box, body: `<div class="tk-h"><span class="tk-code">${esc(box)}</span><span class="tk-w">${esc(f.unit.name)} · ${esc(f.slot.where)}</span></div>
+    ${!total ? `<p class="note">${esc(box)} is at its standing setup: nothing riding along, nothing pulled out.</p>` : ''}
+    ${riders.length ? `<div class="h3">Goes back home <span class="c">${riders.filter(rd).length}/${riders.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${riders.map(x => tick(x, 'ride', rd(x), (rd(x) ? 'Back in ' : 'To ') + esc(homeText(x)))).join('')}</div>` : ''}
+    ${back.length ? `<div class="h3">Goes back into ${esc(box)} <span class="c">${back.filter(bd).length}/${back.length}</span></div><div class="rows" style="box-shadow:none;border:1px solid var(--line)">${back.map(x => tick(x, 'out', bd(x), bd(x) ? 'Back in its place' : 'Pulled out' + (x.out ? ' ' + esc(fmtDay(x.out)) : ''))).join('')}</div>` : ''}
+    ${total ? `<div class="lo-bar"><span>${done === total ? `<b>All back.</b> ${esc(box)} is at its standing setup.` : `<b>${done} of ${total}</b> back`}</span>${done === total ? '' : '<button type="button" class="tk-go" data-act="unall">All back</button>'}</div>` : ''}` };
+}
+function loadoutTap(act, t) {
+  const top = stack[stack.length - 1];
+  if (act === 'loadouts') { openSheet('loadouts', { box: t.dataset.box || '' }, sheet.open && !!t.closest('#shBody')); return true; }
+  if (act === 'lonew') { openSheet('loadedit', { box: t.dataset.box || '' }, true); return true; }
+  if (act === 'loedit') { openSheet('loadedit', { id: t.dataset.id }, true); return true; }
+  if (act === 'lorun') { openSheet('loadrun', t.dataset.id, true); return true; }
+  if (act === 'unload') { openSheet('unload', t.dataset.box, sheet.open && !!t.closest('#shBody')); return true; }
+  if (act === 'lobox') { loRead(top); top.d.box = t.dataset.v; paintSheet(); return true; }
+  if (act === 'losave') { loRead(top); const d = top.d; d.name = String(d.name || '').trim(); if (!d.name) { $('loErr').textContent = 'Give the job a name.'; return true; }
+    const st = doc().app.state, list = loadouts().slice(), rec = { id: d.id || 'LO-' + Date.now().toString(36), name: d.name, box: d.box, tools: d.tools || [], pull: d.pull || [] }, i = list.findIndex(l => l.id === rec.id);
+    if (i >= 0) list[i] = rec; else list.push(rec); st.loadouts = list; commit(); stack.pop(); if (stack.length) paintSheet(); else closeSheet(); toast(`Saved ${rec.name} · ${rec.tools.length} tool${rec.tools.length === 1 ? '' : 's'}`); return true; }
+  if (act === 'lodel') { const id = top.d && top.d.id; if (!id) return true; const st = doc().app.state, was = loadouts().slice(); st.loadouts = was.filter(l => l.id !== id); commit(); stack.pop(); if (stack.length) paintSheet(); else closeSheet();
+    toast('Loadout deleted', 'Undo', () => { doc().app.state.loadouts = was; commit(); if (sheet.open) paintSheet(); }); return true; }
+  if (act === 'lotick') { const l = loadouts().find(v => v.id === top.a), x = thingById(t.dataset.id); if (!l || !x) return true;
+    if (t.dataset.kind === 'pull') { if (x.out) delete x.out; else x.out = today10(); } else if (x.ride && canon(x.ride) === l.box) setRide(x, ''); else setRide(x, l.box, l.name);
+    loSaved(); return true; }
+  if (act === 'loall') { const l = loadouts().find(v => v.id === top.a); if (!l) return true; const P = loParts(l), snap = loSnap([...P.pull, ...P.load].map(x => x.id));
+    P.pull.forEach(x => { if (!x.out) x.out = today10(); }); P.load.forEach(x => setRide(x, l.box, l.name)); loSaved(); toast(`${l.name} loaded into ${l.box}`, 'Undo', () => loRestore(snap)); return true; }
+  if (act === 'untick') { const x = thingById(t.dataset.id), f = S.find(doc(), top.a); if (!x || !f) return true; const box = f.slot.code; top.b = top.b || {};
+    if (t.dataset.kind === 'ride') { if (x.ride && canon(x.ride) === box) { top.b[x.id] = { k: 'ride', job: x.rideFor }; setRide(x, ''); } else setRide(x, box, top.b[x.id] && top.b[x.id].job); }
+    else if (x.out) { top.b[x.id] = { k: 'out', was: x.out }; delete x.out; } else x.out = (top.b[x.id] && top.b[x.id].was) || today10();
+    loSaved(); return true; }
+  if (act === 'unall') { const f = S.find(doc(), top.a); if (!f) return true; const box = f.slot.code, rs = ridersIn(box), bk = livesIn(box).filter(x => x.out), snap = loSnap([...rs, ...bk].map(x => x.id)); top.b = top.b || {};
+    rs.forEach(x => { top.b[x.id] = { k: 'ride', job: x.rideFor }; setRide(x, ''); }); bk.forEach(x => { top.b[x.id] = { k: 'out', was: x.out }; delete x.out; });
+    loSaved(); toast(`${box} unloaded · ${rs.length} back home${bk.length ? `, ${bk.length} back in` : ''}`, 'Undo', () => loRestore(snap)); return true; }
+  if (act === 'rideback' || act === 'rideset') { const x = thingById(t.dataset.id); if (!x) return true; const snap = loSnap([x.id]);
+    if (top && top.k === 'thing' && top.draft) shBody.querySelectorAll('[data-tf]').forEach(el => { top.draft[el.dataset.tf] = el.value; });
+    if (act === 'rideback') setRide(x, ''); else setRide(x, t.dataset.box);
+    if (top && top.k === 'thing' && top.draft && top.a === x.id) { if (x.ride) top.draft.ride = x.ride; else delete top.draft.ride; delete top.draft.rideFor; }
+    loSaved(); toast(act === 'rideback' ? `${x.name} is back home${homeOf(x) ? ' · ' + homeOf(x) : ''}` : `${x.name} is riding in ${t.dataset.box}`, 'Undo', () => loRestore(snap)); return true; }
+  return false;
+}
+
+// 10.26: a layout update that gives the unit a new code (M1 → MOB1). Everything filed in the old unit moves to its matching new spot;
+// anything with no match keeps its old text and shows under "Not on the map yet". One Undo puts it all back.
+function applyRename(x) {
+  const list = doc().locations, i = list.findIndex(l => l && l.kind === 'unit' && l.id === x.id); if (i < 0) return;
+  const old = list[i], nu = cleanUnit(x.to(JSON.parse(JSON.stringify(old)))), keep = new Set(S.slots(nu).map(s => s.code));
+  const mapOne = (v) => { const f = S.find(doc(), v); if (!f || f.unit.id !== old.id) return v; const n = x.map(f.slot.code); return n && keep.has(n) ? n : v; };
+  const mapLoc = (s) => String(s || '').split(/\s*[,;]\s*/).map(v => v.trim()).filter(Boolean).map(mapOne).join(', ');
+  const undo = []; let moved = 0, stuck = 0;
+  const touch = (o) => { const was = o.location, held = String(was || '').split(/\s*[,;]\s*/).some(v => { const f = S.find(doc(), v.trim()); return f && f.unit.id === old.id; }); if (!held) return; const now = mapLoc(was); if (now !== was) { undo.push([o.id, was]); o.location = now; moved++; } if (now.split(', ').some(v => { const f = S.find(doc(), v); return f && f.unit.id === old.id; })) stuck++; };
+  doc().items.forEach(touch); (doc().app.inventory || []).forEach(o => { if (o) touch(o); });
+  if (old.spots) { const sp = {}; Object.entries(old.spots).forEach(([c, pur]) => { const n = x.map(c); if (n && keep.has(n)) sp[n] = pur; }); if (Object.keys(sp).length) nu.spots = sp; }
+  nu.order = old.order ?? i; nu.detail = S.detail(nu); list[i] = nu; commit();
+  if (route().a === old.id) go('#/storage/' + nu.id); else render();
+  toast(`${nu.name} is on the map as ${nu.id}` + (moved ? ` · ${moved} thing${moved > 1 ? 's' : ''} moved — check their bins` : '') + (stuck ? ` · ${stuck} need a new spot` : ''), 'Undo', () => { const j = doc().locations.findIndex(l => l && l.kind === 'unit' && l.id === nu.id); if (j >= 0) doc().locations[j] = old; undo.forEach(([id, was]) => { const o = itemById(id) || (doc().app.inventory || []).find(v => v && v.id === id); if (o) o.location = was; }); commit(); if (route().a === nu.id) go('#/storage/' + old.id); else render(); });
+}
+
 // ---------------------------------------------------------------- taps
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-go],[data-part],[data-slot],[data-act],[data-soon]'); if (!t) return;
@@ -1869,14 +2131,16 @@ document.addEventListener('click', (e) => {
   if (act === 'addmod') { const d = stack[stack.length - 1].draft; readUnit(d); d.modules.push({ name: '', bins: 0, cols: 6 }); paintSheet(); return; }
   if (act === 'delmod') { const d = stack[stack.length - 1].draft; readUnit(d); d.modules.splice(+t.dataset.m, 1); paintSheet(); return; }
   if (act === 'saveunit') { const top = stack[stack.length - 1], d = readUnit(top.draft), isNew = !top.a, err = $('uErr');
-    if (!S.validId(d.id)) { err.textContent = 'Code: one letter (not I or O) and one digit, e.g. A5 or T2.'; return; }
+    if (!S.validId(d.id)) { err.textContent = 'Code: one letter (not I or O) and one digit, like A5 or T2 — or a short name and a digit, like MOB1.'; return; }
     if (isNew && S.units(doc()).some(u => u.id === d.id)) { err.textContent = d.id + ' is already used.'; return; }
     const o = cleanUnit(d), keep = new Set(S.slots(o).map(s => s.code)), lost = isNew ? [] : heldCodes().filter(c => (c === o.id || c.startsWith(o.id + '-')) && !keep.has(c));
     if (!S.slots(o).length) { err.textContent = 'Give it at least one spot.'; return; }
     if (lost.length) { err.textContent = `Spots ${lost.slice(0, 6).join(', ')}${lost.length > 6 ? '…' : ''} still hold parts. Move them first.`; return; }
     saveUnit(o); toast(isNew ? 'Added ' + o.id : 'Saved ' + o.id); finish(); return; }
   if (act === 'delunit') { const id = t.dataset.unit, list = doc().locations, i = list.findIndex(l => l && l.kind === 'unit' && l.id === id); if (i < 0 || heldCodes().some(c => c === id || c.startsWith(id + '-'))) return; const was = list[i]; list.splice(i, 1); commit(); closeSheet(); go('#/storage'); toast('Removed ' + id, 'Undo', () => { doc().locations.splice(Math.min(i, doc().locations.length), 0, was); commit(); render(); }); return; }
-  if (act === 'applyupd') { const x = S.pendingUpdates(doc()).find(v => v.id === t.dataset.unit); if (!x) return; const nu = cleanUnit(x.to(JSON.parse(JSON.stringify(x.unit)))), keep = new Set(S.slots(nu).map(s => s.code)), lost = heldCodes().filter(c => c.startsWith(nu.id + '-') && !keep.has(c));
+  if (act === 'applyupd') { const x = S.pendingUpdates(doc()).find(v => v.id === t.dataset.unit); if (!x) return;
+    if (x.rename) { applyRename(x); return; }
+    const nu = cleanUnit(x.to(JSON.parse(JSON.stringify(x.unit)))), keep = new Set(S.slots(nu).map(s => s.code)), lost = heldCodes().filter(c => c.startsWith(nu.id + '-') && !keep.has(c));
     if (lost.length) { toast(`${lost.join(', ')} still hold${lost.length > 1 ? '' : 's'} parts — move them first`); return; }
     const before = JSON.parse(JSON.stringify(x.unit)); saveUnit(nu); render(); toast('Updated ' + nu.id, 'Undo', () => { saveUnit(before); render(); }); return; }
   if (act === 'organize') { openSheet('organize', '', sheet.open && !!t.closest('#shBody'), t.dataset.unit ? { view: t.dataset.unit } : null); return; }
@@ -1897,6 +2161,11 @@ document.addEventListener('click', (e) => {
   if (act === 'lstyle') { const top = stack[stack.length - 1]; LS.set('wn-style-' + top.roll, t.dataset.v); L.setStyle(top.roll, t.dataset.v); paintSheet(); return; }
   if (act === 'roll' || act === 'only') { const top = stack[stack.length - 1]; if (act === 'roll') { top.roll = t.dataset.v; if (top.roll !== 'both') LS.set('wn-roll', top.roll); top.only = top.a.unit ? t.dataset.v !== 'side' : false; } else top.only = t.dataset.v === '1'; paintSheet(); return; }
   if (act === 'locstyle') { L.setLocStyle(t.dataset.v); LS.set('wn-locstyle', t.dataset.v); paintSheet(); return; }
+  if (act === 'shmore') { SH_MORE = !SH_MORE; render(); return; }
+  if (loadoutTap(act, t)) return;
+  if (act === 'binlabels') { openSheet('print', { bins: t.dataset.unit }, sheet.open && !!t.closest('#shBody')); return; }
+  if (act === 'binkind' || act === 'binstyle' || act === 'binsec') { const top = stack[stack.length - 1]; if (act === 'binkind') top.bk = t.dataset.v; else if (act === 'binstyle') top.bst = t.dataset.v; else top.sec = +t.dataset.v || 0; paintSheet(); return; }
+  if (act === 'modjump') { const m = t.closest('.map'), el = m && m.querySelector('.mod[data-mod="' + t.dataset.k + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (act === 'passign') { const roll = t.dataset.roll, id = t.dataset.id, p = P.found.find(x => x.id === id) || [P.printerOf('front'), P.printerOf('side')].find(x => x && x.id === id); if (!p) return;
     if ((P.printerOf(roll) || dest.local || {}).id === id) { toast(`${rollSize(roll)} labels already print here — tap it on another printer to move them`); return; }
     P.assign(roll, id); conn = null; checkPrinter(false).then(() => { paintSheet(); toast(`${rollSize(roll)} labels now print on ${p.brand === 'computer' ? 'your computer' : pName(p)}`); }); return; }
@@ -2037,11 +2306,14 @@ $('qClear').onclick = () => { noteSearch(qEl.value); qEl.value = ''; $('qClear')
 qEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { noteSearch(qEl.value); qEl.blur(); } });
 $('qScan').onclick = (e) => { e.preventDefault(); qEl.blur(); if (window.WNScan) window.WNScan(); };
 qEl.addEventListener('blur', () => { if (qEl.value.trim()) noteSearch(qEl.value); });
+qEl.addEventListener('focus', () => { enterSearch(); });
+$('qBack').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); exitSearch(); });
+sphReset();
 $('view').addEventListener('click', (e) => { const a = e.target.closest('[data-rsq],[data-rsx],[data-rsclear]'); if (!a) return; e.preventDefault(); e.stopPropagation();
   if (a.hasAttribute('data-rsx')) { WN_SEARCH.drop(a.dataset.rsx); render(); return; }
   if (a.hasAttribute('data-rsclear')) { WN_SEARCH.clear(); render(); return; }
-  qEl.value = a.dataset.rsq; $('qClear').hidden = false; window.scrollTo(0, 0); render(); });
-document.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' || (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) { e.preventDefault(); qEl.focus(); qEl.select(); } if (e.key === 'Escape' && document.activeElement === qEl && qEl.value) { qEl.value = ''; $('qClear').hidden = true; render(); } });
+  qEl.value = a.dataset.rsq; $('qClear').hidden = false; if (!SRCH) enterSearch(); else { window.scrollTo(0, 0); render(); } });
+document.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' || (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) { e.preventDefault(); qEl.focus(); qEl.select(); } if (e.key === 'Escape' && document.activeElement === qEl && qEl.value) { qEl.value = ''; $('qClear').hidden = true; render(); } else if (e.key === 'Escape' && SRCH && !$('sheet').open) exitSearch(); });
 const menu = $('menu'), mb = $('menuBtn');
 function closeMenu() { menu.classList.remove('on'); mb.setAttribute('aria-expanded', 'false'); }
 mb.onclick = (e) => { e.stopPropagation(); if (menu.classList.contains('on')) return closeMenu(); const r = mb.getBoundingClientRect(); menu.style.top = (r.bottom + 8) + 'px'; menu.style.right = Math.max(10, innerWidth - r.right) + 'px'; menu.classList.add('on'); mb.setAttribute('aria-expanded', 'true'); };

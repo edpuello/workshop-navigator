@@ -84,6 +84,11 @@
   }
   // A storage location's own label (cabinet, drawer, organizer, tote…): QR code + its code + its name.
   function location(code, name) { return { code: clean(code), name: clean(name), cat: '', main: clean(code), desc: pretty(name), loc: true }; }
+  // 10.26: a bin of an organizer (MOB1-3-07). binSpot = the sticker on the bin itself: its code to scan, its number big, the full code small.
+  // binNum = the number on the organizer's lid: just "07", with the organizer's code small. Neither says what is inside, so they never change.
+  const binParts = (code) => { const c = clean(code).toUpperCase(), i = c.lastIndexOf('-'); return i > 0 ? { c, num: c.slice(i + 1), sec: c.slice(0, i) } : { c, num: c, sec: '' }; };
+  function binSpot(code, kind) { const b = binParts(code); return { code: b.c, name: '', cat: '', main: b.num, desc: b.c, bin: kind === 'qr' ? 'qr' : 'dm' }; }
+  function binNum(code) { const b = binParts(code); return { code: b.c, name: '', cat: '', main: b.num, desc: b.sec, num: true }; }
   // A custom label: your text printed as big as it fits, with an optional smaller second line.
   const asciiOK = (s) => /^[\x20-\x7E]*$/.test(String(s));
   function custom(data, caption, line2) { return { code: String(data || ''), name: clean(caption), cat: clean(line2), main: pretty(caption) || String(data || ''), desc: pretty(line2), custom: true }; }
@@ -105,7 +110,7 @@
   const setStyle = (roll, st) => { if (STYLES.includes(st)) STYLE[rk(roll)] = st; };
   let LOCST = (() => { try { return localStorage.getItem('wn-locstyle') === 'dm' ? 'dm' : 'qr'; } catch (e) { return 'qr'; } })();   // location labels: QR (default) or Data Matrix
   const setLocStyle = (v) => { LOCST = v === 'dm' ? 'dm' : 'qr'; LAYOUTS.clear(); IMGS.clear(); };
-  const styleOf = (roll, c) => c && c.loc ? (c.style === 'dm' || c.style === 'qr' ? c.style : LOCST) : STYLES.includes(c && c.style) ? c.style : STYLE[rk(roll)];
+  const styleOf = (roll, c) => c && c.bin ? c.bin : c && c.num ? 'text' : c && c.loc ? (c.style === 'dm' || c.style === 'qr' ? c.style : LOCST) : STYLES.includes(c && c.style) ? c.style : STYLE[rk(roll)];
   const symData = (kind, c) => kind === 'qr' ? (c.custom ? String(c.code).trim() : SITE + 'app/?loc=' + encodeURIComponent(c.code)) : clean(c.code).replace(/×/g, 'x');
   const SYMS = new Map();
   function symbolFor(kind, c) {
@@ -148,7 +153,7 @@
   }
   const LAYOUTS = new Map();
   function layout(roll, c) {
-    const key = [rk(roll), styleOf(roll, c), c.code, c.main, c.desc, c.custom ? 1 : 0, c.loc ? 1 : 0, c.reserved ? 1 : 0].join('\u0001');
+    const key = [rk(roll), styleOf(roll, c), c.code, c.main, c.desc, c.custom ? 1 : 0, c.loc ? 1 : 0, c.reserved ? 1 : 0, c.bin || '', c.num ? 1 : 0].join('\u0001');
     if (LAYOUTS.has(key)) return LAYOUTS.get(key);
     if (LAYOUTS.size > 600) LAYOUTS.clear();
     const L = layout0(roll, c); LAYOUTS.set(key, L); return L;
@@ -156,6 +161,22 @@
   function layout0(roll, c) {
     const side = rk(roll) === 'side', W = side ? 300 : 450, H = side ? 300 : 150, st = styleOf(roll, c);
     const has = !!c.main, main = c.main || c.code;
+    if (c.num) {   // lid number: the bin's number as big as it fits, the organizer's code small underneath
+      const w = W - 2 * MX, sh = side ? 30 : 24, base = H - (side ? 22 : 10), bottom = c.desc ? base - Math.round(sh * CAPH) - (side ? 16 : 12) : H - 12, top = side ? 20 : 12;
+      const h = fitOne(c.main, w, Math.floor((bottom - top) / 0.8), 20), rows = placeMain([c.main], h, MX, w, top, bottom);
+      if (c.desc) { const dh = fitOne(c.desc, w, sh, 14); rows.push({ t: c.desc, h: dh, y: base, x: Math.round(MX + (w - textW(c.desc, dh)) / 2) }); }
+      return { W, H, style: 'text', rows };
+    }
+    if (c.bin) {   // bin sticker: the code to scan, then the number big with the full code small under it
+      const s = symbolFor(st, c) || symbolFor(st === 'qr' ? 'dm' : 'qr', c);
+      if (side) { const q = s && s.kind === 'qr' ? 2 : 1, codeH = 34, room = H - 2 * 12 - codeH - 10, m = s ? Math.max(2, Math.min(24, Math.floor(Math.min(W - 2 * MX, room) / (s.n + 2 * q)))) : 0, sz = s ? s.n * m : 0, y0 = 12 + q * m;
+        const ch = fitOne(c.desc, W - 2 * MX, codeH, 18), cy = s ? y0 + sz + q * m + Math.round(codeH * CAPH) + 4 : Math.round(H / 2);
+        return { W, H, style: s ? s.kind : 'text', sym: s ? { ...s, m, s: sz, x: Math.round((W - sz) / 2), y: y0 } : undefined, rows: [{ t: c.desc, h: ch, y: cy, x: Math.round((W - textW(c.desc, ch)) / 2) }] }; }
+      const q = s && s.kind === 'qr' ? 1 : 1, m = s ? Math.max(2, Math.min(24, Math.floor((H - 2 * 10) / (s.n + 2 * q)))) : 0, sz = s ? s.n * m : 0, sx = MX + q * m, tx = s ? sx + sz + q * m + 12 : MX, w = W - MX - tx;
+      const sh = 24, base = H - 10, bottom = base - Math.round(sh * CAPH) - 12, h = fitOne(c.main, w, Math.floor((bottom - 12) / 0.8), 20), rows = placeMain([c.main], h, tx, w, 12, bottom);
+      const dh = fitOne(c.desc, w, sh, 14); rows.push({ t: c.desc, h: dh, y: base, x: Math.round(tx + (w - textW(c.desc, dh)) / 2) });
+      return { W, H, style: s ? s.kind : 'text', sym: s ? { ...s, m, s: sz, x: sx, y: Math.round((H - sz) / 2) } : undefined, rows };
+    }
     const sym = st === 'text' ? null : symbolFor(st, c);
     if (!sym) {
       const o = SZ[side ? 'side' : 'front'], w = W - 2 * MX;
@@ -204,7 +225,7 @@
     const S = L.sym; if (withSym && S) S.M.forEach((row, r) => row.forEach((v, k) => { if (v) g.fillRect(S.x + k * S.m, S.y + r * S.m, S.m, S.m); }));
     return cv;
   }
-  function imageOf(roll, c) { const L = layout(roll, c), key = rk(roll) + '|' + [styleOf(roll, c), c.code, c.main, c.desc, c.custom, c.loc, c.reserved].join('\u0001'); if (IMGS.has(key)) return IMGS.get(key); if (IMGS.size > 400) IMGS.clear(); const u = paint(L, true).toDataURL('image/png'); IMGS.set(key, u); return u; }
+  function imageOf(roll, c) { const L = layout(roll, c), key = rk(roll) + '|' + [styleOf(roll, c), c.code, c.main, c.desc, c.custom, c.loc, c.reserved, c.bin, c.num].join('\u0001'); if (IMGS.has(key)) return IMGS.get(key); if (IMGS.size > 400) IMGS.clear(); const u = paint(L, true).toDataURL('image/png'); IMGS.set(key, u); return u; }
 
   // ---------- ZPL: the words go as one picture (^GF, compressed), the printer draws the code itself (^BX Data Matrix / ^BQ QR)
   let MEDIA = 'continuous'; // 'continuous' (no gaps: label + 1″ to tear, then stop) or 'gap' (die-cut labels)
@@ -290,5 +311,5 @@
     const r = await timed(fetch(BP() + 'write', { method: 'POST', body: JSON.stringify({ device: dev, data }) }), 15000);
     if (!r.ok) throw new Error((await r.text()) || 'The printer refused the job');
   }
-  window.WNLabels = { setLocStyle, locStyle: () => LOCST, location, words, pretty, title, svgLabel, setStyle, style: (roll) => STYLE[rk(roll)], STYLES, layout, png, BP, timed, setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
+  window.WNLabels = { binSpot, binNum, setLocStyle, locStyle: () => LOCST, location, words, pretty, title, svgLabel, setStyle, style: (roll) => STYLE[rk(roll)], STYLES, layout, png, BP, timed, setMedia, get media() { return MEDIA; }, ROLLS, content, custom, check, zpl, preview, textW, findPrinter, status, send, get printer() { return printer; }, frontLayout, sideLayout, clean };
 })();
