@@ -423,7 +423,10 @@ html.rt-home .dock{margin-top:2px;padding-top:8px}
 .sph[hidden]{display:none}
 .sph-w{position:relative;display:block;flex:1;min-width:0;height:22px;overflow:hidden}
 .sph-w b{position:absolute;left:0;top:0;font-weight:500;line-height:22px;white-space:nowrap}
-html.srch .sph{left:54px}
+/* the typing position must sit exactly under the first letter of "Search": no built-in padding or search-field inset on the box
+   (the iPhone adds its own), and the words are placed from the box's real position (sphPlace) */
+html .sbar input#q{padding:0;margin:0;text-indent:0;border-radius:0}
+.sbar input::-webkit-search-decoration,.sbar input::-webkit-search-results-button,.sbar input::-webkit-search-results-decoration{-webkit-appearance:none;display:none}
 html.srch header.hw{display:none}
 html.srch,html.srch body{background:var(--card)}
 html.srch body .dock{background:var(--card)!important;margin-top:0;padding-top:max(10px,calc(env(safe-area-inset-top) + 6px))}
@@ -523,6 +526,7 @@ html.dark .sbar{background:var(--card)}
 @keyframes wnrise{from{transform:translateY(10px) scale(.97)}to{transform:none}}
 @keyframes wnfill{from{transform:scaleX(0)}to{transform:none}}
 </style>
+
 
 
 
@@ -736,7 +740,7 @@ function render() { markTab(); migrateNames();
   IDX = null;
   const q = $('q').value.trim(); terms = searchTerms(q);
   document.documentElement.classList.toggle('rt-home', route().v === 'home' && !q && !SRCH);
-  { const ph = $('sph'); if (ph) ph.hidden = !!$('q').value; }
+  { const ph = $('sph'); if (ph) ph.hidden = !!$('q').value; sphPlace(); }
   { const vk = q ? 'search' : SRCH ? 'shome' : (route().v || 'home'); HOME_FRESH = vk === 'home' && HOME_KEY !== 'home'; HOME_KEY = vk; }
   try { $('view').innerHTML = q ? searchView(q) : SRCH ? searchHome() : (VIEWS[route().v] || home)(); }
   catch (e) { console.error(e); $('view').innerHTML = `<div class="where"><div style="font-weight:800">This screen hit a problem</div><p class="note">Pull down to reload the page — that usually fixes it after an update. If it keeps happening, send a screenshot of this.</p><p class="note" style="font-family:ui-monospace,Menlo,monospace">${esc(e && e.message || e)}</p><div class="btns"><button type="button" class="gbtn" onclick="location.reload()">Reload</button><a class="gbtn" href="#/">Home</a></div></div>`; }
@@ -867,7 +871,7 @@ function enterSearch() { if (SRCH) return; const d = document.querySelector('.do
   SRCH = true; SRCH_Y = window.scrollY || 0; SH_MORE = false; CAT_X = 0;   /* a new search starts the category row from the beginning again */ document.documentElement.classList.add('srch'); sphReset(); render(); window.scrollTo(0, 0); flipDock(before); }
 function exitSearch() { const e = $('q'); if (e.value) { noteSearch(e.value); e.value = ''; $('qClear').hidden = true; } if (document.activeElement === e) e.blur();
   if (!SRCH) { render(); return; } const d = document.querySelector('.dock'), before = d ? d.getBoundingClientRect().top : 0;
-  leaveSearch(); render(); window.scrollTo(0, SRCH_Y); flipDock(before); }
+  leaveSearch(); render(); sphPlace(); window.scrollTo(0, SRCH_Y); flipDock(before); }
 // what to offer before anything is typed: the categories you have the most of, each only if searching its name really finds parts
 function recSearches() { const its = items(), out = [];
   const ranked = CATS.map(c => ({ c, n: its.filter(x => { const s = [x.name, x.category, x.stype].join(' '); return c[2].test(s) && !(c[3] && c[3].test(s)); }).length })).filter(e => e.n).sort((a, b) => b.n - a.n);
@@ -888,6 +892,7 @@ let SPH_WORDS = null, SPH_I = 0, SPH_T = 0;
 function sphWords() { if (SPH_WORDS) return SPH_WORDS; const w = [...new Set([...CATS.map(c => SPH_SAY[c[0]] || c[1]), 'Screws', 'Tools', 'Supplies', 'Gear'])];
   for (let i = w.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [w[i], w[j]] = [w[j], w[i]]; }
   return (SPH_WORDS = ['Workshop Navigator', ...w]); }
+function sphPlace() { const q = $('q'), ph = $('sph'); if (!q || !ph) return; const cs = getComputedStyle(q); ph.style.left = (q.offsetLeft + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.paddingLeft) || 0)) + 'px'; }
 function sphSet(i, roll) { const w = $('sphW'); if (!w) return; SPH_I = i; const cur = w.lastElementChild, txt = sphWords()[i];
   if (!roll || noMotion() || !w.animate || !cur) { w.innerHTML = `<b>${esc(txt)}</b>`; return; }
   const nx = document.createElement('b'); nx.textContent = txt; w.appendChild(nx); const o = { duration: 420, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'forwards' };
