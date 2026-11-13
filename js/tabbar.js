@@ -312,7 +312,10 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     const SKIP = 'script,style,link,dialog,.wnbar,.wnbub,.wnplus,.wnmenu,.wnscrim,#wnCL,.wl,.pzoom,#toast';
     const de = document.documentElement, se = () => document.scrollingElement || de;
     let els = [], g = null, anim = [], clearT = 0;
-    const busy = () => !!(document.querySelector('dialog[open]') || de.classList.contains('wl-open') || de.classList.contains('wn-cl') || document.body.classList.contains('dragging-on') || document.querySelector('.pdragging,.pdrag') || (plus && plus.classList.contains('open')));
+    // 10.26: never while you are typing. The iPhone draws the text cursor itself and it does not follow a stretched page,
+    // so the cursor was left hanging above the search bar whenever the page was pulled with the keyboard up.
+    const typing = () => { const a = document.activeElement; return !!a && (a.isContentEditable || a.tagName === 'TEXTAREA' || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|range|file|color)$/i.test(a.type || ''))); };
+    const busy = () => !!(typing() || document.querySelector('dialog[open]') || de.classList.contains('wl-open') || de.classList.contains('wn-cl') || document.body.classList.contains('dragging-on') || document.querySelector('.pdragging,.pdrag') || (plus && plus.classList.contains('open')));
     const targets = () => [...document.body.children].filter(el => { if (el.matches(SKIP)) return false; const cs = getComputedStyle(el); return cs.position !== 'fixed' && cs.display !== 'none'; });
     const max = () => Math.max(0, se().scrollHeight - innerHeight);
     const R = (d) => { const H = innerHeight; return (1 - 1 / (d * 0.55 / H + 1)) * H; };   // iOS's stretch curve
